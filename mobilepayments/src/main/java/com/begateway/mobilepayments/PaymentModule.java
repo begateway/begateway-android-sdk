@@ -64,9 +64,7 @@ public class PaymentModule implements Serializable {
     private boolean isLoading = false;
 
     private Cryptore cryptore;
-
-
-
+    
     private String publicStoreKey;
 
     private JSONObject orderData;
@@ -182,6 +180,13 @@ public class PaymentModule implements Serializable {
     public void payWithCreditCard(JSONObject creditCardJsonData) {
         prepareForPayment();
 
+        if (creditCardJsonData == null){
+            PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
+            paymentResultResponse.setError("Invalid json");
+            onPaymentComplete(paymentResultResponse);
+            return;
+        }
+
         try {
             JSONObject requestJsonData = creditCardJsonData.getJSONObject("request");
 
@@ -215,6 +220,13 @@ public class PaymentModule implements Serializable {
 
         prepareForPayment();
 
+        if (orderData == null){
+            PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
+            paymentResultResponse.setError("Invalid json");
+            onPaymentComplete(paymentResultResponse);
+            return;
+        }
+
         this.publicStoreKey = publicStoreKey;
         this.orderData = orderData;
 
@@ -228,6 +240,13 @@ public class PaymentModule implements Serializable {
     public void payWithCheckoutJson(JSONObject checkoutJsonData) {
 
         prepareForPayment();
+
+        if (checkoutJsonData == null){
+            PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
+            paymentResultResponse.setError("Invalid json");
+            onPaymentComplete(paymentResultResponse);
+            return;
+        }
 
         paymentTokenResponse = new PaymentTokenResponse();
         try {
