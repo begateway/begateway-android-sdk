@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="begateway_field_container">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:baselineAligned">false</item>
+    </style>
+
+    <style name="begateway_base_textview">
+        <item name="android:textSize">@dimen/begateway_input_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="begateway_text_input_layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:accessibilityLiveRegion" tools:targetApi="kitkat">polite</item>
+    </style>
+
+    <style name="begateway_card_form_field" parent="begateway_base_textview">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:paddingTop">@dimen/begateway_margin</item>
+        <item name="android:textColorHint">@color/begateway_light_gray</item>
+        <item name="android:textCursorDrawable" tools:ignore="NewApi">@null</item>
+    </style>
+
+    <style name="begateway_expiration_date_dialog_sheet" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/begateway_expiration_date_dialog_sheet_animation</item>
+    </style>
+
+    <style name="begateway_expiration_date_dialog_light" parent="begateway_expiration_date_dialog_sheet">
+        <item name="begateway_expiration_date_sheet_background">@color/begateway_expiration_date_sheet_background_light</item>
+        <item name="begateway_expiration_date_dialog_label">@color/begateway_black_54</item>
+        <item name="begateway_expiration_date_dialog_divider">@color/begateway_black_12</item>
+        <item name="begateway_expiration_date_scrollbar_thumb_vertical">@color/begateway_black_54</item>
+        <item name="begateway_expiration_date_scrollbar_track_vertical">@color/begateway_black_12</item>
+    </style>
+
+
+    <style name="begateway_expiration_date_dialog_sheet_animation">
+        <item name="android:windowEnterAnimation">@anim/begateway_expiration_date_dialog_open</item>
+        <item name="android:windowExitAnimation">@anim/begateway_expiration_date_dialog_close</item>
+    </style>
+
+    <style name="begateway_expiration_date_dialog_label">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingTop">@dimen/begateway_expiration_date_sheet_label_padding_top</item>
+        <item name="android:paddingBottom">@dimen/begateway_expiration_date_sheet_label_padding_bottom</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">?attr/begateway_expiration_date_dialog_label</item>
+    </style>
+
+    <style name="begateway_expiration_date_dialog_grid_view">
+        <item name="android:layout_marginLeft">@dimen/begateway_expiration_date_sheet_left_right_margin</item>
+        <item name="android:layout_marginStart" tools:targetApi="jelly_bean_mr1">@dimen/begateway_expiration_date_sheet_left_right_margin</item>
+        <item name="android:layout_marginRight">@dimen/begateway_expiration_date_sheet_left_right_margin</item>
+        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/begateway_expiration_date_sheet_left_right_margin</item>
+        <item name="android:layout_marginBottom">@dimen/begateway_expiration_date_sheet_top_bottom_margin</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:choiceMode">singleChoice</item>
+        <item name="android:numColumns">auto_fit</item>
+        <item name="android:columnWidth">72dp</item>
+    </style>
+
+    <style name="begateway_expiration_date_dialog_year_grid_view" parent="begateway_expiration_date_dialog_grid_view">
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">8dp</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">0dp</item>
+        <item name="android:scrollbarSize">3dp</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+    </style>
+
+    <style name="begateway_generic_button" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/begateway_black</item>
+    </style>
+
+    <style name="begateway_secured_label" parent="@android:style/TextAppearance">
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/begateway_black</item>
+    </style>
+
+<!--    <style name="begateway_form_dialog" parent="Theme.AppCompat.Light.Dialog.Alert">-->
+<!--        <item name="android:windowFrame">@null</item>-->
+<!--        <item name="android:windowIsFloating">true</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
+<!--        <item name="android:background">@android:color/transparent</item>-->
+<!--        <item name="colorPrimary">@color/light_theme_primary</item>-->
+<!--        <item name="colorPrimaryDark">@color/light_theme_primary_dark</item>-->
+<!--        <item name="colorAccent">@color/light_theme_accent</item>-->
+<!--    </style>-->
+
+    <style name="begateway_form_fullscreen" parent="Theme.AppCompat.Light">
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorPrimary">@color/light_theme_primary</item>
+        <item name="colorPrimaryDark">@color/light_theme_primary_dark</item>
+        <item name="colorAccent">@color/light_theme_accent</item>
+    </style>
+
+</resources>

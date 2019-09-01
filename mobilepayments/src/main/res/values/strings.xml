@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="begateway_form_hint_cvv" translatable="false">@string/begateway_cvv</string>
+
+    <string name="begateway_form_hint_card_number">Card number</string>
+    <string name="begateway_form_hint_expiration">Expiration date</string>
+    <string name="begateway_form_hint_cardholder_name">Name on card</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Month</string>
+    <string name="begateway_year">Year</string>
+    <string name="begateway_card_number_required">Card number is required</string>
+    <string name="begateway_card_number_invalid">Card number is invalid</string>
+    <string name="begateway_cvv_required">%s is required</string>
+    <string name="begateway_cvv_invalid">%s is invalid</string>
+    <string name="begateway_expiration_required">Expiration date is required</string>
+    <string name="begateway_expiration_invalid">Expiration date is invalid</string>
+    <string name="begateway_cardholder_name_required">Name on card is required</string>
+    <string name="begateway_savecard">Save card</string>
+    <string name="begateway_button_pay">Pay</string>
+    <string name="begateway_secure_info">Secure payment is provided by %s</string>
+
+
+</resources>

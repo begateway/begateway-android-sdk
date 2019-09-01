@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">Numero carta</string>
+    <string name="begateway_form_hint_expiration">Data di scadenza</string>
+    <string name="begateway_form_hint_cardholder_name">Nome sulla carta</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Mese</string>
+    <string name="begateway_year">Anno</string>
+    <string name="begateway_card_number_required">Il numero della carta è obbligatorio</string>
+    <string name="begateway_card_number_invalid">Il numero della carta non è valido</string>
+    <string name="begateway_cvv_required">Il codice %s è obbligatorio</string>
+    <string name="begateway_cvv_invalid">Il codice %s non è valido</string>
+    <string name="begateway_expiration_required">La data di scadenza è obbligatoria</string>
+    <string name="begateway_expiration_invalid">La data di scadenza non è valida</string>
+    <string name="begateway_cardholder_name_required">Il nome indicato sulla carta è obbligatorio</string>
+    <string name="begateway_savecard">Ricordami la prossima volta</string>
+    <string name="begateway_button_pay">Paga</string>
+    <string name="begateway_secure_info">Pagamento sicuro fornito da %s</string>
+</resources>

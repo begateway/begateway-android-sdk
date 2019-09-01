@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">Нумар карткі</string>
+    <string name="begateway_form_hint_expiration">Тэрмін дзеяння</string>
+    <string name="begateway_form_hint_cardholder_name">Імя на картцы</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Месяц</string>
+    <string name="begateway_year">Год</string>
+    <string name="begateway_card_number_required">Неабходна ўказаць нумар карты</string>
+    <string name="begateway_card_number_invalid">Нумар карты несапраўдны</string>
+    <string name="begateway_cvv_required">Неабходна ўказаць %s</string>
+    <string name="begateway_cvv_invalid">%s несапраўдны</string>
+    <string name="begateway_expiration_required">Неабходна ўказаць тэрмін дзеяння</string>
+    <string name="begateway_expiration_invalid">Тэрмін дзеяння несапраўдны</string>
+    <string name="begateway_cardholder_name_required">Неабходна ўказаць імя, напісанае на карце</string>
+    <string name="begateway_savecard">Запомніць картку</string>
+    <string name="begateway_button_pay">Аплаціць</string>
+    <string name="begateway_secure_info">Абароненыя плацяжы на платформе %s</string>
+</resources>

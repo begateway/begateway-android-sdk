@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="wrap_content"
+       android:layout_height="match_parent">
+
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:paddingEnd="15dp"
+        android:paddingTop="15dp"
+        android:layout_gravity="right"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/button_scan_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:layout_weight="0.5"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@null"
+            android:src="@drawable/begateway_ic_camera" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:weightSum="2">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/begateway_text_input_layout"
+            tools:ignore="RtlCompat"
+            android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+            android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+            android:paddingEnd="@dimen/begateway_edit_text_icon_padding"
+            android:labelFor="@+id/begateway_card_form_cardholder_name">
+
+            <com.begateway.mobilepayments.view.CardholderNameEditText
+                style="@style/begateway_card_form_field"
+                android:id="@+id/begateway_card_form_cardholder_name"
+                android:hint="@string/begateway_form_hint_cardholder_name"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/begateway_field_container">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/begateway_text_input_layout"
+            tools:ignore="RtlCompat"
+            android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+            android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+            android:paddingEnd="@dimen/begateway_edit_text_icon_padding"
+            android:labelFor="@+id/begateway_card_form_card_number">
+
+            <com.begateway.mobilepayments.view.CardEditText
+                style="@style/begateway_card_form_field"
+                android:id="@+id/begateway_card_form_card_number"
+                android:hint="@string/begateway_form_hint_card_number"
+                android:inputType="number"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:baselineAligned="false"
+        tools:ignore="RtlCompat"
+        android:weightSum="2"
+        android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+        android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+        android:paddingEnd="@dimen/begateway_edit_text_icon_padding">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/begateway_text_input_layout"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:labelFor="@+id/begateway_card_form_expiration">
+
+            <com.begateway.mobilepayments.view.ExpirationDateEditText
+                style="@style/begateway_card_form_field"
+                android:id="@+id/begateway_card_form_expiration"
+                android:hint="@string/begateway_form_hint_expiration"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/begateway_text_input_layout"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:labelFor="@+id/begateway_card_form_cvv">
+
+            <com.begateway.mobilepayments.view.CvvEditText
+                style="@style/begateway_card_form_field"
+                android:id="@+id/begateway_card_form_cvv"
+                android:hint="@string/begateway_form_hint_cvv"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:paddingRight="0dp"
+        android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+        android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+        android:paddingEnd="0dp">
+
+        <com.begateway.mobilepayments.view.InitialValueCheckBox
+            android:id="@+id/begateway_card_form_save_card_checkbox"
+            android:layout_marginStart="@dimen/begateway_save_card_checkbox_left_margin"
+            android:layout_marginLeft="@dimen/begateway_save_card_checkbox_left_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/begateway_savecard"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp"
+        android:paddingRight="@dimen/begateway_edit_text_icon_padding"
+        android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+        android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+        android:paddingEnd="@dimen/begateway_edit_text_icon_padding">
+
+        <Button
+            style="@style/begateway_generic_button"
+            android:gravity="center"
+            android:id="@+id/begateway_card_form_button_confirmpay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/begateway_button_pay"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        style="@style/begateway_field_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="0dp"
+        android:paddingBottom="15dp"
+        android:paddingRight="0dp"
+        android:paddingLeft="0dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp">
+
+        <TextView
+            style="@style/begateway_secured_label"
+            android:id="@+id/begateway_secure_label"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/begateway_secure_info"/>
+
+    </LinearLayout>
+
+
+</merge>

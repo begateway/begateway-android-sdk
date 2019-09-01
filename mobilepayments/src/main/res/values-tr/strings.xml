@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">Kart numarası</string>
+    <string name="begateway_form_hint_expiration">Son kullanma tarihi</string>
+    <string name="begateway_form_hint_cardholder_name">Kart üzerindeki isim</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Ay</string>
+    <string name="begateway_year">Yil</string>
+    <string name="begateway_card_number_required">Kart numarası gerekli</string>
+    <string name="begateway_card_number_invalid">Kart numarası geçersiz</string>
+    <string name="begateway_cvv_required">%s gerekli</string>
+    <string name="begateway_cvv_invalid">%s geçersiz</string>
+    <string name="begateway_expiration_required">Son kullanma tarihi gerekli</string>
+    <string name="begateway_expiration_invalid">Son kullanma tarihi geçersiz</string>
+    <string name="begateway_cardholder_name_required">Kart üzerindeki isim gerekli</string>
+    <string name="begateway_savecard">Sonraki sefere beni hatırla</string>
+    <string name="begateway_button_pay">Öde</string>
+    <string name="begateway_secure_info">Güvenli ödeme sağlayıcısı: %s</string>
+</resources>

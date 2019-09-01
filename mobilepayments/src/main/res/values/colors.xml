@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="begateway_black">#001129</color>
+    <color name="begateway_blue">#009bde</color>
+    <color name="begateway_light_gray">#6d6d6d</color>
+    <color name="begateway_expiration_date_sheet_background_light">#eceff0</color>
+    <color name="begateway_black_12">#1e000000</color>
+    <color name="begateway_black_38">#61000000</color>
+    <color name="begateway_white_38">#61ffffff</color>
+    <color name="begateway_black_54">#8a000000</color>
+    <color name="begateway_black_87">#de000000</color>
+    <color name="begateway_white_87">#deffffff</color>
+    <color name="begateway_loading">#40000000</color>
+
+
+    <color name="light_theme_primary">#a5d6a7</color>
+    <color name="light_theme_primary_dark">#164313</color>
+    <color name="light_theme_accent">#61d395</color>
+
+</resources>

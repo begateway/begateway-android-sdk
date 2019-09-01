@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">カード番号</string>
+    <string name="begateway_form_hint_expiration">有効期限</string>
+    <string name="begateway_form_hint_cardholder_name">カードの名義</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">月</string>
+    <string name="begateway_year">年</string>
+    <string name="begateway_card_number_required">カード番号は必須です</string>
+    <string name="begateway_card_number_invalid">カード番号は無効です</string>
+    <string name="begateway_cvv_required">%sは必須です</string>
+    <string name="begateway_cvv_invalid">%sは無効です</string>
+    <string name="begateway_expiration_required">有効期限は必須です</string>
+    <string name="begateway_expiration_invalid">有効期限は無効です</string>
+    <string name="begateway_cardholder_name_required">カード名義人は必須です</string>
+    <string name="begateway_savecard">次回もこれを使用する</string>
+    <string name="begateway_button_pay">支払う</string>
+    <string name="begateway_secure_info">セキュア決済の提供元：%s</string>
+</resources>

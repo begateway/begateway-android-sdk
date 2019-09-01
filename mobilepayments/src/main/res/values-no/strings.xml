@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">Kortnummer</string>
+    <string name="begateway_form_hint_expiration">Utløpsdato</string>
+    <string name="begateway_form_hint_cardholder_name">Navn på kort</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Måned</string>
+    <string name="begateway_year">År</string>
+    <string name="begateway_card_number_required">Kortnummer er nødvendig</string>
+    <string name="begateway_card_number_invalid">Kortnummer er ugyldig</string>
+    <string name="begateway_cvv_required">%s er nødvendig</string>
+    <string name="begateway_cvv_invalid">% er ugyldig</string>
+    <string name="begateway_expiration_required">Utløpsdato er nødvendig</string>
+    <string name="begateway_expiration_invalid">Utløptsdato er ugyldig</string>
+    <string name="begateway_cardholder_name_required">Navn på kort er nødvendig</string>
+    <string name="begateway_savecard">Lagre kortet</string>
+    <string name="begateway_button_pay">Betal</string>
+    <string name="begateway_secure_info">Sikker betaling tilbys av %s</string>
+</resources>

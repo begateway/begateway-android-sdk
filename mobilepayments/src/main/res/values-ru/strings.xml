@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begateway_form_hint_card_number">Номер карты</string>
+    <string name="begateway_form_hint_expiration">Срок действия</string>
+    <string name="begateway_form_hint_cardholder_name">Имя на карте</string>
+    <string name="begateway_cvv">CVV</string>
+    <string name="begateway_cvc">CVC</string>
+    <string name="begateway_cid">CID</string>
+    <string name="begateway_cvn">CVN</string>
+    <string name="begateway_month">Месяц</string>
+    <string name="begateway_year">Год</string>
+    <string name="begateway_card_number_required"></string>
+    <string name="begateway_card_number_invalid"></string>
+    <string name="begateway_cvv_required"></string>
+    <string name="begateway_cvv_invalid"></string>
+    <string name="begateway_expiration_required"></string>
+    <string name="begateway_expiration_invalid"></string>
+    <string name="begateway_cardholder_name_required"></string>
+    <string name="begateway_savecard">Запомнить карту</string>
+    <string name="begateway_button_pay">Оплатить</string>
+    <string name="begateway_secure_info">Безопасная оплата обеспечивается %s</string>
+</resources>

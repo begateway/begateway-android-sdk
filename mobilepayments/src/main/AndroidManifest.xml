@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.begateway.mobilepayments" >
+
+    <application>
+
+        <activity android:name="com.begateway.mobilepayments.BaseCardFormActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="sensor"
+            android:theme="@style/begateway_form_fullscreen" />
+
+    </application>
+
+</manifest>
+
+
