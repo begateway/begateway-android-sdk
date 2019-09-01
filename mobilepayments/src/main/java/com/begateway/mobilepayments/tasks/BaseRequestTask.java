@@ -19,7 +19,7 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
     private String requestMethod = "POST";
 
-    private String endpoint = "https://checkout.bepaid.by/ctp/api/checkouts";
+    private String endpoint = "";
 
     private String authorizationString = "";
 
@@ -71,7 +71,7 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-            Log.w("RequestTask", " --> " + jsonBody);
+//            Log.w("RequestTask", " --> " + jsonBody);
 
             if (requestMethod.contains("GET") == false) {
                 con.setRequestMethod(requestMethod);
@@ -122,14 +122,14 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
         if (responseData.getStatus() == ResponseCode.ERROR)
         {
-            Log.w("RequestTask", " <-- " + responseData.getError());
+//            Log.w("RequestTask", " <-- " + responseData.getError());
         }
         else if (responseData.getStatus() != ResponseCode.SUCCESS)
         {
-            Log.w("RequestTask", " <-- " + responseData.getStatus().toString());
+//            Log.w("RequestTask", " <-- " + responseData.getStatus().toString());
         }
         else {
-            Log.w("RequestTask", " <-- " + responseData.getRawJson().toString());
+//            Log.w("RequestTask", " <-- " + responseData.getRawJson().toString());
         }
 
 
