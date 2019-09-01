@@ -1,5 +1,5 @@
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.shadowagv.BegatewayMobilePayments-Android'
+group='com.github.shadowagv.begatewaypayments'
 
 apply plugin: 'com.android.library'
 
