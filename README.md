@@ -6,7 +6,7 @@ beGateway components for Android allows you to accept in-app payments
 ## Installation
 
 The Components are available through 
-[![](https://jitpack.io/v/shadowagv/begatewaypayments.svg)](https://jitpack.io/#shadowagv/begatewaypayments), you only need to add the Gradle dependency.
+[![](https://jitpack.io/v/begateway/begateway-android-sdk.svg)](https://jitpack.io/#begateway/begateway-android-sdk), you only need to add the Gradle dependency.
 
 ### Import with Gradle
 
@@ -24,7 +24,7 @@ allprojects {
 Import the component module by adding it to your `build.gradle` file.
 
 ```groovy
-   implementation 'com.github.shadowagv:begatewaypayments:1.0.0'
+   implementation 'com.github.begateway:begateway-android-sdk:1.0.0'
 ```
 
 ## Usage
