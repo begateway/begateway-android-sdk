@@ -38,7 +38,7 @@ PaymentModule paymentModule = new PaymentBuilder()
     .setPaymentResultListener(MainActivity.this)
     .build(getApplicationContext(), MainActivity.this);
 ```
-Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.bepaid.by/ctp/api/"
+Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.begateway.com/ctp/api/"
 
 Don't forget to add premissions to your manifest:
 ```java
@@ -93,7 +93,7 @@ Example:
 {
     "checkout": {
         "token": "623b342e6fa003ce273c6197380400137057cee5a4640822c2274f0fd3e278e2",
-        "redirect_url": "https://checkout.bepaid.by/checkout?token=623b342e6fa003ce273c6197380400137057cee5a4640822c2274f0fd3e278e2",
+        "redirect_url": "https://checkout.begateway.com/checkout?token=623b342e6fa003ce273c6197380400137057cee5a4640822c2274f0fd3e278e2",
         "brands": [
             {
                 "alternative": false,
@@ -121,8 +121,8 @@ Example:
             }
         ],
         "company": {
-            "name": "bePaid",
-            "site": "https://bepaid.by"
+            "name": "beGateway",
+            "site": "https://begateway.com"
         },
         "description": "Payment description",
         "card_info": {}
