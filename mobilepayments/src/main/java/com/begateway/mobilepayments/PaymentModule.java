@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Base64;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,11 +18,8 @@ import com.begateway.mobilepayments.tasks.PayWithCardTask;
 import com.begateway.mobilepayments.tasks.RetrievePaymentStatusTask;
 import com.begateway.mobilepayments.tasks.RetrievePaymentTokenTask;
 import com.begateway.mobilepayments.utils.CardType;
-import com.kazakago.cryptore.CipherAlgorithm;
-import com.kazakago.cryptore.Cryptore;
-import com.kazakago.cryptore.DecryptResult;
-import com.kazakago.cryptore.EncryptResult;
-import com.kazakago.cryptore.EncryptionPadding;
+import com.begateway.mobilepayments.utils.RSA;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,8 +59,6 @@ public class PaymentModule implements Serializable {
 
     private boolean isLoading = false;
 
-    private Cryptore cryptore;
-    
     private String publicStoreKey;
 
     private JSONObject orderData;
@@ -118,36 +112,10 @@ public class PaymentModule implements Serializable {
         this.context = context;
         this.activity = activity;
 
-        try {
-            this.cryptore = getCryptore(context, "$begatewaycsejs_1_0_0$");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
-    private Cryptore getCryptore(){
-
-        return cryptore;
-    }
-
-    private Cryptore getCryptore(Context context, String alias) throws Exception {
-        Cryptore.Builder builder = new Cryptore.Builder(alias, CipherAlgorithm.RSA);
-        builder.setContext(context); // Need Only RSA on below API Lv22.
-        builder.setEncryptionPadding(EncryptionPadding.RSA_PKCS1); //If Needed.
-        return builder.build();
-    }
-
-    String encrypt(String plainStr) throws Exception {
-        byte[] plainByte = plainStr.getBytes();
-        EncryptResult result = getCryptore().encrypt(plainByte);
-        return Base64.encodeToString(result.getBytes(), Base64.DEFAULT);
-    }
-
-    String decrypt(String encryptedStr) throws Exception {
-        byte[] encryptedByte = Base64.decode(encryptedStr, Base64.DEFAULT);
-        DecryptResult result = getCryptore().decrypt(encryptedByte, null);
-        return new String(result.getBytes());
+    String encrypt(String dataString, String publicKey) {
+        return RSA.encryptData(dataString, publicKey);
     }
 
     private void prepareForPayment(){
@@ -156,7 +124,6 @@ public class PaymentModule implements Serializable {
         orderData = null;
         paymentTokenResponse = null;
         isCallbackRecieved = false;
-
     }
 
     /**
@@ -282,9 +249,13 @@ public class PaymentModule implements Serializable {
      * @param cardData
      * @return
      */
-    public String encryptCardData(String cardData){
+    public String encryptCardData(String cardData, String publicKey){
         try {
-            String encryptedData = encrypt(cardData);
+
+            if (cardData.isEmpty()){
+                return cardData;
+            }
+            String encryptedData = encrypt(cardData, publicKey);
 
             return encryptedData;
 
@@ -434,8 +405,18 @@ public class PaymentModule implements Serializable {
 
         PayWithCardTask payWithCardTask =  new PayWithCardTask();
 
+        boolean isUseEnctyptedCard = paymentSettings.isUseEnctyptedCard();
+
+        String targetPublicKey = publicStoreKey.isEmpty() ? paymentSettings.getPublicKey() : publicStoreKey;
+
+        String targetCardNumber = isUseEnctyptedCard ? encryptCardData(cardNumber, targetPublicKey) : cardNumber;
+        String targetCardCvv = isUseEnctyptedCard ? encryptCardData(cardCvv, targetPublicKey) : cardCvv;
+        String targetCardHolder = isUseEnctyptedCard ? encryptCardData(cardHolder, targetPublicKey) : cardHolder;
+        String targetCardExpMonth = isUseEnctyptedCard ? encryptCardData(cardExpMonth, targetPublicKey) : cardExpMonth;
+        String targetCardExpYear = isUseEnctyptedCard ? encryptCardData(cardExpYear, targetPublicKey) : cardExpYear;
+
         payWithCardTask
-                .fillBodyRequest(paymentToken, cardNumber, cardCvv, cardHolder, cardExpMonth, cardExpYear)
+                .fillBodyRequest(paymentToken, targetCardNumber, targetCardCvv, targetCardHolder, targetCardExpMonth, targetCardExpYear, isUseEnctyptedCard)
                 .setCallback(new IPayWithCardTaskCallback() {
                     @Override
                     public void onCallback(PaymentResultResponse response) {

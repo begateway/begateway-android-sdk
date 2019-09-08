@@ -17,11 +17,23 @@ public class PaymentBuilder {
         this.paymentSettings = new PaymentSettings();
     }
 
+    public PaymentBuilder setPublicKey(String publicKey) {
+        paymentSettings.setPublicKey(publicKey);
+
+        return this;
+    }
+
     public PaymentBuilder setSupportedCardTypes(List<CardType> supportedCardTypes) {
         paymentSettings.setSupportedCardTypes(supportedCardTypes);
 
         return this;
     }
+
+    public PaymentBuilder setUseEnctyptedCard(boolean useEnctyptedCard) {
+        paymentSettings.setUseEnctyptedCard(useEnctyptedCard);
+        return this;
+    }
+
 
     public PaymentBuilder setTestMode(boolean testMode) {
         paymentSettings.setTestMode(testMode);

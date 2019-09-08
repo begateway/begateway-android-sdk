@@ -29,6 +29,13 @@
         android:text="Pay with CREDIT_CARD_JSON"
         android:textAllCaps="true" />
 
+    <Button
+        android:id="@+id/button_pay_with_encrypted_credit_card_json"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pay with ENCRYPTED_CREDIT_CARD_JSON"
+        android:textAllCaps="true" />
+
     <EditText
         android:id="@+id/input_public_store_key"
         android:layout_width="match_parent"

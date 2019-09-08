@@ -1,6 +1,7 @@
 package com.begateway.mobilepaymentsexample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements OnPaymentResultLi
                 .setTestMode(true)
                 .setEndpoint("https://checkout.bepaid.by/ctp/api/")
                 .setPaymentResultListener(MainActivity.this)
+                .setUseEnctyptedCard(true)
                 .build(getApplicationContext(), MainActivity.this);
 
 
@@ -64,9 +66,20 @@ public class MainActivity extends AppCompatActivity implements OnPaymentResultLi
             }
         });
 
+        Button buttonPayWithEncryptedCreditCard = findViewById(R.id.button_pay_with_encrypted_credit_card_json);
+        buttonPayWithEncryptedCreditCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                payWithEncryptedCreditCardButtonClick();
+            }
+        });
+
         editTextToken = findViewById(R.id.input_payment_token);
 
         editTextPublicStoreKey = findViewById(R.id.input_public_store_key);
+
+        editTextPublicStoreKey.setText("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvextn45qf3NiNzqBYXMvcaSFlgoYE/LDuDDHtNNM4iWJP7BvjBkPcZu9zAfo5IiMxl660r+1E4PYWwr0iKSQ8+7C/WcSYwP8WlQVZH+2KtPmJgkPcBovz3/aZrQpj6krcKLklihg3Vs++TtXAbpCCbhIq0DJ3T+khttBqTGD+2x2vOC68xPgMwvnwQinfhaHEQNbtEcWWXPw9LYuOTuCwKlqijAEds4LgKSisubqrkRw/HbAKVfa659l5DJ8QuXctjp3Ic+7P2TC+d+rcfylxKw9c61ykHS1ggI/N+/KmEDVJv1wHvdy7dnT0D/PhArnCB37ZDAYErv/NMADz2/LuQIDAQAB");
 
     }
 
@@ -161,6 +174,37 @@ public class MainActivity extends AppCompatActivity implements OnPaymentResultLi
                     "      }\n" +
                     "   }\n" +
                     "}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        paymentModule.payWithCreditCard(CREDIT_CARD_JSON);
+
+    }
+
+    void payWithEncryptedCreditCardButtonClick(){
+
+        JSONObject CREDIT_CARD_JSON = null;
+
+        String publicKey = editTextPublicStoreKey.getText().toString();
+
+        try {
+            CREDIT_CARD_JSON = new JSONObject("{\n" +
+                    "   \"request\":{\n" +
+                    "      \"token\":\"" + editTextToken.getText().toString() +  "\",\n" +
+                    "      \"payment_method\": \"credit_card\",\n" +
+                    "      \"encrypted_credit_card\":{\n" +
+                    "         \"number\":\""+ paymentModule.encryptCardData("4200000000000000", publicKey) +"\",\n" +
+                    "         \"verification_value\":\"" + paymentModule.encryptCardData("123", publicKey) +"\",\n" +
+                    "         \"holder\":\""+ paymentModule.encryptCardData("IVAN IVANOV", publicKey) +"\",\n" +
+                    "         \"exp_month\":\""+ paymentModule.encryptCardData("01", publicKey) +"\",\n" +
+                    "         \"exp_year\":\""+ paymentModule.encryptCardData("2020", publicKey) +"\"\n" +
+                    "      }\n" +
+                    "   }\n" +
+                    "}");
+
+            Log.e("ENCRYPT", CREDIT_CARD_JSON.toString());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

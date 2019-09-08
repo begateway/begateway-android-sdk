@@ -17,7 +17,7 @@ public class PayWithCardTask extends BaseRequestTask<PaymentResultResponse> {
         return this;
     }
 
-    public PayWithCardTask fillBodyRequest(String paymentToken, String cardNumber, String cvv, String cardHolder, String cardExpMonth, String cardExpYear) {
+    public PayWithCardTask fillBodyRequest(String paymentToken, String cardNumber, String cvv, String cardHolder, String cardExpMonth, String cardExpYear, boolean isEncrypt) {
 
         JSONObject rootJson = new JSONObject();
 
@@ -47,7 +47,13 @@ public class PayWithCardTask extends BaseRequestTask<PaymentResultResponse> {
 
             requestJson.put("token", paymentToken);
             requestJson.put("payment_method", "credit_card");
-            requestJson.put("credit_card", creditCardJson);
+
+            if (isEncrypt){
+                requestJson.put("credit_card", creditCardJson);
+            }
+            else {
+                requestJson.put("encrypted_credit_card", creditCardJson);
+            }
 
             rootJson.put("request", requestJson);
         } catch (JSONException e) {

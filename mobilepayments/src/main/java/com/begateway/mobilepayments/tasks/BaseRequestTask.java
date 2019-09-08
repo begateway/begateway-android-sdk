@@ -84,10 +84,6 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
             con.addRequestProperty("Authorization", authorizationString);
             con.setDoInput(true);
 
-//            con.setConnectTimeout(5000);
-//            con.setReadTimeout(5000);
-
-
             if (requestMethod.contains("GET") == false) {
                 try (OutputStream os = con.getOutputStream()) {
                     byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);

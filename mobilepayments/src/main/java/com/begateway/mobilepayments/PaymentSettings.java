@@ -11,6 +11,8 @@ public class PaymentSettings {
 
     private boolean isTestMode;
 
+    private boolean isUseEnctyptedCard;
+
     private String locale = "en";
 
     private String securedBy = "beGateway";
@@ -20,6 +22,8 @@ public class PaymentSettings {
     private List<CardType> supportedCardTypes;
 
     private StyleSettings styleSettings = new StyleSettings();
+
+    private String publicKey;
 
     public StyleSettings getStyleSettings() {
         return styleSettings;
@@ -75,5 +79,21 @@ public class PaymentSettings {
 
     public void setSupportedCardTypes(List<CardType> supportedCardTypes) {
         this.supportedCardTypes = supportedCardTypes;
+    }
+
+    public void setUseEnctyptedCard(boolean useEnctyptedCard) {
+        isUseEnctyptedCard = useEnctyptedCard;
+    }
+
+    public boolean isUseEnctyptedCard() {
+        return isUseEnctyptedCard;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
     }
 }
