@@ -170,20 +170,29 @@ paymentModule.payWithCreditCard(CREDIT_CARD_JSON);
 ```
 ### Encryption
 Use `encryptCardData` with your PUBLIC_STORE_KEY to get encrypted credit card data
+
 For example:
-```java paymentModule.encryptCardData("4200000000000000", publicKey) ```
+```java 
+String ENCRYPTED_NUMBER = paymentModule.encryptCardData("4200000000000000", PUBLIC_STORE_KEY);
+String ENCRYPTED_CVV = paymentModule.encryptCardData("123", PUBLIC_STORE_KEY);
+String ENCRYPTED_HOLDER = paymentModule.encryptCardData("IVAN IVANOV", PUBLIC_STORE_KEY);
+String ENCRYPTED_EXPMONTH = paymentModule.encryptCardData("01", PUBLIC_STORE_KEY);
+String ENCRYPTED_EXPYEAR = paymentModule.encryptCardData("2020", PUBLIC_STORE_KEY);
+```
+
 And then use it in `CREDIT_CARD_JSON`
+
 ```json
 {
   "request": {
     "token": "",
     "payment_method": "credit_card",
     "encrypted_credit_card": {
-      "number": "P5\/ydz1md1vGy15v2dSlno+qCw\/8HJ\/CDWgDWTDkdkMsIYLOIo4bI\/TOwa7qB5zkgfBypOk5OOC\/ZB0Rn+cJxLV5w3MC4j\/LAxxL3xwBiGekxiZF7xlMVSCBYdYPDt+9pWVMWDj34FP3SqJm6DiY5U973TN\/lQ77O8OIUP0eaGIa2pK20Bt0Uk\/yhdIki5MFd6rn10YCScOq88ZLeqIdDUw74KvppgNpZ7OYWyu8T050dCKc\/Z1rz9nRihLhm9SvVH8K+TKJEPhw8N2uXjFU5VSDEgSMTNWc8hpuL7x6ayW7VrjYk17FWtXC\/iXefWIVqEvgVAg8C4JKNkKdAK6b9A==",
-      "verification_value": "hvgvuHoFZnvWhj763ESnqis8QaZBVhpx31X3ISepJB2h6kmWrkTVh2eL2z0tHY7S4J0ILubXGHCw8RRwhlhxh96nZMrJhkPa6Gb73xRg8lvlJE2aXWN+Szru81YnxYSaBhV28DeseCOXxYlqB\/\/f7jfsNcwll4HISFymKOeewz4u0fUzlLlOtSnk7SkUb8xJdLCtyDiMXAWoUsmr2vntTBLGiYgVrdbO\/RGvMKb58c591CFf9\/Pg5nnA9w11F0jSuASvBhzzt63AKDmlmPy4lXxXvC3lz\/BkhvOU1b3MNt2UMugpqfl2BgLUNMZGCuilYYB4sjSapUSOxVzTYZaAAQ==",
-      "holder": "DjWromxDMQ0TPTjirxJll7nmaKFWt8fSLdPxJ0mF4fty3HGxQkzPp0Edr8AnpCOO3IW90pOtS7f3aiv+40pKOj0YHiQ\/oGtTl6y4yV342jKLMBqByWEhKgmOebIeyYKymJ3vsNu7do900UYT04EaCLjLjynt2eTu1htAC7+Vp8AlU1KaXS25TgVgOqPP7n4A6Q+JF6WCyfiyqs+5tbVgJMnnssJwT9MjnB6L+JD7LdOl6fMC4neYOMg5tjOWc5Al9gIbyS4+F1FZYTksLcFQQgJsLIHuby\/jKuzNuVWDBBbxriVoJt9XJXYWBkWG9LvunEPy0S\/IO4SllpsEBdNk3Q==",
-      "exp_month": "f4P8J8PGs8BTSFndBSkmn+bEkr3ZIlRHy4fm+BLR9imF9TOLizCaTR+A6tX9HEgSfgAqIT3\/rfSgTHpsLgTCFwJ\/o\/C3jwEJBG6nZNYpFFp3v\/YHXjsZI8wIZUs0vcHVB+IJfgih9AGadFVy84G+RPxC627LrkvDzQLP\/y6d7CMNjscD5b7Rbp3E8HOetB27iGkgrmZ73cZekMXUavsZn7xInSXka8BjwBfIh3Gv7OCH03VpBW62yNRgs28MPQEkywVVFBRdNeTlm16QEjUMMSPASz\/rXEFildNyAGlheMeIm9cU07JBNfCCmXMFWuzWVbWCqYq9GnhsTeVHhiyLGw==",
-      "exp_year": "FCUuvzHCg8VJxcMpj8TP+QXEuxKHkOEFPXqbiO0KFMvPRb4Q3uq3WmJ9OLTX1uyRDOErOBy96TkYRx9\/w1jCcvHoY+ktYtsp\/SPQvOYsICJTUiDiSGqXcHLCKYK84TQ1LM6WaXiF+UtYjmf8A3Sf3xb06mCC6r8W5LyV3lYa68JWHIsl2OMXKLTMP8XTlvAq7+a6w4NwbpbvU0HOr0jZju9HprvGdRu0h4Cp5mLfb07ultxi1JDMa4GY+qnq6vjGuKqh2iL+ewzpGd\/t7BdfXiaUZ1qe2\/sRvLxD386jyGRNg8An2IrLXr\/hB2yrsBHSI52tnsQePKiNDOIXrqhFrw=="
+      "number": ENCRYPTED_NUMBER,
+      "verification_value": ENCRYPTED_CVV,
+      "holder": ENCRYPTED_HOLDER,
+      "exp_month": ENCRYPTED_EXPMONTH,
+      "exp_year": ENCRYPTED_EXPYEAR
     }
   }
 }
