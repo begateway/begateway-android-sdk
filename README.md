@@ -24,7 +24,7 @@ allprojects {
 Import the component module by adding it to your `build.gradle` file.
 
 ```groovy
-   implementation 'com.github.begateway:begateway-android-sdk:1.0.1'
+   implementation 'com.github.begateway:begateway-android-sdk:1.0.2'
 ```
 
 ## Usage
