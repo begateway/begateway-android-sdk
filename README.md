@@ -138,22 +138,6 @@ paymentModule.payWithCheckoutJson(CHECKOUT_JSON);
 Example
 ```json
 {
-   "request":{
-      "token": "a349f2aac6d45f4b165c6da02a19ad3b93c9ad89392339c32210b3ec8fe9d3a3",
-      "payment_method": "credit_card",
-      "credit_card":{
-         "number":"4200000000000000",
-         "verification_value":"123",
-         "holder":"IVAN IVANOV",
-         "exp_month":"01",
-         "exp_year":"2020"
-      }
-   }
-}
-```
-or with token card
-```json
-{
    "request": {
       "token": "ccf6700bf372168e81fd3f4c2dd2e821524982a166ee83db7faa300e60a0f3e4", 
       "payment_method": "credit_card",
