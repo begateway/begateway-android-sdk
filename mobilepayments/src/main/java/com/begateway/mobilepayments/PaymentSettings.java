@@ -27,6 +27,8 @@ public class PaymentSettings {
 
     private String publicKey;
 
+    private boolean isDebugMode;
+
     public StyleSettings getStyleSettings() {
         return styleSettings;
     }
@@ -105,5 +107,13 @@ public class PaymentSettings {
 
     public String getReturnUrl() {
         return returnUrl;
+    }
+
+    public boolean isDebugMode() {
+        return isDebugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        isDebugMode = debugMode;
     }
 }

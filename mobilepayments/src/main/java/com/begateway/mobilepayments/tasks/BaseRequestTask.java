@@ -4,6 +4,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.begateway.mobilepayments.PaymentModule;
 import com.begateway.mobilepayments.model.BaseResponse;
 import com.begateway.mobilepayments.model.ResponseCode;
 
@@ -25,6 +26,8 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
     private String authorizationString = "";
 
     private String jsonBody = "{}";
+
+    private boolean isDebugMode;
 
     public BaseRequestTask setJsonBody(String jsonBody) {
         this.jsonBody = jsonBody;
@@ -50,13 +53,21 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
         return this;
     }
 
+    public BaseRequestTask setDebugMode(boolean debugMode) {
+        isDebugMode = debugMode;
+
+        return this;
+    }
+
     public BaseResponse getResponseInstance(){
         return new BaseResponse();
     }
 
     protected void log(String message){
 
-        Log.w("RequestTask", message);
+        if (isDebugMode) {
+            Log.w("RequestTask", message);
+        }
     }
 
     protected T doInBackground(Object... urls) {

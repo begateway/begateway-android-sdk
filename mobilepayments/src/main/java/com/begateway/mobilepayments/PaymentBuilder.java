@@ -83,6 +83,12 @@ public class PaymentBuilder {
         return this;
     }
 
+    public PaymentBuilder setDebugMode(boolean debugMode) {
+        paymentSettings.setDebugMode(debugMode);
+
+        return this;
+    }
+
     public PaymentModule build(Context context, Activity activity){
 
         PaymentModule paymentModule = PaymentModule.getInstance();

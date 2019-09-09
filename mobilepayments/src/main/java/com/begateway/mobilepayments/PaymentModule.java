@@ -400,6 +400,7 @@ public class PaymentModule implements Serializable {
                 .setCallback(callback)
                 .setAuthorizationString("Bearer " + paymentToken)
                 .setRequestMethod("GET")
+                .setDebugMode(getPaymentSettings().isDebugMode())
                 .execute();
     }
 
@@ -427,6 +428,7 @@ public class PaymentModule implements Serializable {
                 })
                 .setEndpoint(paymentSettings.getEndpoint() + "payments")
                 .setAuthorizationString("Bearer " + paymentToken)
+                .setDebugMode(getPaymentSettings().isDebugMode())
                 .execute();
     }
 
@@ -444,6 +446,7 @@ public class PaymentModule implements Serializable {
                 .setJsonBody(creditCardJson.toString())
                 .setEndpoint(paymentSettings.getEndpoint() + "payments")
                 .setAuthorizationString("Bearer " + paymentToken)
+                .setDebugMode(getPaymentSettings().isDebugMode())
                 .execute();
     }
 
@@ -470,6 +473,7 @@ public class PaymentModule implements Serializable {
                     })
                     .setEndpoint(paymentSettings.getEndpoint() + "checkouts")
                     .setAuthorizationString("Bearer " + publicStoreKey)
+                    .setDebugMode(getPaymentSettings().isDebugMode())
                     .execute();
 
         } catch (JSONException e) {
@@ -502,6 +506,7 @@ public class PaymentModule implements Serializable {
                     })
                     .setEndpoint(paymentSettings.getEndpoint() + "checkouts")
                     .setAuthorizationString("Bearer " + publicStoreKey)
+                    .setDebugMode(getPaymentSettings().isDebugMode())
                     .execute();
 
         } catch (JSONException e) {
