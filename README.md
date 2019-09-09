@@ -41,7 +41,9 @@ PaymentModule paymentModule = new PaymentBuilder()
 Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.begateway.com/ctp/api/"
 
 You can setup your return_url to process 3D SECURE:
+```java
     .setReturnUrl("https://YOUR_RETURN_URL.com")
+```
 
 Don't forget to add premissions to your manifest:
 ```java
