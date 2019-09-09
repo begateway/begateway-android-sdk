@@ -40,6 +40,9 @@ PaymentModule paymentModule = new PaymentBuilder()
 ```
 Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.begateway.com/ctp/api/"
 
+You can setup your return_url to process 3D SECURE:
+    .setReturnUrl("https://YOUR_RETURN_URL.com")
+
 Don't forget to add premissions to your manifest:
 ```java
 <uses-permission android:name="android.permission.INTERNET" />
@@ -133,7 +136,7 @@ Example:
 paymentModule.payWithCheckoutJson(CHECKOUT_JSON);
 ```
 
-#### Start payment with `CREDIT_CARD_JSON`
+#### Start payment with `CREDIT_CARD_JSON` with credit card token
 
 Example
 ```json
@@ -162,24 +165,6 @@ String ENCRYPTED_CVV = paymentModule.encryptCardData("123", PUBLIC_STORE_KEY);
 String ENCRYPTED_HOLDER = paymentModule.encryptCardData("IVAN IVANOV", PUBLIC_STORE_KEY);
 String ENCRYPTED_EXPMONTH = paymentModule.encryptCardData("01", PUBLIC_STORE_KEY);
 String ENCRYPTED_EXPYEAR = paymentModule.encryptCardData("2020", PUBLIC_STORE_KEY);
-```
-
-And then use it in `CREDIT_CARD_JSON`
-
-```json
-{
-  "request": {
-    "token": "",
-    "payment_method": "credit_card",
-    "encrypted_credit_card": {
-      "number": ENCRYPTED_NUMBER,
-      "verification_value": ENCRYPTED_CVV,
-      "holder": ENCRYPTED_HOLDER,
-      "exp_month": ENCRYPTED_EXPMONTH,
-      "exp_year": ENCRYPTED_EXPYEAR
-    }
-  }
-}
 ```
 
 ### Customization
