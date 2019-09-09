@@ -9,6 +9,8 @@ public class PaymentSettings {
 
     private String endpoint;
 
+    private String returnUrl = "https://DEFAULT_RETURN_URL.com";
+
     private boolean isTestMode;
 
     private boolean isUseEnctyptedCard;
@@ -95,5 +97,13 @@ public class PaymentSettings {
 
     public String getPublicKey() {
         return publicKey;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
     }
 }

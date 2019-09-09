@@ -77,6 +77,12 @@ public class PaymentBuilder {
         return this;
     }
 
+    public PaymentBuilder setReturnUrl(String returnUrl) {
+        paymentSettings.setReturnUrl(returnUrl);
+
+        return this;
+    }
+
     public PaymentModule build(Context context, Activity activity){
 
         PaymentModule paymentModule = PaymentModule.getInstance();

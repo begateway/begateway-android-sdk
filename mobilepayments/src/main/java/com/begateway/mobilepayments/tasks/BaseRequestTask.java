@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.tasks;
 
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -53,6 +54,11 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
         return new BaseResponse();
     }
 
+    protected void log(String message){
+
+        Log.w("RequestTask", message);
+    }
+
     protected T doInBackground(Object... urls) {
 
         T responseData = (T) getResponseInstance();
@@ -71,7 +77,7 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-//            Log.w("RequestTask", " --> " + jsonBody);
+            log(" --> " + jsonBody);
 
             if (requestMethod.contains("GET") == false) {
                 con.setRequestMethod(requestMethod);
@@ -83,6 +89,8 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
             con.addRequestProperty("X-Api-Version", "2");
             con.addRequestProperty("Authorization", authorizationString);
             con.setDoInput(true);
+
+            con.setConnectTimeout(1500);
 
             if (requestMethod.contains("GET") == false) {
                 try (OutputStream os = con.getOutputStream()) {
@@ -118,14 +126,14 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
         if (responseData.getStatus() == ResponseCode.ERROR)
         {
-//            Log.w("RequestTask", " <-- " + responseData.getError());
+            log(" <-- " + responseData.getError());
         }
         else if (responseData.getStatus() != ResponseCode.SUCCESS)
         {
-//            Log.w("RequestTask", " <-- " + responseData.getStatus().toString());
+            log(" <-- " + responseData.getStatus().toString());
         }
         else {
-//            Log.w("RequestTask", " <-- " + responseData.getRawJson().toString());
+            log(" <-- " + responseData.getRawJson().toString());
         }
 
 

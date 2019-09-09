@@ -57,7 +57,9 @@ public class BaseResponse {
 
         if (error != null) return ResponseCode.ERROR;
 
-        return ResponseCode.SUCCESS;
+        if (raw != null) return ResponseCode.SUCCESS;
+
+        return ResponseCode.CANCELED;
     }
 
     @Override

@@ -60,9 +60,18 @@ public class PaymentResultResponse extends BaseResponse {
     @Override
     public ResponseCode getStatus() {
 
-        if (getPaymentStatus() != null) {
-            return ResponseCode.SUCCESS;
+        if (getError() != null && getError().toLowerCase().contains("canceled")){
+            return ResponseCode.CANCELED;
         }
+
+        if (getPaymentStatus() != null && getPaymentStatus().toLowerCase().contains("failed")){
+            return ResponseCode.FAILED;
+        }
+
+        if (getPaymentStatus() != null && getPaymentStatus().toLowerCase().contains("incomplete")){
+            return ResponseCode.INCOMPLETE;
+        }
+
         return super.getStatus();
     }
 

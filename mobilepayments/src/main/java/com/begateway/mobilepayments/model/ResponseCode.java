@@ -5,7 +5,9 @@ public enum ResponseCode {
     SUCCESS("SUCCESS", 0),
     ERROR("ERROR", 1),
     TIMEOUT("TIMEOUT", 2),
-    CANCELED("CANCELED", 3);
+    CANCELED("CANCELED", 3),
+    INCOMPLETE("INCOMPLETE", 4),
+    FAILED("FAILED", 5);
 
     private String stringValue;
     private int intValue;

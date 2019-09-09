@@ -31,6 +31,27 @@
     </LinearLayout>
 
     <LinearLayout
+        style="@style/begateway_field_container">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/begateway_text_input_layout"
+            tools:ignore="RtlCompat"
+            android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
+            android:paddingStart="@dimen/begateway_edit_text_icon_padding"
+            android:paddingEnd="@dimen/begateway_edit_text_icon_padding"
+            android:labelFor="@+id/begateway_card_form_card_number">
+
+            <com.begateway.mobilepayments.view.CardEditText
+                style="@style/begateway_card_form_field"
+                android:id="@+id/begateway_card_form_card_number"
+                android:hint="@string/begateway_form_hint_card_number"
+                android:inputType="number"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         style="@style/begateway_field_container"
         android:weightSum="2">
 
@@ -51,26 +72,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        style="@style/begateway_field_container">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/begateway_text_input_layout"
-            tools:ignore="RtlCompat"
-            android:paddingLeft="@dimen/begateway_edit_text_icon_padding"
-            android:paddingStart="@dimen/begateway_edit_text_icon_padding"
-            android:paddingEnd="@dimen/begateway_edit_text_icon_padding"
-            android:labelFor="@+id/begateway_card_form_card_number">
-
-            <com.begateway.mobilepayments.view.CardEditText
-                style="@style/begateway_card_form_field"
-                android:id="@+id/begateway_card_form_card_number"
-                android:hint="@string/begateway_form_hint_card_number"
-                android:inputType="number"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
 
     <LinearLayout
         style="@style/begateway_field_container"

@@ -20,7 +20,6 @@ import com.begateway.mobilepayments.tasks.RetrievePaymentTokenTask;
 import com.begateway.mobilepayments.utils.CardType;
 import com.begateway.mobilepayments.utils.RSA;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -288,7 +287,7 @@ public class PaymentModule implements Serializable {
 
     private void onPayWithCardCallback(final Activity activityContext, final PaymentResultResponse response, final IPayWithCardTaskCallback callback, boolean isWaitForIncomplete){
 
-        if (response.getStatus() == ResponseCode.SUCCESS) {
+        if (response.getStatus() == ResponseCode.SUCCESS || response.getStatus() == ResponseCode.INCOMPLETE) {
 
             if (response.getPaymentStatus().equals("incomplete")) {
 
@@ -316,7 +315,7 @@ public class PaymentModule implements Serializable {
 
                         public void onPageFinished(WebView view, String url) {
 
-                            if (url.contains(response.getToken())) {
+                            if (url.toLowerCase().contains(paymentSettings.getReturnUrl().toLowerCase())) {
 
                                 alertDialog.dismiss();
 
@@ -326,6 +325,7 @@ public class PaymentModule implements Serializable {
                                         onPayWithCardCallback(activityContext, response, callback, true);
                                     }
                                 });
+
                             }
 
                         }
@@ -358,7 +358,6 @@ public class PaymentModule implements Serializable {
             else {
 
                 onPaymentComplete(response);
-
                 callback.onCallback(response);
 
 
@@ -378,14 +377,17 @@ public class PaymentModule implements Serializable {
         if (paymentResultListener != null && isCallbackRecieved == false) {
             if (paymentResult != null && paymentResult.getStatus() != ResponseCode.ERROR) {
 
-                if (paymentResult.getPaymentStatus() == null || paymentResult.getPaymentStatus().contains("incomplete")) {
+                if (paymentResult.getPaymentStatus() == null) {
 
                     paymentResult.setPaymentStatus(ResponseCode.CANCELED.toString());
                     paymentResult.setError(ResponseCode.CANCELED.toString());
                 }
+                else if (paymentResult.getPaymentStatus().contains("incomplete")){
+                    paymentResult.setPaymentStatus(ResponseCode.INCOMPLETE.toString());
+                }
             }
             paymentResultListener.onPaymentResult(paymentResult);
-            paymentResultListener = null;
+            isCallbackRecieved = true;
         }
     }
 
@@ -407,7 +409,7 @@ public class PaymentModule implements Serializable {
 
         boolean isUseEnctyptedCard = paymentSettings.isUseEnctyptedCard();
 
-        String targetPublicKey = publicStoreKey.isEmpty() ? paymentSettings.getPublicKey() : publicStoreKey;
+        String targetPublicKey = (publicStoreKey != null && publicStoreKey.isEmpty()) ? paymentSettings.getPublicKey() : publicStoreKey;
 
         String targetCardNumber = isUseEnctyptedCard ? encryptCardData(cardNumber, targetPublicKey) : cardNumber;
         String targetCardCvv = isUseEnctyptedCard ? encryptCardData(cardCvv, targetPublicKey) : cardCvv;
@@ -445,7 +447,7 @@ public class PaymentModule implements Serializable {
                 .execute();
     }
 
-    public void getPaymentToken(final IRetrievePaymentTokenTask callback) {
+    public void getPaymentToken(String publicStoreKey, JSONObject orderData, final IRetrievePaymentTokenTask callback) {
 
         RetrievePaymentTokenTask paymentTokenTask =  new RetrievePaymentTokenTask();
 
@@ -456,7 +458,7 @@ public class PaymentModule implements Serializable {
             String description = orderData.getString("description");
 
             paymentTokenTask
-                    .fillBodyRequest(getPaymentSettings().isTestMode(), "1", amount, currency, description)
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), "1", amount, currency, description, getPaymentSettings().getReturnUrl())
                     .setCallback(new IRetrievePaymentTokenTask() {
                         @Override
                         public void onCallback(PaymentTokenResponse response) {
@@ -475,8 +477,38 @@ public class PaymentModule implements Serializable {
             paymentTokenResponse.setError("Invalid order data");
             callback.onCallback(paymentTokenResponse);
         }
+    }
 
+    public void getPaymentToken(final IRetrievePaymentTokenTask callback) {
 
+        RetrievePaymentTokenTask paymentTokenTask =  new RetrievePaymentTokenTask();
+
+        try {
+
+            String amount = orderData.getString("amount");
+            String currency = orderData.getString("currency");
+            String description = orderData.getString("description");
+
+            paymentTokenTask
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), "1", amount, currency, description, getPaymentSettings().getReturnUrl())
+                    .setCallback(new IRetrievePaymentTokenTask() {
+                        @Override
+                        public void onCallback(PaymentTokenResponse response) {
+
+                            paymentTokenResponse = response;
+
+                            callback.onCallback(response);
+                        }
+                    })
+                    .setEndpoint(paymentSettings.getEndpoint() + "checkouts")
+                    .setAuthorizationString("Bearer " + publicStoreKey)
+                    .execute();
+
+        } catch (JSONException e) {
+            PaymentTokenResponse paymentTokenResponse = new PaymentTokenResponse();
+            paymentTokenResponse.setError("Invalid order data");
+            callback.onCallback(paymentTokenResponse);
+        }
     }
 
 

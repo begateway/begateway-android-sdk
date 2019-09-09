@@ -48,7 +48,7 @@ public class PayWithCardTask extends BaseRequestTask<PaymentResultResponse> {
             requestJson.put("token", paymentToken);
             requestJson.put("payment_method", "credit_card");
 
-            if (isEncrypt){
+            if (isEncrypt == false){
                 requestJson.put("credit_card", creditCardJson);
             }
             else {

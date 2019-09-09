@@ -19,8 +19,12 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
             "            \"currency\": \"%s\",\n" +
             "            \"description\": \"%s\",\n" +
             "            \"additional_data\": {\n"+
-            "               \"contract\": [ \"recurring\", \"card_on_file\"]\n"+
+            "               \"contract\": [\"recurring\",\"card_on_file\"]\n"+
             "               }\n"+
+            "        },\n" +
+            "        \"settings\": {\n" +
+            "            \"auto_return\": true,\n" +
+            "            \"return_url\": \"%s\"\n" +
             "        }\n" +
             "    }\n" +
             "}";
@@ -33,9 +37,9 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
         return this;
     }
 
-    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, String attempts, String orderAmount, String orderCurrency, String orderDescription) {
+    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, String attempts, String orderAmount, String orderCurrency, String orderDescription, String returnUrl) {
 
-        String result = String.format(templateBody, isTestMode, attempts, orderAmount, orderCurrency, orderDescription);
+        String result = String.format(templateBody, isTestMode, attempts, orderAmount, orderCurrency, orderDescription, returnUrl);
 
         setJsonBody(result);
 

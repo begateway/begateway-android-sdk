@@ -58,6 +58,10 @@ public class PaymentTokenResponse extends BaseResponse {
                     CardType cardType = CardType.valueOf(cardTypeName);
 
                     supportedCardTypes.add(cardType);
+
+                    setRaw(jsonObject.toString());
+                    setRawJson(jsonData);
+
                 } catch (IllegalArgumentException e){
                     Log.e("parse token data --> ", cardTypeName + " unsupported ");
                 }
