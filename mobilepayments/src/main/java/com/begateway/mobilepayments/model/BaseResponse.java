@@ -55,7 +55,13 @@ public class BaseResponse {
 
     public ResponseCode getStatus(){
 
-        if (error != null) return ResponseCode.ERROR;
+        if (error != null)
+        {
+            if (getResponseCode() == 408){
+                return ResponseCode.CONNECTION_ERROR;
+            }
+            return ResponseCode.ERROR;
+        }
 
         if (raw != null) return ResponseCode.SUCCESS;
 

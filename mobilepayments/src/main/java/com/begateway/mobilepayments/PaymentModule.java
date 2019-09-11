@@ -5,9 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.core.net.ConnectivityManagerCompat;
 
 import com.begateway.mobilepayments.model.PaymentResultResponse;
 import com.begateway.mobilepayments.model.PaymentTokenResponse;
@@ -134,17 +138,17 @@ public class PaymentModule implements Serializable {
      *    	  "token": "a349f2aac6d45f4b165c6da02a19ad3b93c9ad89392339c32210b3ec8fe9d3a3",
      * 	  "payment_method": "credit_card",
      *       "credit_card":{
-     *          "number":"4200000000000000",
-     *          "verification_value":"123",
-     *          "holder":"IVAN IVANOV",
-     *          "exp_month":"01",
-     *          "exp_year":"2020"
+     *          "number":"*",
+     *          "toke":"12345678"
      *       }
      *    }
      * }
      */
     public void payWithCreditCard(JSONObject creditCardJsonData) {
+
         prepareForPayment();
+
+        if (checkConnection() == false) return;
 
         if (creditCardJsonData == null){
             PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
@@ -186,6 +190,8 @@ public class PaymentModule implements Serializable {
 
         prepareForPayment();
 
+        if (checkConnection() == false) return;
+
         if (orderData == null){
             PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
             paymentResultResponse.setError("Invalid json");
@@ -206,6 +212,8 @@ public class PaymentModule implements Serializable {
     public void payWithCheckoutJson(JSONObject checkoutJsonData) {
 
         prepareForPayment();
+
+        if (checkConnection() == false) return;
 
         if (checkoutJsonData == null){
             PaymentResultResponse paymentResultResponse = new PaymentResultResponse();
@@ -228,6 +236,20 @@ public class PaymentModule implements Serializable {
             onPaymentComplete(paymentResultResponse);
         }
 
+    }
+
+    private boolean checkConnection(){
+
+        if (isConnected() == false){
+            PaymentResultResponse result = new PaymentResultResponse();
+            result.setError("Check your connection");
+            result.setResponseCode(408);
+            onPaymentComplete(result);
+
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isCardSupported(CardType cardType){
@@ -372,20 +394,30 @@ public class PaymentModule implements Serializable {
         }
     }
 
+    public boolean isConnected(){
+
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
+    }
+
     void onPaymentComplete(PaymentResultResponse paymentResult){
 
         if (paymentResultListener != null && isCallbackRecieved == false) {
-            if (paymentResult != null && paymentResult.getStatus() != ResponseCode.ERROR) {
-
-                if (paymentResult.getPaymentStatus() == null) {
-
-                    paymentResult.setPaymentStatus(ResponseCode.CANCELED.toString());
-                    paymentResult.setError(ResponseCode.CANCELED.toString());
-                }
-                else if (paymentResult.getPaymentStatus().contains("incomplete")){
-                    paymentResult.setPaymentStatus(ResponseCode.INCOMPLETE.toString());
-                }
-            }
+//            if (paymentResult != null && paymentResult.getStatus() != ResponseCode.ERROR) {
+//
+//                if (paymentResult.getPaymentStatus() == null) {
+//
+//                    paymentResult.setPaymentStatus(ResponseCode.CANCELED.toString());
+//                    paymentResult.setError(ResponseCode.CANCELED.toString());
+//                }
+//                else if (paymentResult.getPaymentStatus().contains("incomplete")){
+//                    paymentResult.setPaymentStatus(ResponseCode.INCOMPLETE.toString());
+//                }
+//            }
             paymentResultListener.onPaymentResult(paymentResult);
             isCallbackRecieved = true;
         }
@@ -452,6 +484,16 @@ public class PaymentModule implements Serializable {
 
     public void getPaymentToken(String publicStoreKey, JSONObject orderData, final IRetrievePaymentTokenTask callback) {
 
+        if (isConnected() == false){
+            PaymentTokenResponse result = new PaymentTokenResponse();
+            result.setError("Check your connection");
+            result.setResponseCode(408);
+
+            paymentTokenResponse = result;
+            callback.onCallback(result);
+            return;
+        }
+
         RetrievePaymentTokenTask paymentTokenTask =  new RetrievePaymentTokenTask();
 
         try {
@@ -484,6 +526,16 @@ public class PaymentModule implements Serializable {
     }
 
     public void getPaymentToken(final IRetrievePaymentTokenTask callback) {
+
+        if (isConnected() == false){
+            PaymentTokenResponse result = new PaymentTokenResponse();
+            result.setError("Check your connection");
+            result.setResponseCode(408);
+
+            paymentTokenResponse = result;
+            callback.onCallback(result);
+            return;
+        }
 
         RetrievePaymentTokenTask paymentTokenTask =  new RetrievePaymentTokenTask();
 

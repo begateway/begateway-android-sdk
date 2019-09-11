@@ -1,1 +1,1 @@
-include ':app', ':mobilepayments'
+include ':app', ':mobilepayments', ':samplejava'
