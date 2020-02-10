@@ -24,7 +24,7 @@ allprojects {
 Import the component module by adding it to your `build.gradle` file.
 
 ```groovy
-   implementation 'com.github.begateway:begateway-android-sdk:1.0.3'
+   implementation 'com.github.begateway:begateway-android-sdk:1.0.4'
 ```
 You can give a look to the full java sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/master/samplejava)
 
@@ -44,6 +44,15 @@ Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.begateway.com/ctp/api/"
 You can setup your return_url to process 3D SECURE:
 ```java
     .setReturnUrl("https://YOUR_RETURN_URL.com")
+```
+You can setup your notification_url to process transactions on your backend:
+```java
+    .setNotificationUrl("https://YOUR_NOTIFICATION_URL.com")
+```
+
+You can setup trasaction type. Use one of valid types: PAYMENT, AUTHORIZATION, VERIFY:
+```java
+    .setTransactionType(TransactionType.PAYMENT)
 ```
 
 Don't forget to add premissions to your manifest:
