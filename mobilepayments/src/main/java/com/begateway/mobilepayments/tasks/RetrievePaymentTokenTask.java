@@ -9,9 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenResponse> {
 
     private IRetrievePaymentTokenTask callback;
@@ -48,12 +45,11 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
 
             settingsJson.put("auto_return", true);
             if (notificationUrl != null && notificationUrl.isEmpty() == false) {
-                URL url= new URL(notificationUrl);
-//                settingsJson.put("notification_url", url);
+                settingsJson.put("notification_url", notificationUrl);
 
             }
             if (returnUrl != null && returnUrl.isEmpty() == false) {
-                settingsJson.put("return_url", "YOUR_RETURN_URL");
+                settingsJson.put("return_url", returnUrl);
             }
 
             checkoutJson.put("order", orderJson);
@@ -63,13 +59,9 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
 
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         }
 
         String jsonBody = rootJson.toString();
-        jsonBody = jsonBody.replace("YOUR_RETURN_URL", returnUrl);
-
         setJsonBody(jsonBody);
 
         return this;

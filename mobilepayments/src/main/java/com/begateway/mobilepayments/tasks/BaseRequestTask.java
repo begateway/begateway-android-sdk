@@ -73,7 +73,7 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
     protected T doInBackground(Object... urls) {
 
         T responseData = (T) getResponseInstance();
-
+        HttpURLConnection con = null;
         try {
 
             if (requestMethod.contains("GET")) {
@@ -86,12 +86,12 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
             }
             URL url = new URL(endpoint);
 
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con = (HttpURLConnection) url.openConnection();
 
             log(" endpoint --> " + endpoint);
             log(" requestMethod --> " + requestMethod);
             log(" authorizationString --> " + authorizationString);
-            log(" -->" + jsonBody);
+            log(" jsonBody -->" + jsonBody);
 
             if (requestMethod.contains("GET") == false) {
                 con.setRequestMethod(requestMethod);
@@ -117,7 +117,7 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
             int responseCode = con.getResponseCode();
             responseData.setResponseCode(responseCode);
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
 
                 StringBuilder response = new StringBuilder();
                 String responseLine = null;
@@ -126,13 +126,33 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
                 }
 
                 String responseString = response.toString();
-                responseData.setRaw(responseString);
 
-                responseData.setRaw(responseString);
-
-                JSONObject rawJson = new JSONObject(responseString);
-                responseData.setRawJson(rawJson);
+                responseData.setError(responseString);
             }
+            catch (Exception e){
+                log(e.getMessage());
+            }
+            finally {
+                if (responseData.getStatus() != ResponseCode.ERROR) {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+
+                        StringBuilder response = new StringBuilder();
+                        String responseLine = null;
+                        while ((responseLine = br.readLine()) != null) {
+                            response.append(responseLine.trim());
+                        }
+
+                        String responseString = response.toString();
+                        responseData.setRaw(responseString);
+
+                        responseData.setRaw(responseString);
+
+                        JSONObject rawJson = new JSONObject(responseString);
+                        responseData.setRawJson(rawJson);
+                    }
+                }
+            }
+
         } catch (Exception e) {
 
             responseData.setError(e.toString());
