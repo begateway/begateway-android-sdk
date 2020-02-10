@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public enum CardType {
 
-    MIR("^220[1-4]",
+    MIR("^220[0-4]",
             R.drawable.begateway_ic_mir,
             16, 16,
             3, R.string.begateway_cvv, null),
@@ -47,7 +47,7 @@ public enum CardType {
             R.drawable.begateway_ic_jcb,
             16, 16,
             3, R.string.begateway_cvv, null),
-    MAESTRO("^(5018|5020|5038|5[6-9]|6020|6304|6703|6759|676[1-3])\\d*",
+    MAESTRO("^(5077|5049|5018|5020|5038|5[6-9]|6020|6304|6703|6759|676[1-3])\\d*",
             R.drawable.begateway_ic_maestro,
             12, 19,
             3, R.string.begateway_cvc,

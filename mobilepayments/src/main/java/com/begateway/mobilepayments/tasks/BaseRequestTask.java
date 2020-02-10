@@ -113,26 +113,27 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
                 }
             }
 
-
             int responseCode = con.getResponseCode();
             responseData.setResponseCode(responseCode);
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
+            if (con.getErrorStream() != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
 
-                StringBuilder response = new StringBuilder();
-                String responseLine = null;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
+                    StringBuilder response = new StringBuilder();
+                    String responseLine = null;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+
+                    String responseString = response.toString();
+
+                    responseData.setError(responseString);
                 }
-
-                String responseString = response.toString();
-
-                responseData.setError(responseString);
+                catch (Exception e){
+                    log(e.getMessage());
+                }
             }
-            catch (Exception e){
-                log(e.getMessage());
-            }
-            finally {
+            else {
                 if (responseData.getStatus() != ResponseCode.ERROR) {
                     try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
 
@@ -152,7 +153,6 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
                     }
                 }
             }
-
         } catch (Exception e) {
 
             responseData.setError(e.toString());
