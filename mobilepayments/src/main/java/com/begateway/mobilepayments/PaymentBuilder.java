@@ -83,8 +83,26 @@ public class PaymentBuilder {
         return this;
     }
 
+    public PaymentBuilder setNotificationUrl(String notificationUrl) {
+        paymentSettings.setNotificationUrl(notificationUrl);
+
+        return this;
+    }
+
+    public PaymentBuilder setTransactionType(TransactionType transactionType) {
+        paymentSettings.setTransactionType(transactionType);
+
+        return this;
+    }
+
     public PaymentBuilder setDebugMode(boolean debugMode) {
         paymentSettings.setDebugMode(debugMode);
+
+        return this;
+    }
+
+    public PaymentBuilder setAttempts(int attempts) {
+        paymentSettings.setAttempts(attempts);
 
         return this;
     }

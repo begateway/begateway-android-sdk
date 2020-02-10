@@ -21,7 +21,8 @@ public class BaseCardFormActivity extends AppCompatActivity implements OnCardFor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PaymentSettings paymentSettings = PaymentModule.getInstance().getPaymentSettings();
+        PaymentModule paymentModule = PaymentModule.getInstance();
+        PaymentSettings paymentSettings = paymentModule.getPaymentSettings();
         StyleSettings styleSettings = paymentSettings.getStyleSettings();
 
         Locale locale = new Locale(paymentSettings.getLocale());

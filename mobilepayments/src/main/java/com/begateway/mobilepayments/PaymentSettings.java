@@ -11,6 +11,10 @@ public class PaymentSettings {
 
     private String returnUrl = "https://DEFAULT_RETURN_URL.com";
 
+    private String notificationUrl = "";
+
+    private TransactionType transactionType = TransactionType.PAYMENT;
+
     private boolean isTestMode;
 
     private boolean isUseEnctyptedCard;
@@ -28,6 +32,8 @@ public class PaymentSettings {
     private String publicKey;
 
     private boolean isDebugMode;
+
+    private int attempts = 1;
 
     public StyleSettings getStyleSettings() {
         return styleSettings;
@@ -111,6 +117,30 @@ public class PaymentSettings {
 
     public boolean isDebugMode() {
         return isDebugMode;
+    }
+
+    public String getNotificationUrl() {
+        return notificationUrl;
+    }
+
+    public void setNotificationUrl(String notificationUrl) {
+        this.notificationUrl = notificationUrl;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
     }
 
     public void setDebugMode(boolean debugMode) {

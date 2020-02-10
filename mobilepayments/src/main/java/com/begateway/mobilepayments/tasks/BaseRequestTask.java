@@ -88,7 +88,10 @@ public abstract class BaseRequestTask<T extends BaseResponse> extends AsyncTask<
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-            log(" --> " + jsonBody);
+            log(" endpoint --> " + endpoint);
+            log(" requestMethod --> " + requestMethod);
+            log(" authorizationString --> " + authorizationString);
+            log(" -->" + jsonBody);
 
             if (requestMethod.contains("GET") == false) {
                 con.setRequestMethod(requestMethod);

@@ -11,8 +11,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.core.net.ConnectivityManagerCompat;
-
 import com.begateway.mobilepayments.model.PaymentResultResponse;
 import com.begateway.mobilepayments.model.PaymentTokenResponse;
 import com.begateway.mobilepayments.model.ResponseCode;
@@ -503,7 +501,7 @@ public class PaymentModule implements Serializable {
             String description = orderData.getString("description");
 
             paymentTokenTask
-                    .fillBodyRequest(getPaymentSettings().isTestMode(), "1", amount, currency, description, getPaymentSettings().getReturnUrl())
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType())
                     .setCallback(new IRetrievePaymentTokenTask() {
                         @Override
                         public void onCallback(PaymentTokenResponse response) {
@@ -546,7 +544,7 @@ public class PaymentModule implements Serializable {
             String description = orderData.getString("description");
 
             paymentTokenTask
-                    .fillBodyRequest(getPaymentSettings().isTestMode(), "1", amount, currency, description, getPaymentSettings().getReturnUrl())
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType())
                     .setCallback(new IRetrievePaymentTokenTask() {
                         @Override
                         public void onCallback(PaymentTokenResponse response) {

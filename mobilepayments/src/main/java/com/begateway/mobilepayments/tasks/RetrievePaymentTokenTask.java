@@ -1,33 +1,18 @@
 package com.begateway.mobilepayments.tasks;
 
+import com.begateway.mobilepayments.TransactionType;
 import com.begateway.mobilepayments.model.BaseResponse;
 import com.begateway.mobilepayments.model.PaymentTokenResponse;
 import com.begateway.mobilepayments.model.ResponseCode;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenResponse> {
+import java.net.MalformedURLException;
+import java.net.URL;
 
-    private String templateBody = "{\n" +
-            "    \"checkout\": {\n" +
-            "        \"test\": %s,\n" +
-            "        \"transaction_type\": \"payment\",\n" +
-            "        \"attempts\": %s,\n" +
-            "        \"order\": {\n" +
-            "            \"amount\": \"%s\",\n" +
-            "            \"currency\": \"%s\",\n" +
-            "            \"description\": \"%s\",\n" +
-            "            \"additional_data\": {\n"+
-            "               \"contract\": [\"recurring\",\"card_on_file\"]\n"+
-            "               }\n"+
-            "        },\n" +
-            "        \"settings\": {\n" +
-            "            \"auto_return\": true,\n" +
-            "            \"return_url\": \"%s\"\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
+public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenResponse> {
 
     private IRetrievePaymentTokenTask callback;
 
@@ -37,11 +22,55 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
         return this;
     }
 
-    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, String attempts, String orderAmount, String orderCurrency, String orderDescription, String returnUrl) {
+    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, int attempts, String orderAmount, String orderCurrency, String orderDescription, String notificationUrl, String returnUrl, TransactionType transactionType) {
 
-        String result = String.format(templateBody, isTestMode, attempts, orderAmount, orderCurrency, orderDescription, returnUrl);
+        JSONObject rootJson = new JSONObject();
 
-        setJsonBody(result);
+        try {
+
+            JSONObject checkoutJson = new JSONObject();
+            JSONObject orderJson = new JSONObject();
+            JSONObject orderAdditionalDataJson = new JSONObject();
+            JSONObject settingsJson = new JSONObject();
+
+            checkoutJson.put("test", isTestMode);
+            checkoutJson.put("transaction_type", transactionType.toString().toLowerCase());
+            checkoutJson.put("attempts", attempts);
+
+            orderJson.put("amount", orderAmount);
+            orderJson.put("currency", orderCurrency);
+            orderJson.put("description", orderDescription);
+            JSONArray contractParameters = new JSONArray();
+            contractParameters.put("recurring");
+            contractParameters.put("card_on_file");
+            orderAdditionalDataJson.put("contract", contractParameters);
+            orderJson.put("additional_data", orderAdditionalDataJson);
+
+            settingsJson.put("auto_return", true);
+            if (notificationUrl != null && notificationUrl.isEmpty() == false) {
+                URL url= new URL(notificationUrl);
+//                settingsJson.put("notification_url", url);
+
+            }
+            if (returnUrl != null && returnUrl.isEmpty() == false) {
+                settingsJson.put("return_url", "YOUR_RETURN_URL");
+            }
+
+            checkoutJson.put("order", orderJson);
+            checkoutJson.put("settings", settingsJson);
+
+            rootJson.put("checkout", checkoutJson);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        String jsonBody = rootJson.toString();
+        jsonBody = jsonBody.replace("YOUR_RETURN_URL", returnUrl);
+
+        setJsonBody(jsonBody);
 
         return this;
     }
