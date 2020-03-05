@@ -499,9 +499,10 @@ public class PaymentModule implements Serializable {
             String amount = orderData.getString("amount");
             String currency = orderData.getString("currency");
             String description = orderData.getString("description");
+            String trackingId = orderData.getString("tracking_id");
 
             paymentTokenTask
-                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType())
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType(), trackingId)
                     .setCallback(new IRetrievePaymentTokenTask() {
                         @Override
                         public void onCallback(PaymentTokenResponse response) {
@@ -542,9 +543,10 @@ public class PaymentModule implements Serializable {
             String amount = orderData.getString("amount");
             String currency = orderData.getString("currency");
             String description = orderData.getString("description");
+            String trackingId = orderData.getString("tracking_id");
 
             paymentTokenTask
-                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType())
+                    .fillBodyRequest(getPaymentSettings().isTestMode(), getPaymentSettings().getAttempts(), amount, currency, description, getPaymentSettings().getNotificationUrl(), getPaymentSettings().getReturnUrl(), getPaymentSettings().getTransactionType(), trackingId)
                     .setCallback(new IRetrievePaymentTokenTask() {
                         @Override
                         public void onCallback(PaymentTokenResponse response) {

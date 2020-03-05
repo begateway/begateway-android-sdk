@@ -19,7 +19,7 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
         return this;
     }
 
-    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, int attempts, String orderAmount, String orderCurrency, String orderDescription, String notificationUrl, String returnUrl, TransactionType transactionType) {
+    public RetrievePaymentTokenTask fillBodyRequest(boolean isTestMode, int attempts, String orderAmount, String orderCurrency, String orderDescription, String notificationUrl, String returnUrl, TransactionType transactionType, String trackingId) {
 
         JSONObject rootJson = new JSONObject();
 
@@ -37,6 +37,10 @@ public class RetrievePaymentTokenTask extends BaseRequestTask<PaymentTokenRespon
             orderJson.put("amount", orderAmount);
             orderJson.put("currency", orderCurrency);
             orderJson.put("description", orderDescription);
+            if (trackingId != null && trackingId.isEmpty() == false) {
+                orderJson.put("tracking_id", trackingId);
+
+            }
             JSONArray contractParameters = new JSONArray();
             contractParameters.put("recurring");
             contractParameters.put("card_on_file");
