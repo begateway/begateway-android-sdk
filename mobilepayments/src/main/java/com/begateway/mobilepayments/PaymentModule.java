@@ -11,6 +11,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.begateway.mobilepayments.model.PaymentResultResponse;
 import com.begateway.mobilepayments.model.PaymentTokenResponse;
 import com.begateway.mobilepayments.model.ResponseCode;
@@ -21,6 +23,7 @@ import com.begateway.mobilepayments.tasks.RetrievePaymentStatusTask;
 import com.begateway.mobilepayments.tasks.RetrievePaymentTokenTask;
 import com.begateway.mobilepayments.utils.CardType;
 import com.begateway.mobilepayments.utils.RSA;
+import com.begateway.mobilepayments.view.WebViewDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +53,7 @@ public class PaymentModule implements Serializable {
 
     private PaymentSettings paymentSettings;
 
-    private AlertDialog alertDialog = null;
+    private WebViewDialog alertDialog = null;
 
     private Activity activity;
 
@@ -351,10 +354,8 @@ public class PaymentModule implements Serializable {
                         }
                     });
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-                    alertDialog = builder
-                            .setView(webView)
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    alertDialog = new WebViewDialog(webView);
+                    alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                 @Override
                                 public void onCancel(DialogInterface dialog) {
                                     alertDialog.dismiss();
@@ -365,14 +366,15 @@ public class PaymentModule implements Serializable {
 
 
                                 }
-                            })
-                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            });
+                    alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
                                 public void onDismiss(DialogInterface dialog) {
 
                                 }
-                            })
-                            .show();
+                            });
+                    alertDialog.show(( (AppCompatActivity) activity ).getSupportFragmentManager(), "");
+
                 }
             }
             else {
