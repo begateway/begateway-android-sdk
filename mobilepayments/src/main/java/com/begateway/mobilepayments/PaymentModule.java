@@ -3,13 +3,9 @@ package com.begateway.mobilepayments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.begateway.mobilepayments.model.PaymentResultResponse;
 import com.begateway.mobilepayments.model.PaymentTokenResponse;
@@ -53,8 +49,6 @@ public class PaymentModule implements Serializable {
     private AlertDialog alertDialog = null;
 
     private Activity activity;
-
-    private Activity cardFormActivity;
 
     private OnPaymentResultListener paymentResultListener;
 
@@ -305,6 +299,9 @@ public class PaymentModule implements Serializable {
         }
     }
 
+    private PaymentResultResponse paymentResult;
+    private IPayWithCardTaskCallback iPayWithCardTaskCallback;
+
     private void onPayWithCardCallback(final Activity activityContext, final PaymentResultResponse response, final IPayWithCardTaskCallback callback, boolean isWaitForIncomplete){
 
         if (response.getStatus() == ResponseCode.SUCCESS || response.getStatus() == ResponseCode.INCOMPLETE) {
@@ -320,76 +317,39 @@ public class PaymentModule implements Serializable {
                     });
                 }
                 else {
-
-                    WebView webView = new WebView(activityContext);
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.getSettings().setAllowFileAccess(true);
-                    webView.loadUrl(response.getUrl());
-                    webView.setWebChromeClient(new WebChromeClient() {
-                    });
-
-                    webView.setWebViewClient(new WebViewClient() {
-                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                            return false;
-                        }
-
-                        public void onPageFinished(WebView view, String url) {
-
-                            if (url.toLowerCase().contains(paymentSettings.getReturnUrl().toLowerCase())) {
-
-                                alertDialog.dismiss();
-
-                                getPaymentStatus(response.getToken(), new IPayWithCardTaskCallback() {
-                                    @Override
-                                    public void onCallback(PaymentResultResponse response) {
-                                        onPayWithCardCallback(activityContext, response, callback, true);
-                                    }
-                                });
-
-                            }
-
-                        }
-                    });
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-                    alertDialog = builder
-                            .setView(webView)
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    alertDialog.dismiss();
-
-                                    onPaymentComplete(response);
-
-                                    callback.onCallback(response);
-
-
-                                }
-                            })
-                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-
-                                }
-                            })
-                            .show();
+                    Intent intent = WebViewActivity.getIntent(
+                            context,
+                            response.getUrl(),
+                            paymentSettings.getReturnUrl()
+                    );
+                    context.startActivity(intent);
+                    paymentResult = response;
+                    iPayWithCardTaskCallback = callback;
                 }
             }
             else {
-
                 onPaymentComplete(response);
                 callback.onCallback(response);
-
-
             }
         }
         else {
-
             onPaymentComplete(response);
             callback.onCallback(response);
-
-
         }
+    }
+
+    void onWebViewFinished() {
+        getPaymentStatus(paymentResult.getToken(), new IPayWithCardTaskCallback() {
+            @Override
+            public void onCallback(PaymentResultResponse response) {
+                onPayWithCardCallback(activity, response, iPayWithCardTaskCallback, true);
+            }
+        });
+    }
+
+    void onWebViewCancelled() {
+        onPaymentComplete(paymentResult);
+        iPayWithCardTaskCallback.onCallback(paymentResult);
     }
 
     public boolean isConnected(){
@@ -567,6 +527,4 @@ public class PaymentModule implements Serializable {
             callback.onCallback(paymentTokenResponse);
         }
     }
-
-
 }

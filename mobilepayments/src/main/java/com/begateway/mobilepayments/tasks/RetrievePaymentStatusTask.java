@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class RetrievePaymentStatusTask extends BaseRequestTask<PaymentResultResponse> {
 
-    private String templateBody = "https://checkout.bepaid.by/ctp/api/checkouts/%s";
+    private String templateBody = "https://checkout-staging.begateway.com/ctp/api/checkouts/%s";
 
     private IPayWithCardTaskCallback callback;
 
