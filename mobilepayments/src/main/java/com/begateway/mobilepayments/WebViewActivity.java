@@ -11,7 +11,7 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity {
 
     private static final String START_URL = "startUrl";
     private static final String RETURN_URL = "returnUrl";

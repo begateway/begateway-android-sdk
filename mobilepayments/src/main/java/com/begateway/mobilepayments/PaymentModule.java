@@ -22,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class PaymentModule implements Serializable {
@@ -384,9 +386,18 @@ public class PaymentModule implements Serializable {
     private void getPaymentStatus(String paymentToken, final IPayWithCardTaskCallback callback) {
 
         RetrievePaymentStatusTask retrievePaymentStatusTask =  new RetrievePaymentStatusTask();
-
+        String endpoint = paymentSettings.getEndpoint();
+        String protocol = null;
+        String host = null;
+        try {
+            URL url = new URL(endpoint);
+            protocol = url.getProtocol();
+            host = url.getHost();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         retrievePaymentStatusTask
-                .fillBodyRequest(paymentToken)
+                .fillBodyRequest(protocol, host, paymentToken)
                 .setCallback(callback)
                 .setAuthorizationString("Bearer " + paymentToken)
                 .setRequestMethod("GET")
