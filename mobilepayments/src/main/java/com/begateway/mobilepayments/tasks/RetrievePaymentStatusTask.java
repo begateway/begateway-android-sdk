@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class RetrievePaymentStatusTask extends BaseRequestTask<PaymentResultResponse> {
 
-    private String templateBody = "https://checkout.bepaid.by/ctp/api/checkouts/%s";
+    private final String templateBody = "%s://%s/ctp/api/checkouts/%s";
 
     private IPayWithCardTaskCallback callback;
 
@@ -19,9 +19,9 @@ public class RetrievePaymentStatusTask extends BaseRequestTask<PaymentResultResp
         return this;
     }
 
-    public RetrievePaymentStatusTask fillBodyRequest(String paymentToken) {
+    public RetrievePaymentStatusTask fillBodyRequest(String protocol, String host, String paymentToken) {
 
-        String result = String.format(templateBody, paymentToken);
+        String result = String.format(templateBody, protocol, host, paymentToken);
 
         setEndpoint(result);
 

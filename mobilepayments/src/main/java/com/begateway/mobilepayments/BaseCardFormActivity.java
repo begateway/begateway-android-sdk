@@ -3,6 +3,8 @@ package com.begateway.mobilepayments;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.begateway.mobilepayments.model.PaymentResultResponse;
