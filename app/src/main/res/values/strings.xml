@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">BePaid Payments Example</string>
+    <string name="app_name" translatable="false">BePaid Payments Example</string>
 
 </resources>

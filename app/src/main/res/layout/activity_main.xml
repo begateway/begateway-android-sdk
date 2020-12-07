@@ -1,64 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
     tools:context=".MainActivity">
 
-    <ToggleButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toggle_3d_state"/>
-
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/tvHello"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Use 3D secure"
-        android:labelFor="@+id/toggle_3d_state"/>
+        android:layout_gravity="center"
+        android:text="hello" />
 
-    <Button
-        android:id="@+id/button_pay_with_public_store_key"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pay with PUBLIC_STORE_KEY"
-        android:textAllCaps="true" />
-
-    <Button
-        android:id="@+id/button_pay_with_checkout_json"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pay with CHECKOUT_JSON"
-        android:textAllCaps="true" />
-
-    <Button
-        android:id="@+id/button_pay_with_credit_card_token"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pay with CREDIT_CARD_TOKEN"
-        android:textAllCaps="true" />
-
-
-
-    <EditText
-        android:id="@+id/input_payment_token"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Payment token"
-        android:labelFor="@+id/input_payment_token"/>
-
-    <Button
-        android:id="@+id/button_get_payment_token"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get PAYMENT_TOKEN"
-        android:textAllCaps="true" />
-
-
-</LinearLayout>
+</FrameLayout>

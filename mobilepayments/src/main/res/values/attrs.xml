@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="begateway_expiration_date_sheet_background" format="color"/>
-    <attr name="begateway_expiration_date_dialog_label" format="color"/>
-    <attr name="begateway_expiration_date_dialog_divider" format="color" />
-    <attr name="begateway_expiration_date_scrollbar_thumb_vertical" format="color" />
-    <attr name="begateway_expiration_date_scrollbar_track_vertical" format="color" />
+
 </resources>
