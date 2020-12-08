@@ -3,7 +3,6 @@ package com.begateway.example
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.begateway.example.databinding.ActivityMainBinding
-import com.begateway.mobilepayments.Foo
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -12,6 +11,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.tvHello.text = Foo().label
+        binding.bGetToken
     }
 }

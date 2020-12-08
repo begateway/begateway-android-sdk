@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">BePaid Payments Example</string>
-
+    <string name="hint_token" translatable="false">token</string>
+    <string name="action_get_token" translatable="false">get token</string>
+    <string name="msg_use_3d" translatable="false">3d security</string>
 </resources>
