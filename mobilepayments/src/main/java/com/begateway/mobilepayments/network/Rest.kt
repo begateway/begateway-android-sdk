@@ -1,7 +1,11 @@
 package com.begateway.mobilepayments.network
 
+import android.util.Log
+import com.begateway.mobilepayments.model.network.request.Checkout
+import com.begateway.mobilepayments.model.network.request.GetPaymentTokenRequest
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -28,7 +32,21 @@ class Rest(baseUrl: String, isDebugMode: Boolean) {
         api = retrofit.create(Api::class.java)
     }
 
-    suspend fun getPaymentToken() {
+    internal suspend fun getPaymentToken(publicKey: String, requestBody: GetPaymentTokenRequest): HttpResult<Any> {
+        return safeApiCall { api.getPaymentToken("Bearer $publicKey", requestBody) }
+    }
 
+    private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
+        return try {
+            val response = call.invoke()
+            if (response.isSuccessful) {
+                HttpResult.Success(response.body()!!)
+            } else {
+                HttpResult.UnSuccess(response)
+            }
+        } catch (e: Exception) {
+            Log.e("mobilepayments", "unknown error", e)
+            HttpResult.Error(e)
+        }
     }
 }

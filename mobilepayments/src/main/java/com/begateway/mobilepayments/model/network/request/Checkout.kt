@@ -4,7 +4,7 @@ import com.begateway.mobilepayments.model.*
 import com.begateway.mobilepayments.model.network.ReadOnly
 import com.google.gson.annotations.SerializedName
 
-internal class Checkout(
+class Checkout(
     @SerializedName("version") val version: Double = 2.1,
     @SerializedName("test") val test: Boolean = false,
     @SerializedName("transaction_type") val transactionType: TransactionType,
@@ -17,28 +17,28 @@ internal class Checkout(
     @SerializedName("travel") val travel: Travel? = null,
 ) : AdditionalFields()
 
-internal class Order(
+class Order(
     @SerializedName("amount") val amount: Long,
     @SerializedName("currency") val currency: String,
     @SerializedName("description") val description: String,
-    @SerializedName("tracking_id") val trackingId: String? = null,//todo
+    @SerializedName("tracking_id") val trackingId: String? = null,
     @SerializedName("expired_at") val expiredAt: String? = null,
     @SerializedName("additional_data") val additionalData: AdditionalData? = null,
 ) : AdditionalFields()
 
-internal class AdditionalData(
+class AdditionalData(
     @SerializedName("receipt_text") val receiptText: Array<String>? = null,
     @SerializedName("contract") val contract: Array<Contract>? = null,
     @SerializedName("avs_cvc_verification") val avsCvcVerification: Array<String>? = null,
     @SerializedName("card_on_file") val card_on_file: CardOnFile? = null,
 ) : AdditionalFields()
 
-internal class CardOnFile(
+class CardOnFile(
     @SerializedName("initiator") val initiator: Initiator = Initiator.MERCHANT,
     @SerializedName("type") val cardOnFileType: CardOnFileType = CardOnFileType.DELAYED_CHARGE,
 ) : AdditionalFields()
 
-internal class Settings(
+class Settings(
     /** If returnUrl defined, then successUrl and declineUrl could be ignored. Use only with header "X-Api-Version: 2" */
     @SerializedName("return_url") val returnUrl: String? = null,
     @SerializedName("success_url") val successUrl: String? = null,
@@ -54,12 +54,12 @@ internal class Settings(
     @SerializedName("customer_fields") val customerFields: CustomerFields? = null,
 ) : AdditionalFields()
 
-internal class CustomerFields(
+class CustomerFields(
     @SerializedName("read_only") val readOnly: Array<ReadOnly>? = null,
     @SerializedName("visible") val visible: Array<Visible>? = null,
 ) : AdditionalFields()
 
-internal class Customer(
+class Customer(
     @SerializedName("email") val email: String? = null,
     @SerializedName("first_name") val firstName: String? = null,
     @SerializedName("last_name") val lastName: String? = null,
@@ -72,28 +72,28 @@ internal class Customer(
     @SerializedName("country") val country: String? = null,
 ) : AdditionalFields()
 
-internal class PaymentMethod(
+class PaymentMethod(
     @SerializedName("types") val types: Array<PaymentMethodType>,
     @SerializedName("erip") val erip: Erip? = null,
     @SerializedName("credit_card") val creditCard: CreditCard,
 ) : AdditionalFields()
 
-internal class Erip(
+class Erip(
     @SerializedName("order_id") val orderId: String,
     @SerializedName("account_number") val accountNumber: String,
     @SerializedName("service_no") val serviceNo: Int? = null,
     @SerializedName("service_info") val serviceInfo: Array<String>? = null,
 ) : AdditionalFields()
 
-internal class CreditCard(
+class CreditCard(
     @SerializedName("token") val token: String,
 ) : AdditionalFields()
 
-internal class Travel(
+class Travel(
     @SerializedName("airline") val airline: Airline,
 ) : AdditionalFields()
 
-internal class Airline(
+class Airline(
     @SerializedName("agency_code") val agencyCode: String? = null,
     @SerializedName("agency_name") val agencyName: String? = null,
     @SerializedName("ticket_number") val ticketNumber: String,
@@ -103,7 +103,7 @@ internal class Airline(
     @SerializedName("passengers") val passengers: Array<Passenger>,
 ) : AdditionalFields()
 
-internal class Leg(
+class Leg(
     @SerializedName("airline_code") val airlineCode: String,
     @SerializedName("stop_over_code") val stop_over_code: String? = null,
     @SerializedName("flight_number") val flightNumber: String,
@@ -119,7 +119,7 @@ internal class Leg(
     @SerializedName("class") val clazz: String,
 ) : AdditionalFields()
 
-internal class Passenger(
+class Passenger(
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,
 ) : AdditionalFields()
