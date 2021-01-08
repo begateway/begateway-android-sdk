@@ -46,11 +46,6 @@ class CardFormBottomDialog : BottomSheetDialogFragment() {
         activity?.finish()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        BottomSheetDialog(requireContext(), theme).apply {
-
-        }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
