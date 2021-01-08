@@ -1,5 +1,6 @@
 package com.begateway.example
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -9,6 +10,7 @@ import com.begateway.mobilepayments.PaymentSdkBuilder
 import com.begateway.mobilepayments.model.TransactionType
 import com.begateway.mobilepayments.model.network.request.*
 import com.begateway.mobilepayments.network.HttpResult
+import com.begateway.mobilepayments.ui.CheckoutActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,13 +27,14 @@ class MainActivity : AppCompatActivity() {
 
         sdk = PaymentSdkBuilder()
 //                .setTestMode(true)
-                .setDebugMode(true)
-                .setEndpoint("https://checkout.begateway.com/ctp/api/")
+            .setDebugMode(true)
+            .setEndpoint("https://checkout.begateway.com/ctp/api/")
 //                .setPublicKey(TestData.PUBLIC_KEY_3D_ON)
-                .build()
+            .build()
 
         initView()
         listeners()
+        startActivity(Intent(this, CheckoutActivity::class.java))
     }
 
     private fun initView() {

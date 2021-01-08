@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Radii-->
-    <dimen name="begateway_radius_s">6dp</dimen>
-    <dimen name="begateway_radius_m">8dp</dimen>
-    <dimen name="begateway_radius_l">10dp</dimen>
+    <dimen name="begateway_radius_small">6dp</dimen>
+    <dimen name="begateway_radius_medium">8dp</dimen>
+    <dimen name="begateway_radius_big">10dp</dimen>
 
 
     <dimen name="begateway_default_margin">16dp</dimen>
     <dimen name="begateway_default_margin_small">8dp</dimen>
     <dimen name="begateway_default_margin_big">24dp</dimen>
+
+    <dimen name="begateway_min_btn_height">56dp</dimen>
+
+    <dimen name="begateway_scroll_padding">80dp</dimen>
+
+    <dimen name="begateway_appbar">126dp</dimen>
+
+    <dimen name="begateway_default_text">16sp</dimen>
+    <dimen name="begateway_title_text_big">34sp</dimen>
+
 </resources>
