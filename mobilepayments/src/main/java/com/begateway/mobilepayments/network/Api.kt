@@ -7,11 +7,14 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-interface Api {
+internal const val CONTENT_TYPE = "Content-Type: application/json; charset=utf-8"
+internal const val ACCEPT_HEADER = "Accept: application/json"
+internal const val X_API_VERSION = "X-Api-Version: 2"
+internal interface Api {
     @Headers(
-            "Content-Type: application/json; charset=utf-8",
-            "Accept: application/json",
-            "X-Api-Version: 2",
+            CONTENT_TYPE,
+            ACCEPT_HEADER,
+            X_API_VERSION,
     )
     @POST("checkouts")
     suspend fun getPaymentToken(
