@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="begateway_palette_accent">#b3b3b3</color>
+    <color name="begateway_color_primary">#F44336</color>
+    <color name="begateway_color_accent">#009688</color>
+    <color name="begateway_button_tint">#009688</color>
     <color name="begateway_loading">#666666</color>
     <color name="begateway_background">#f7f7f7</color>
     <color name="begateway_button_text_link">#0070F0</color>
@@ -9,6 +11,5 @@
     <color name="begateway_hint">#b3b3b3</color>
     <color name="begateway_control_normal">#ebebeb</color>
     <color name="begateway_text_primary">#000000</color>
-    <color name="begateway_divider">#ebebeb</color>
-    <color name="begateway_color_ghost">#9A9EA7</color>
+    <color name="begateway_primary_black">#000000</color>
 </resources>

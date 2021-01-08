@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/begateway_background" />
     <corners
-        android:topLeftRadius="@dimen/begateway_radius_s"
-        android:topRightRadius="@dimen/begateway_radius_s"/>
+        android:topLeftRadius="@dimen/begateway_radius_big"
+        android:topRightRadius="@dimen/begateway_radius_big"/>
 </shape>

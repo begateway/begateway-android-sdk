@@ -4,6 +4,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>    <!--need to check new api android 11+-->
+        <intent>
+            <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD" />
+        </intent>
+    </queries>
     <application>
 
         <activity
