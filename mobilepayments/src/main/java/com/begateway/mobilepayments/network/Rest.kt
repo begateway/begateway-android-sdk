@@ -1,25 +1,22 @@
 package com.begateway.mobilepayments.network
 
 import android.util.Log
-import com.begateway.mobilepayments.model.network.request.Checkout
 import com.begateway.mobilepayments.model.network.request.GetPaymentTokenRequest
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
-class Rest(baseUrl: String, isDebugMode: Boolean) {
+internal const val BEARER_AUTH_STRING = "Basic "
+
+internal class Rest(baseUrl: String, isDebugMode: Boolean) {
 
     private val retrofit: Retrofit
     private val api: Api
 
     init {
         val client = OkHttpClient.Builder().run {
-            writeTimeout(10, TimeUnit.SECONDS)
-            readTimeout(10, TimeUnit.SECONDS)
-            connectTimeout(10, TimeUnit.SECONDS)
             if (isDebugMode) addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             build()
         }
@@ -33,7 +30,7 @@ class Rest(baseUrl: String, isDebugMode: Boolean) {
     }
 
     internal suspend fun getPaymentToken(publicKey: String, requestBody: GetPaymentTokenRequest): HttpResult<Any> {
-        return safeApiCall { api.getPaymentToken("Bearer $publicKey", requestBody) }
+        return safeApiCall { api.getPaymentToken(BEARER_AUTH_STRING + publicKey, requestBody) }
     }
 
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
