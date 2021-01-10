@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.*
@@ -37,6 +39,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private var binding: BegatewayFragmentCardFormBinding? = null
     private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var activityInfo: ActivityInfo? = null
+    private var nfcAdapter: NfcAdapter? = null
 
     private val cardInputFilterList: Array<InputFilter> = arrayOf(
         inputFilterDigits(BANK_CARD_REGEX),
@@ -88,6 +91,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         false
     ).also {
         activityInfo = requireContext().findDefaultLocalActivityForIntent(intent)
+        nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
         setHasOptionsMenu(true)
         binding = it
     }.root
@@ -141,6 +145,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.begateway_scan_card_menu, menu)
         menu.findItem(R.id.action_scan_camera).isVisible = activityInfo != null
+        menu.findItem(R.id.action_scan_nfc).isVisible = nfcAdapter != null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -381,4 +386,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             true
         }
 
+    private fun isNfcEnable(): Boolean {
+        return context?.packageManager?.hasSystemFeature(PackageManager.FEATURE_NFC) == true
+    }
 }
