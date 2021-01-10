@@ -27,6 +27,7 @@ private const val EXPIRY_DATE_LENGTH = 7
 private const val MIN_LENGTH_NAME = 3
 private const val REQUEST_CODE_SCAN_BANK_CARD = 0x56BD
 private const val BANK_CARD_REGEX = "[^\\d ]*"
+private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 21
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private val minExpiry = Calendar.getInstance()
@@ -218,10 +219,24 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     ::requestFocusToNextVisibleElement,
                     ::isCardExpireLengthAccepted
                 )
-                onExpiryTextChanged(minExpiry.get(Calendar.YEAR))
+                onExpiryTextChanged()
             }
             tietCardExpiryDate.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
+                val firstTwoNumber = minExpiry.get(Calendar.YEAR) / 100
+                val firstTwoNumberDifference =
+                    (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100
+                installMask(
+                    maskFormatWatcher(
+                        "__/${
+                            if (firstTwoNumber == firstTwoNumberDifference) {
+                                firstTwoNumber
+                            } else {
+                                firstTwoNumber / 10
+                            }
+                        }__"
+                    )
+                )
             }
         }
     }
