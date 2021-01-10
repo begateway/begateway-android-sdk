@@ -320,7 +320,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun isCardNumberCorrect(): Boolean =
         binding?.tilCardNumber?.editText
             ?.text?.toString()
-            ?.isCorrectPan(currentCardType.listOfCardNumberSizes) ?: false
+            ?.isCorrectPan(currentCardType.listOfCardNumberSizes, currentCardType.isLunhCheckRequired)
+            ?: false
 
     private fun isExpiryCorrect(): Boolean =
         if (binding?.tilCardExpiryDate?.isVisible == true) {
