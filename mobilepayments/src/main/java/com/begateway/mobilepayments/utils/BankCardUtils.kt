@@ -2,7 +2,9 @@ package com.begateway.mobilepayments.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.widget.doAfterTextChanged
 import com.begateway.mobilepayments.R
+import com.google.android.material.textfield.TextInputLayout
 import java.util.regex.Pattern
 
 private const val MIN_DIGIT = 0
@@ -11,6 +13,15 @@ private const val LAST_DIGIT_MASK = 10
 private const val MAX_DIGIT = 9
 
 private val DIGIT_RANGE = MIN_DIGIT..MAX_DIGIT
+
+internal inline fun TextInputLayout.onCardNumberWatcher(
+    crossinline onCardTypeUpdate: (cardType: CardType) -> Unit,
+) {
+    editText?.doAfterTextChanged {
+        val pan = it?.toString().orEmpty().filter(Char::isDigit)
+        onCardTypeUpdate(CardType.getCardTypeByPan(pan))
+    }
+}
 
 internal fun String.isCorrectPan(listOfSizes: ArrayList<Int>, isLuhnCheckRequired: Boolean) =
     listOfSizes.contains(this.length) && this.filter(Char::isDigit).map(Character::getNumericValue)
@@ -153,8 +164,8 @@ internal enum class CardType(
         R.string.begateway_cvv
     );
 
-    companion object {
-        internal fun getCardTypeByPan(pan: String) =
+    internal companion object {
+        fun getCardTypeByPan(pan: String) =
             values().find {
                 it.regex.matcher(pan).matches()
             } ?: UNKNOWN
