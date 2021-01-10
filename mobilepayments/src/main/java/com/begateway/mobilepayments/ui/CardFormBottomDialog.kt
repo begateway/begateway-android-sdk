@@ -7,29 +7,27 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.WindowManager.LayoutParams.*
+import android.view.*
+import android.view.WindowManager.LayoutParams.FLAG_SECURE
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.widget.addTextChangedListener
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
 import com.begateway.mobilepayments.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.textfield.TextInputLayout
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-private const val MIN_LENGTH_EXPIRY = 7
+private const val EXPIRY_DATE_LENGTH = 7
+private const val MIN_LENGTH_NAME = 3
 private const val REQUEST_CODE_SCAN_BANK_CARD = 0x56BD
 private const val BANK_CARD_REGEX = "[^\\d ]*"
 
@@ -41,13 +39,16 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private var binding: BegatewayFragmentCardFormBinding? = null
     private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var activityInfo: ActivityInfo? = null
-    private val payButtonState: (text: Editable?) -> Unit = { _ ->
-        binding?.mbPay?.isEnabled = isAllFieldCorrect()
-    }
-    private val inputFilterList: Array<InputFilter> = arrayOf(
-        inputFilter(BANK_CARD_REGEX),
-        InputFilter.LengthFilter(currentCardType.maxCardLength)
+
+    private val cardInputFilterList: Array<InputFilter> = arrayOf(
+        inputFilterDigits(BANK_CARD_REGEX),
+        InputFilter.LengthFilter(currentCardType.getMaxCardLength())
     )
+    private val cvcInputFilterList: Array<InputFilter> = arrayOf(
+        inputFilterDigits(BANK_CARD_REGEX),
+        InputFilter.LengthFilter(currentCardType.getMaxCVCLength())
+    )
+    private val inputTypeMask = maskFormatWatcher(currentCardType.maskFormat)
 
     init {
         val year = minExpiry.get(Calendar.YEAR)
@@ -88,21 +89,17 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         container,
         false
     ).also {
+        activityInfo = requireContext().findDefaultLocalActivityForIntent(intent)
+        setHasOptionsMenu(true)
         binding = it
     }.root
 
-    private fun isAllFieldCorrect(): Boolean {
-        return true
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activityInfo = requireContext().findDefaultLocalActivityForIntent(intent)
-        if (Build.VERSION.SDK_INT >= 30) {//чекнуть надо ли это??? и в связке с setDecorFitsSystemWindows должен быть листенер
+        if (Build.VERSION.SDK_INT >= 30) {//чекнуть надо ли это??? и в связке с setDecorFitsSystemWindows должен быть еще листенер
             dialog?.window?.setDecorFitsSystemWindows(false)
-            dialog?.window?.setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         } else {
-            dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE or SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+            dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
         }
         onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             (dialog as? BottomSheetDialog)?.also { dialog ->
@@ -119,7 +116,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
 
         binding?.run {
-            mbPay.isEnabled = isAllFieldCorrect()
+            updateButtonState()
             toolbar.run {
                 (activity as CheckoutActivity?)?.let {
                     it.setToolBar(toolbar, R.color.begateway_primary_black) {
@@ -127,98 +124,17 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     }
                 }
             }
-            tilCardName.editText?.run {
-                addTextChangedListener(afterTextChanged = payButtonState)
-            }
-            tilCardDate.editText?.run {
-                addTextChangedListener(afterTextChanged = payButtonState)
-            }
-            tilCardCvv.editText?.run {
-                addTextChangedListener(afterTextChanged = payButtonState)
-            }
+            mcbSaveCard
         }
         initCardNumberView()
+        initCardNameView()
+        initCardExpireDateView()
+        initCVCView()
+        applyCardTypeValues()
     }
 
-    private fun initCardNumberView() {
-        binding?.run {
-            tilCardNumber.setStartIconTintList(null)
-            tilCardNumber.editText?.run {
-                setOnFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus) {
-                        isCardNumberCorrect()
-                    }
-                }
-                addTextChangedListener(
-                    onTextChanged = { charSequence: CharSequence?, _: Int, _: Int, _: Int ->
-                        val pan = charSequence?.toString() ?: ""
-                        val newCardType = CardType.getCardTypeByPan(pan.filter(Char::isDigit))
-                        if (currentCardType != newCardType) {
-                            currentCardType = newCardType
-                            cardTypeUpdated()
-                        }
-                        setEndCardNumberMode(pan)
-                    },
-                    afterTextChanged = payButtonState
-                )
-                setEndCardNumberMode()
-                cardTypeUpdated()
-                configureForCardNumberInput()
-            }
-
-        }
-    }
-
-    private fun cardTypeUpdated() {
-        binding?.tilCardNumber?.run {
-            editText?.let {
-                inputFilterList[1] = InputFilter.LengthFilter(currentCardType.maxCardLength)
-                it.filters = inputFilterList
-            }
-            startIconDrawable =
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    currentCardType.drawable
-                )
-        }
-    }
-
-    private fun setEndCardNumberMode(cardNumber: String? = null) {
-        binding?.run {
-            if (activityInfo != null && cardNumber.isNullOrEmpty()) {
-                tilCardNumber.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                tilCardNumber.endIconDrawable =
-                    AppCompatResources.getDrawable(
-                        requireContext(),
-                        R.drawable.begateway_ic_scan_card_data
-                    )
-                tilCardNumber.setEndIconOnClickListener {
-                    intent.component =
-                        ComponentName(activityInfo!!.packageName, activityInfo!!.name)
-                    startActivityForResult(intent, REQUEST_CODE_SCAN_BANK_CARD)
-                }
-            } else {
-                if (TextInputLayout.END_ICON_CLEAR_TEXT != tilCardNumber.endIconMode) {
-                    tilCardNumber.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-                }
-            }
-        }
-    }
-
-    private fun isCardNumberCorrect(): Boolean =
-        binding?.tilCardNumber?.editText
-            ?.text?.toString()
-            ?.isCorrectPan(currentCardType.minCardLength..currentCardType.maxCardLength) ?: false
-
-    private fun isExpiryCorrect(): Boolean {
-        val editText = binding?.tilCardDate?.editText
-        return editText?.length() == MIN_LENGTH_EXPIRY &&
-                try {
-                    val text = editText.text?.toString()
-                    !text.isNullOrEmpty() && minExpiry.time < expiryFormat.parse(text)
-                } catch (e: ParseException) {
-                    false
-                }
+    private fun updateButtonState() {
+        binding?.mbPay?.isEnabled = isAllFieldCorrect()
     }
 
     override fun onDestroyView() {
@@ -226,4 +142,198 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         view?.viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
         binding = null
     }
+
+    private fun initCardNumberView() {
+        binding?.run {
+            tilCardNumber.requestFocus()
+            tilCardNumber.setStartIconTintList(null)
+            tilCardNumber.onFocusListener(
+                ::isCardNumberCorrect,
+                getString(R.string.begateway_card_number_invalid)
+            )
+            tilCardNumber.onTextChanged(
+                ::updateButtonState,
+                ::requestFocusToNextVisibleElement,
+                currentCardType.getMaxCardLength()
+            )
+            tietCardNumber.run {
+                onEditorListener(::requestFocusToNextVisibleElement)
+                doOnTextChanged { text, _, _, _ ->
+                    val pan = text?.toString() ?: ""
+                    val newCardType = CardType.getCardTypeByPan(pan.filter(Char::isDigit))
+                    if (currentCardType != newCardType) {
+                        currentCardType = newCardType
+                        applyCardTypeValues()
+                    }
+                }
+                configureForCardNumberInput(inputTypeMask)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.begateway_scan_card_menu, menu)
+        menu.findItem(R.id.action_scan_camera).isVisible = activityInfo != null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_scan_camera -> {
+                intent.component = ComponentName(activityInfo!!.packageName, activityInfo!!.name)
+                startActivityForResult(intent, REQUEST_CODE_SCAN_BANK_CARD)
+                true
+            }
+            R.id.action_scan_nfc -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun initCardNameView() {
+        binding?.run {
+            tilCardName.onFocusListener(
+                ::isCardNameCorrect,
+                getString(R.string.begateway_cardholder_name_required)
+            )
+            tilCardName.onTextChanged(
+                ::updateButtonState,
+                ::requestFocusToNextVisibleElement,
+                null
+            )
+            tietCardName.run {
+                onEditorListener(::requestFocusToNextVisibleElement)
+            }
+        }
+    }
+
+    private fun initCardExpireDateView() {
+        binding?.run {
+            tilCardExpiryDate.apply {
+                onFocusListener(
+                    ::isExpiryCorrect,
+                    getString(R.string.begateway_expiration_invalid)
+                )
+                onTextChanged(
+                    ::updateButtonState,
+                    ::requestFocusToNextVisibleElement,
+                    EXPIRY_DATE_LENGTH
+                )
+            }
+            tietCardExpiryDate.run {
+                onEditorListener(::requestFocusToNextVisibleElement)
+                addTextChangedListener(ExpiryDateTextWatcher())
+            }
+        }
+    }
+
+    private fun initCVCView() {
+        binding?.run {
+            tilCardCvc.apply {
+                onFocusListener(
+                    ::isCVCCorrect,
+                    String.format(
+                        getString(R.string.begateway_cvv_invalid),
+                        getString(currentCardType.securityCodeName)
+                    )
+                )
+                onTextChanged(
+                    ::updateButtonState,
+                    ::requestFocusToNextVisibleElement,
+                    currentCardType.getMaxCVCLength()
+                )
+            }
+
+            tietCvc.onEditorListener(::requestFocusToNextVisibleElement)
+        }
+    }
+
+    private fun applyCardTypeValues() {
+        binding?.run {
+            tilCardNumber.apply {
+                editText?.let {
+                    cardInputFilterList[1] =
+                        InputFilter.LengthFilter(currentCardType.getMaxCardLength())
+                    it.filters = cardInputFilterList
+                }
+                startIconDrawable =
+                    AppCompatResources.getDrawable(
+                        requireContext(),
+                        currentCardType.drawable
+                    )
+            }
+            tilCardCvc.apply {
+                hint = getString(currentCardType.securityCodeName)
+                editText?.let {
+                    cvcInputFilterList[1] =
+                        InputFilter.LengthFilter(currentCardType.getMaxCVCLength())
+                    it.filters = cvcInputFilterList
+                }
+            }
+        }
+    }
+
+    private fun requestFocusToNextVisibleElement(currentElement: EditText): Boolean {
+        binding?.run {
+            val listOfViews = arrayListOf(
+                tietCardNumber,
+                tietCardName,
+                tietCardExpiryDate,
+                tietCvc
+            ).filter { it.isVisible }
+            val listSize = listOfViews.size - 1
+            listOfViews.forEachIndexed { index, view ->
+                if (view == currentElement && listSize > index) {
+                    listOfViews[index + 1].requestFocus()
+                    return true
+                } else if (listSize == index) {
+                    view.clearFocus()
+                    view.hideSoftKeyboard()
+                    return false
+                }
+            }
+        }
+        return false
+    }
+
+    private fun isAllFieldCorrect(): Boolean {
+        return isCardNumberCorrect() && isCardNameCorrect() && isExpiryCorrect() && isCVCCorrect()
+    }
+
+    private fun isCardNameCorrect(): Boolean =
+        if (binding?.tilCardName?.isVisible == true) {
+            (binding?.tilCardName?.editText?.text?.trim()?.length ?: 0) >= MIN_LENGTH_NAME
+        } else {
+            true
+        }
+
+    private fun isCVCCorrect(): Boolean =
+        if (binding?.tilCardCvc?.isVisible == true) {
+            currentCardType.listOfSecurityCodeSizes.contains(
+                binding?.tilCardCvc?.editText?.text?.length ?: 0
+            )
+        } else {
+            true
+        }
+
+    private fun isCardNumberCorrect(): Boolean =
+        binding?.tilCardNumber?.editText
+            ?.text?.toString()
+            ?.isCorrectPan(currentCardType.listOfCardNumberSizes) ?: false
+
+    private fun isExpiryCorrect(): Boolean =
+        if (binding?.tilCardExpiryDate?.isVisible == true) {
+            val editText = binding?.tilCardExpiryDate?.editText
+            editText?.length() == EXPIRY_DATE_LENGTH &&
+                    try {
+                        val text = editText.text?.toString()
+                        !text.isNullOrEmpty() && minExpiry.time < expiryFormat.parse(text)
+                    } catch (e: ParseException) {
+                        false
+                    }
+        } else {
+            true
+        }
+
 }

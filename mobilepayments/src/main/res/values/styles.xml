@@ -54,6 +54,8 @@
     <style name="begateway_Button" parent="Widget.MaterialComponents.Button">
         <item name="materialThemeOverlay">@style/begateway_ThemeOverlay.App.Button</item>
         <item name="android:textAppearance">@style/begateway_TextAppearance.App.Button</item>
+        <item name="colorButtonNormal">@color/begateway_button_tint</item>
+        <item name="android:disabledAlpha">1.0</item>
     </style>
 
     <style name="begateway_ThemeOverlay.App.Button" parent="">
