@@ -12,12 +12,16 @@ private const val MAX_DIGIT = 9
 
 private val DIGIT_RANGE = MIN_DIGIT..MAX_DIGIT
 
-internal fun String.isCorrectPan(listOfSizes: ArrayList<Int>) =
+internal fun String.isCorrectPan(listOfSizes: ArrayList<Int>, isLuhnCheckRequired: Boolean) =
     listOfSizes.contains(this.length) && this.filter(Char::isDigit).map(Character::getNumericValue)
-        .isCorrectPan()
+        .isCorrectPan(isLuhnCheckRequired)
 
-private fun List<Int>.isCorrectPan() =
-    all(DIGIT_RANGE::contains) && checkCardLuhnAlgorithm(this)
+private fun List<Int>.isCorrectPan(isLuhnCheckRequired: Boolean) =
+    all(DIGIT_RANGE::contains) && if (isLuhnCheckRequired) {
+        checkCardLuhnAlgorithm(this)
+    } else {
+        true
+    }
 
 // Simplified version of Luhn algorithm.
 // Implementation is partially taken from
@@ -38,7 +42,7 @@ internal enum class CardType(
     val listOfCardNumberSizes: ArrayList<Int>,//with spaces
     val listOfSecurityCodeSizes: ArrayList<Int>,
     @StringRes val securityCodeName: Int,
-    val isLunhCheckNeeded: Boolean = true,
+    val isLunhCheckRequired: Boolean = true,
     val maskFormat: String = "____ ____ ____ ____ ___"
 ) {
     MIR(
