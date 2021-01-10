@@ -223,16 +223,14 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             }
             tietCardExpiryDate.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
-                val firstTwoNumber = minExpiry.get(Calendar.YEAR) / 100
-                val firstTwoNumberDifference =
-                    (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100
+                val firstTwoNumberOfYear = minExpiry.get(Calendar.YEAR) / 100
                 installMask(
                     maskFormatWatcher(
                         "__/${
-                            if (firstTwoNumber == firstTwoNumberDifference) {
-                                firstTwoNumber
+                            if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
+                                firstTwoNumberOfYear
                             } else {
-                                firstTwoNumber / 10
+                                firstTwoNumberOfYear / 10
                             }
                         }__"
                     )
