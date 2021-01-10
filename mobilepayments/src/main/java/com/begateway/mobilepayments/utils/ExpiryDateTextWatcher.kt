@@ -4,8 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import com.google.android.material.textfield.TextInputLayout
 
-private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 21
-internal fun TextInputLayout.onExpiryTextChanged(year: Int) {
+internal fun TextInputLayout.onExpiryTextChanged() {
     editText?.addTextChangedListener(object : TextWatcher {
         private var previousValue: String? = null
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -21,7 +20,6 @@ internal fun TextInputLayout.onExpiryTextChanged(year: Int) {
                 return
             }
             previousValue = value
-            value = value.filter(Char::isDigit)
             val length = value.length
             value = when {
                 length > 0 -> when (value[0]) {
@@ -29,11 +27,11 @@ internal fun TextInputLayout.onExpiryTextChanged(year: Int) {
                         if (length > 1 && value[1] == '0') {
                             value.substring(0, 1)
                         }
-                        format(value)
+                        value
                     }
                     '1' -> if (length > 1) {
                         when (value[1]) {
-                            '0', '1', '2' -> format(value)
+                            '0', '1', '2' -> value
                             else -> value.substring(0, 1)
                         }
                     } else {
@@ -44,15 +42,6 @@ internal fun TextInputLayout.onExpiryTextChanged(year: Int) {
                 else -> value
             }
             s?.replace(0, s.length, value)
-        }
-
-        private fun format(value: String): String {
-            val length = value.length
-            return if (length > 2) {
-                value.substring(0, 2) + '/' + value.substring(2, length)
-            } else {
-                value
-            }
         }
     })
 }
