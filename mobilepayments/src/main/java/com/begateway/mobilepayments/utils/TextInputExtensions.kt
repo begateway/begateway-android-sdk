@@ -5,42 +5,42 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
-import ru.tinkoff.decoro.MaskImpl
+import ru.tinkoff.decoro.MaskDescriptor
 import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser
-import ru.tinkoff.decoro.watchers.MaskFormatWatcher
+import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 
 internal inline fun TextInputLayout.onFocusListener(
     crossinline isCorrect: () -> Boolean,
-    errorString: String
+    crossinline onError: () -> String
 ) {
-    setOnFocusChangeListener { _, hasFocus ->
+    editText?.setOnFocusChangeListener { _, hasFocus ->
         if (!hasFocus) {
-            this.error = if (isCorrect()) {
+            error = if (isCorrect()) {
                 null
             } else {
-                errorString
+                onError()
             }
         }
     }
-
 }
 
 internal inline fun TextInputLayout.onTextChanged(
-    crossinline updateStates: () -> Unit,
-    crossinline changeFocus: (editText: EditText) -> Boolean,
-    maxLength: Int?
+    crossinline updateViewStates: () -> Unit,
+    noinline changeFocus: (editText: EditText) -> Boolean,
+    crossinline isMaxLengthAccepted: (length: Int) -> Boolean,
 ) {
     editText?.doAfterTextChanged {
-        error = null
-        if (!it.isNullOrEmpty() && it.length == maxLength) {
+        if (editText?.hasFocus() == true)
+            error = null
+        if (!it.isNullOrEmpty() && isMaxLengthAccepted(it.length)) {
             editText?.let { editText -> changeFocus(editText) }
         }
-        updateStates()
+        updateViewStates()
     }
 }
 
-internal inline fun EditText.onEditorListener(
-    crossinline changeFocus: (editText: EditText) -> Boolean,
+internal fun EditText.onEditorListener(
+    changeFocus: (editText: EditText) -> Boolean,
 ) {
     setOnEditorActionListener { _, actionId, _ ->
         when (actionId) {
@@ -52,20 +52,21 @@ internal inline fun EditText.onEditorListener(
     }
 }
 
-internal fun EditText.configureForCardNumberInput(maskFormatWatcher: MaskFormatWatcher): Unit =
-    maskFormatWatcher.installOn(this)
-
 internal fun inputFilterDigits(regex: String) =
     InputFilter { source, start, end, _, _, _ ->
         source.subSequence(start, end).toString().replace(regex.toRegex(), "")
             .trim { it <= ' ' }
     }
 
-internal fun maskFormatWatcher(mask: String) = MaskFormatWatcher(
-    getMaskImpl(mask)
+internal fun EditText.installMask(maskFormatWatcher: DescriptorFormatWatcher): Unit =
+    maskFormatWatcher.installOn(this)
+
+
+internal fun maskFormatWatcher(mask: String) = DescriptorFormatWatcher(
+    getMaskDescriptor(mask)
 )
 
-internal fun getMaskImpl(mask: String) = MaskImpl.createTerminated(
+internal fun getMaskDescriptor(mask: String) = MaskDescriptor.ofSlots(
     UnderscoreDigitSlotsParser()
         .parseSlots(mask)
 )

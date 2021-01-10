@@ -5,17 +5,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.*
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
-import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
 import com.begateway.mobilepayments.utils.*
@@ -96,11 +93,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (Build.VERSION.SDK_INT >= 30) {//чекнуть надо ли это??? и в связке с setDecorFitsSystemWindows должен быть еще листенер
-            dialog?.window?.setDecorFitsSystemWindows(false)
-        } else {
-            dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
-        }
+//        if (Build.VERSION.SDK_INT >= 30) {//чекнуть надо ли это??? и в связке с setDecorFitsSystemWindows должен быть еще листенер
+//            dialog?.window?.setDecorFitsSystemWindows(false)
+//        } else {
+//            dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
+//        }
         onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             (dialog as? BottomSheetDialog)?.also { dialog ->
                 val bottomSheet =
@@ -129,46 +126,14 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         initCardNumberView()
         initCardNameView()
         initCardExpireDateView()
-        initCVCView()
+        initCvcView()
         applyCardTypeValues()
-    }
-
-    private fun updateButtonState() {
-        binding?.mbPay?.isEnabled = isAllFieldCorrect()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         view?.viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
         binding = null
-    }
-
-    private fun initCardNumberView() {
-        binding?.run {
-            tilCardNumber.requestFocus()
-            tilCardNumber.setStartIconTintList(null)
-            tilCardNumber.onFocusListener(
-                ::isCardNumberCorrect,
-                getString(R.string.begateway_card_number_invalid)
-            )
-            tilCardNumber.onTextChanged(
-                ::updateButtonState,
-                ::requestFocusToNextVisibleElement,
-                currentCardType.getMaxCardLength()
-            )
-            tietCardNumber.run {
-                onEditorListener(::requestFocusToNextVisibleElement)
-                doOnTextChanged { text, _, _, _ ->
-                    val pan = text?.toString() ?: ""
-                    val newCardType = CardType.getCardTypeByPan(pan.filter(Char::isDigit))
-                    if (currentCardType != newCardType) {
-                        currentCardType = newCardType
-                        applyCardTypeValues()
-                    }
-                }
-                configureForCardNumberInput(inputTypeMask)
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -191,17 +156,51 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         }
     }
 
+    private fun updateButtonState() {
+        binding?.mbPay?.isEnabled = isAllFieldCorrect()
+    }
+
+    private fun initCardNumberView() {
+        binding?.run {
+            tilCardNumber.apply {
+                requestFocus()
+                setStartIconTintList(null)
+                onFocusListener(
+                    ::isCardNumberCorrect
+                ) { getString(R.string.begateway_card_number_invalid) }
+                onTextChanged(
+                    ::updateButtonState,
+                    ::requestFocusToNextVisibleElement,
+                    ::isCardMaxLengthAccepted
+                )
+                onCardNumberWatcher(
+                    ::setCardType
+                )
+            }
+
+            tietCardNumber.run {
+                onEditorListener(::requestFocusToNextVisibleElement)
+                installMask(inputTypeMask)
+            }
+        }
+    }
+
+    private fun isCardMaxLengthAccepted(length: Int) = currentCardType.getMaxCardLength() == length
+
     private fun initCardNameView() {
         binding?.run {
-            tilCardName.onFocusListener(
-                ::isCardNameCorrect,
-                getString(R.string.begateway_cardholder_name_required)
-            )
-            tilCardName.onTextChanged(
-                ::updateButtonState,
-                ::requestFocusToNextVisibleElement,
-                null
-            )
+            tilCardName.apply {
+                onFocusListener(
+                    ::isCardNameCorrect
+                ) { getString(R.string.begateway_cardholder_name_required) }
+                onTextChanged(
+                    ::updateButtonState,
+                    ::requestFocusToNextVisibleElement,
+                ) {
+                    false
+                }
+            }
+
             tietCardName.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
             }
@@ -212,40 +211,52 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         binding?.run {
             tilCardExpiryDate.apply {
                 onFocusListener(
-                    ::isExpiryCorrect,
-                    getString(R.string.begateway_expiration_invalid)
-                )
+                    ::isExpiryCorrect
+                ) { getString(R.string.begateway_expiration_invalid) }
                 onTextChanged(
                     ::updateButtonState,
                     ::requestFocusToNextVisibleElement,
-                    EXPIRY_DATE_LENGTH
+                    ::isCardExpireLengthAccepted
                 )
+                onExpiryTextChanged(minExpiry.get(Calendar.YEAR))
             }
             tietCardExpiryDate.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
-                addTextChangedListener(ExpiryDateTextWatcher())
             }
         }
     }
 
-    private fun initCVCView() {
+    private fun isCardExpireLengthAccepted(length: Int) = EXPIRY_DATE_LENGTH == length
+
+    private fun initCvcView() {
         binding?.run {
             tilCardCvc.apply {
                 onFocusListener(
                     ::isCVCCorrect,
-                    String.format(
-                        getString(R.string.begateway_cvv_invalid),
-                        getString(currentCardType.securityCodeName)
-                    )
+                    ::getCvcError
                 )
                 onTextChanged(
                     ::updateButtonState,
                     ::requestFocusToNextVisibleElement,
-                    currentCardType.getMaxCVCLength()
+                    ::isCardCvcLengthAccepted
                 )
             }
 
             tietCvc.onEditorListener(::requestFocusToNextVisibleElement)
+        }
+    }
+
+    private fun isCardCvcLengthAccepted(length: Int) = currentCardType.getMaxCVCLength() == length
+
+    private fun getCvcError() = String.format(
+        getString(R.string.begateway_cvv_invalid),
+        getString(currentCardType.securityCodeName)
+    )
+
+    private fun setCardType(cardType: CardType) {
+        if (currentCardType != cardType) {
+            currentCardType = cardType
+            applyCardTypeValues()
         }
     }
 
@@ -256,6 +267,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     cardInputFilterList[1] =
                         InputFilter.LengthFilter(currentCardType.getMaxCardLength())
                     it.filters = cardInputFilterList
+                    inputTypeMask.changeMask(
+                        getMaskDescriptor(currentCardType.maskFormat).setInitialValue(
+                            it.text.toString()
+                        )
+                    )
                 }
                 startIconDrawable =
                     AppCompatResources.getDrawable(
@@ -264,11 +280,20 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     )
             }
             tilCardCvc.apply {
-                hint = getString(currentCardType.securityCodeName)
-                editText?.let {
-                    cvcInputFilterList[1] =
-                        InputFilter.LengthFilter(currentCardType.getMaxCVCLength())
-                    it.filters = cvcInputFilterList
+                if (isVisible) {
+                    hint = getString(currentCardType.securityCodeName)
+                    editText?.let {
+                        cvcInputFilterList[1] =
+                            InputFilter.LengthFilter(currentCardType.getMaxCVCLength())
+                        it.filters = cvcInputFilterList
+                        if (!it.text.isNullOrEmpty()) {
+                            error = if (isCVCCorrect()) {
+                                null
+                            } else {
+                                getCvcError()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -277,19 +302,22 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun requestFocusToNextVisibleElement(currentElement: EditText): Boolean {
         binding?.run {
             val listOfViews = arrayListOf(
-                tietCardNumber,
-                tietCardName,
-                tietCardExpiryDate,
-                tietCvc
-            ).filter { it.isVisible }
+                tilCardNumber,
+                tilCardName,
+                tilCardExpiryDate,
+                tilCardCvc
+            )
+                .filter { it.isVisible }
+                .map { it.editText }
             val listSize = listOfViews.size - 1
             listOfViews.forEachIndexed { index, view ->
                 if (view == currentElement && listSize > index) {
-                    listOfViews[index + 1].requestFocus()
+                    view.clearFocus()
+                    listOfViews[index + 1]?.requestFocus()
                     return true
                 } else if (listSize == index) {
-                    view.clearFocus()
-                    view.hideSoftKeyboard()
+                    view?.clearFocus()
+                    view?.hideSoftKeyboard()
                     return false
                 }
             }
@@ -320,7 +348,10 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun isCardNumberCorrect(): Boolean =
         binding?.tilCardNumber?.editText
             ?.text?.toString()
-            ?.isCorrectPan(currentCardType.listOfCardNumberSizes, currentCardType.isLunhCheckRequired)
+            ?.isCorrectPan(
+                currentCardType.listOfCardNumberSizes,
+                currentCardType.isLunhCheckRequired
+            )
             ?: false
 
     private fun isExpiryCorrect(): Boolean =
