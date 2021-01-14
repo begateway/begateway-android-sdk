@@ -36,6 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/action_get_token"/>
+        <Button
+            android:id="@+id/b_pay_with_credit_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_with_card"/>
 
     </LinearLayout>
 

@@ -79,7 +79,7 @@ internal enum class CardType(
     ),
     VISA_ELECTRON(
         Pattern.compile("^4(026|17500|405|508|844|91[37])\\d*"),
-        R.drawable.begateway_ic_visa,
+        R.drawable.begateway_ic_visa_electron,
         arrayListOf(19, 23),
         arrayListOf(3),
         R.string.begateway_cvv
@@ -122,14 +122,14 @@ internal enum class CardType(
     ),
     DANKORT(
         Pattern.compile("^5019\\d*"),
-        R.drawable.begateway_ic_jcb,
+        R.drawable.begateway_ic_dankort,
         arrayListOf(19),
         arrayListOf(3),
         R.string.begateway_cvv
     ),
     FORBRUGSFORENINGEN(
         Pattern.compile("^600\\d*"),
-        R.drawable.begateway_ic_jcb,
+        R.drawable.begateway_ic_forbrugsforeningen,
         arrayListOf(19),
         arrayListOf(3),
         R.string.begateway_cvv
@@ -164,13 +164,13 @@ internal enum class CardType(
         R.string.begateway_cvv
     );
 
-    internal companion object {
+    companion object {
         fun getCardTypeByPan(pan: String) =
             values().find {
                 it.regex.matcher(pan).matches()
             } ?: UNKNOWN
     }
 
-    internal fun getMaxCardLength() = listOfCardNumberSizes.last()
-    internal fun getMaxCVCLength() = listOfSecurityCodeSizes.last()
+    fun getMaxCardLength() = listOfCardNumberSizes.last()
+    fun getMaxCVCLength() = listOfSecurityCodeSizes.last()
 }

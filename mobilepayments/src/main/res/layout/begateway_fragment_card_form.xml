@@ -41,8 +41,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="number|textNoSuggestions"
                     android:maxLength="23"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/tiet_card_name" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -62,8 +61,7 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textCapCharacters"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/til_card_date" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -84,8 +82,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="number|textNoSuggestions"
                     android:maxLength="7"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/tiet_cvc" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.Guideline
