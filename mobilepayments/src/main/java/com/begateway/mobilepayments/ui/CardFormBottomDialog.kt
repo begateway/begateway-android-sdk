@@ -1,26 +1,31 @@
 package com.begateway.mobilepayments.ui
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.*
-import android.view.WindowManager.LayoutParams.FLAG_SECURE
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.begateway.mobilepayments.R
+import com.begateway.mobilepayments.cardscanner.ui.NfcScannerActivity
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
+import com.begateway.mobilepayments.model.CardData
 import com.begateway.mobilepayments.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,10 +37,12 @@ private const val BANK_CARD_REGEX = "[^\\d ]*"
 private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 21
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment() {
+
     private val minExpiry = Calendar.getInstance()
     private var currentCardType: CardType = CardType.EMPTY
     private val intent = Intent("com.begateway.mobilepayments.action.SCAN_BANK_CARD")
-    private val expiryFormat = SimpleDateFormat("MM/yyyy", Locale.US)
+    private val expiryFormat =
+        SimpleDateFormat(CardData.EXPIRY_DATE_FORMAT_FULL, Locale.US)
     private var binding: BegatewayFragmentCardFormBinding? = null
     private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var activityInfo: ActivityInfo? = null
@@ -49,7 +56,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         inputFilterDigits(BANK_CARD_REGEX),
         InputFilter.LengthFilter(currentCardType.getMaxCVCLength())
     )
-    private val inputTypeMask = maskFormatWatcher(currentCardType.maskFormat)
+    private var cardNumberInputTypeMask: DescriptorFormatWatcher? = null
+    private var expiryDateTypeMask: DescriptorFormatWatcher? = null
 
     init {
         val year = minExpiry.get(Calendar.YEAR)
@@ -62,11 +70,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activity?.window?.addFlags(FLAG_SECURE)
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 
     override fun onDetach() {
-        activity?.window?.clearFlags(FLAG_SECURE)
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         super.onDetach()
     }
 
@@ -98,11 +106,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        if (Build.VERSION.SDK_INT >= 30) {//чекнуть надо ли это??? и в связке с setDecorFitsSystemWindows должен быть еще листенер
-//            dialog?.window?.setDecorFitsSystemWindows(false)
-//        } else {
-//            dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
-//        }
         onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             (dialog as? BottomSheetDialog)?.also { dialog ->
                 val bottomSheet =
@@ -120,8 +123,18 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         binding?.run {
             updateButtonState()
             toolbar.run {
-                (activity as CheckoutActivity?)?.let {
-                    it.setToolBar(toolbar, R.color.begateway_primary_black) {
+                (activity as AbstractActivity?)?.let {
+                    it.setToolBar(
+                        toolbar,
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.begateway_primary_black
+                        ),
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.begateway_color_accent
+                        )
+                    ) {
                         dismissAllowingStateLoss()
                     }
                 }
@@ -139,6 +152,45 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         super.onDestroyView()
         view?.viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
         binding = null
+        nfcAdapter = null
+        cardNumberInputTypeMask = null
+        expiryDateTypeMask = null
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            REQUEST_CODE_SCAN_BANK_CARD -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    applyCardDataFromIntent(data)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun applyCardDataFromIntent(data: Intent?) {
+        CardData.getDataFromIntent(data)?.let {
+            binding?.apply {
+                val pan = it.cardNumber.orEmpty().filter(Char::isDigit)
+                setCardType(CardType.getCardTypeByPan(pan))
+                tietCardNumber.setText(pan)
+                tietCardNumber.onFocusChangeListener?.onFocusChange(
+                    tietCardNumber,
+                    false
+                )
+                tietCardName.setText(it.cardHolderName)
+                tietCardName.onFocusChangeListener?.onFocusChange(tietCardName, false)
+                expiryDateTypeMask?.removeFromTextView()
+                tietCardExpiryDate.setText(CardData.getExpiryDateString(it.expiryDate))
+                tietCardExpiryDate.onFocusChangeListener?.onFocusChange(
+                    tietCardExpiryDate,
+                    false
+                )
+                expiryDateTypeMask?.let { tietCardExpiryDate.installMask(it) }
+                tietCvc.setText(it.cvcCode)
+                tietCvc.onFocusChangeListener?.onFocusChange(tietCvc, false)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -156,6 +208,12 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                 true
             }
             R.id.action_scan_nfc -> {
+                activity?.let {
+                    startActivityForResult(
+                        NfcScannerActivity.getIntent(it),
+                        REQUEST_CODE_SCAN_BANK_CARD
+                    )
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -186,7 +244,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
             tietCardNumber.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
-                installMask(inputTypeMask)
+                cardNumberInputTypeMask = maskFormatWatcher(currentCardType.maskFormat)
+                installMask(cardNumberInputTypeMask!!)
             }
         }
     }
@@ -229,17 +288,16 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             tietCardExpiryDate.run {
                 onEditorListener(::requestFocusToNextVisibleElement)
                 val firstTwoNumberOfYear = minExpiry.get(Calendar.YEAR) / 100
-                installMask(
-                    maskFormatWatcher(
-                        "__/${
-                            if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
-                                firstTwoNumberOfYear
-                            } else {
-                                firstTwoNumberOfYear / 10
-                            }
-                        }__"
-                    )
+                expiryDateTypeMask = maskFormatWatcher(
+                    "__/${
+                        if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
+                            "${firstTwoNumberOfYear}__"
+                        } else {
+                            "${firstTwoNumberOfYear / 10}___"
+                        }
+                    }"
                 )
+                installMask(expiryDateTypeMask!!)
             }
         }
     }
@@ -285,7 +343,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     cardInputFilterList[1] =
                         InputFilter.LengthFilter(currentCardType.getMaxCardLength())
                     it.filters = cardInputFilterList
-                    inputTypeMask.changeMask(
+                    cardNumberInputTypeMask?.changeMask(
                         getMaskDescriptor(currentCardType.maskFormat).setInitialValue(
                             it.text.toString()
                         )
@@ -319,24 +377,27 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun requestFocusToNextVisibleElement(currentElement: EditText): Boolean {
         binding?.run {
+            var wrongFilledField: EditText? = null
             val listOfViews = arrayListOf(
                 tilCardNumber,
                 tilCardName,
                 tilCardExpiryDate,
                 tilCardCvc
-            )
-                .filter { it.isVisible }
-                .map { it.editText }
+            ).filter { it.isVisible }
             val listSize = listOfViews.size - 1
             listOfViews.forEachIndexed { index, view ->
-                if (view == currentElement && listSize > index) {
-                    view.clearFocus()
-                    listOfViews[index + 1]?.requestFocus()
+                val editText = view.editText
+                if (wrongFilledField == null && (editText?.text.isNullOrEmpty() || !view.error.isNullOrEmpty())) {
+                    wrongFilledField = editText
+                }
+                if (editText == currentElement && listSize > index) {
+                    editText.clearFocus()
+                    listOfViews[index + 1].editText?.requestFocus()
                     return true
                 } else if (listSize == index) {
-                    view?.clearFocus()
-                    view?.hideSoftKeyboard()
-                    return false
+                    editText?.clearFocus()
+                    wrongFilledField?.requestFocus() ?: editText?.hideSoftKeyboard()
+                    return wrongFilledField != null
                 }
             }
         }
@@ -386,7 +447,4 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             true
         }
 
-    private fun isNfcEnable(): Boolean {
-        return context?.packageManager?.hasSystemFeature(PackageManager.FEATURE_NFC) == true
-    }
 }

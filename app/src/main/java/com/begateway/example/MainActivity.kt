@@ -1,6 +1,5 @@
 package com.begateway.example
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -10,10 +9,11 @@ import com.begateway.mobilepayments.PaymentSdkBuilder
 import com.begateway.mobilepayments.model.TransactionType
 import com.begateway.mobilepayments.model.network.request.*
 import com.begateway.mobilepayments.network.HttpResult
-import com.begateway.mobilepayments.ui.CheckoutActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
+private const val REQUEST_PAY_WITH_CARD = 1
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -26,15 +26,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sdk = PaymentSdkBuilder()
-//                .setTestMode(true)
             .setDebugMode(true)
             .setEndpoint("https://checkout.begateway.com/ctp/api/")
-//                .setPublicKey(TestData.PUBLIC_KEY_3D_ON)
             .build()
 
         initView()
         listeners()
-        startActivity(Intent(this, CheckoutActivity::class.java))
     }
 
     private fun initView() {
@@ -44,6 +41,9 @@ class MainActivity : AppCompatActivity() {
     private fun listeners() {
         binding.bGetToken.setOnClickListener {
             getPaymentToken()
+        }
+        binding.bPayWithCreditCard.setOnClickListener {
+            startActivityForResult(PaymentSdk.getCardFormIntent(this), REQUEST_PAY_WITH_CARD)
         }
     }
 
