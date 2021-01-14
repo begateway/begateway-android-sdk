@@ -7,11 +7,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.nfc.NfcAdapter
-import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.*
-import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
