@@ -15,7 +15,8 @@ class ScanBankCardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val scanIntent = Intent(this, CardIOActivity::class.java)
-        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true)
+        scanIntent.putExtra(CardIOActivity.EXTRA_SCAN_EXPIRY, true)
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CARDHOLDER_NAME, true)
         startActivityForResult(scanIntent, REQUEST_CODE)
     }
 
