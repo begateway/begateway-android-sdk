@@ -1,14 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.begateway.mobilepayments" >
+    package="com.begateway.mobilepayments">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
 
-        <activity android:name="com.begateway.mobilepayments.BaseCardFormActivity"
+        <activity
+            android:name="com.begateway.mobilepayments.BaseCardFormActivity"
             android:configChanges="orientation"
             android:screenOrientation="sensor"
             android:theme="@style/begateway_form_fullscreen" />
 
+        <activity android:name="com.begateway.mobilepayments.WebViewActivity" />
     </application>
 
 </manifest>
