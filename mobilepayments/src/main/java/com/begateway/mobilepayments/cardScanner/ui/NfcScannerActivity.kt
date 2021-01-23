@@ -1,11 +1,9 @@
-package com.begateway.mobilepayments.cardscanner.ui
+package com.begateway.mobilepayments.cardScanner.ui
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayNfcScannerActivityBinding
 import com.begateway.mobilepayments.model.CardData
 import com.begateway.mobilepayments.ui.AbstractActivity
@@ -30,11 +28,7 @@ internal class NfcScannerActivity : AbstractActivity(), NfcCallbacks, NfcClarify
             }
             setToolBar(
                 toolbar,
-                ContextCompat.getColor(this@NfcScannerActivity, R.color.begateway_primary_black),
-                ContextCompat.getColor(this@NfcScannerActivity, R.color.begateway_color_accent)
-            ) {
-                onBackPressed()
-            }
+            )
         }
         NfcAutoRecognizer(this, this).registerClarifyCallbacks(this)
     }

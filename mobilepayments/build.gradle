@@ -35,8 +35,6 @@ android {
     }
 }
 
-def retrofit_version = '2.9.0'
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.core:core-ktx:$ktx"
@@ -49,6 +47,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor"
     implementation "ru.tinkoff.core:core-nfc:$core_nfc"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle"
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
