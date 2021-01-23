@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.model.network.request
+package com.begateway.mobilepayments.model
 
 import com.google.gson.annotations.SerializedName
 

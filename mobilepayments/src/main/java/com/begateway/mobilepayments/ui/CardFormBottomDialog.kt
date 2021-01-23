@@ -2,7 +2,6 @@ package com.begateway.mobilepayments.ui
 
 import android.app.Activity
 import android.content.ComponentName
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -13,16 +12,23 @@ import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import com.begateway.mobilepayments.PaymentSdk
 import com.begateway.mobilepayments.R
-import com.begateway.mobilepayments.cardscanner.ui.NfcScannerActivity
+import com.begateway.mobilepayments.cardScanner.ui.NfcScannerActivity
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
 import com.begateway.mobilepayments.model.CardData
+import com.begateway.mobilepayments.model.CreditCard
+import com.begateway.mobilepayments.model.PaymentMethodType
+import com.begateway.mobilepayments.model.Request
+import com.begateway.mobilepayments.model.network.request.PaymentRequest
+import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -56,6 +62,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     )
     private var cardNumberInputTypeMask: DescriptorFormatWatcher? = null
     private var expiryDateTypeMask: DescriptorFormatWatcher? = null
+    private lateinit var cardData: CardData
 
     init {
         val year = minExpiry.get(Calendar.YEAR)
@@ -66,25 +73,17 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         setStyle(STYLE_NO_FRAME, R.style.begateway_MainDialogTheme)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    }
-
-    override fun onDetach() {
-        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        super.onDetach()
-    }
-
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        activity?.finish()
+        if (!isStateSaved)
+            activity?.finish()
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         view?.hideSoftKeyboard()
         super.onDismiss(dialog)
-        activity?.finish()
+        if (!isStateSaved)
+            activity?.finish()
     }
 
     override fun onCreateView(
@@ -123,27 +122,52 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             toolbar.run {
                 (activity as AbstractActivity?)?.let {
                     it.setToolBar(
-                        toolbar,
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.begateway_primary_black
-                        ),
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.begateway_color_accent
-                        )
+                        toolbar
                     ) {
                         dismissAllowingStateLoss()
                     }
                 }
             }
-            mcbSaveCard
+            mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
+                PaymentSdk.instance.isSaveCard = isChecked
+            }
+            mbPay.setOnClickListener {
+                pay()
+            }
         }
         initCardNumberView()
         initCardNameView()
         initCardExpireDateView()
         initCvcView()
         applyCardTypeValues()
+    }
+
+    private fun pay() {
+        lifecycleScope.launch {
+            val paymentSdk = PaymentSdk.instance
+            val result = paymentSdk.payWithCard(
+                PaymentRequest(
+                    Request(
+                        paymentSdk.checkoutWithTokenData.checkout.token,
+                        PaymentMethodType.CREDIT_CARD,
+                        CreditCard(
+                            cardNumber = cardData.cardNumber,
+                            verificationValue = cardData.cvcCode,
+                            holderName = cardData.cardHolderName,
+                            expMonth = cardData.getMonth(),
+                            expYear = cardData.getYear()
+                        )
+                    )
+                )
+            )
+            when (result) {
+                is HttpResult.Success -> result.data
+                is HttpResult.UnSuccess -> result.bepaidResponse
+                is HttpResult.Error -> {
+
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -179,7 +203,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                 tietCardName.setText(it.cardHolderName)
                 tietCardName.onFocusChangeListener?.onFocusChange(tietCardName, false)
                 expiryDateTypeMask?.removeFromTextView()
-                tietCardExpiryDate.setText(CardData.getExpiryDateString(it.expiryDate))
+                tietCardExpiryDate.setText(CardData.getExpiryDateStringForView(it.expiryDate))
                 tietCardExpiryDate.onFocusChangeListener?.onFocusChange(
                     tietCardExpiryDate,
                     false
@@ -219,7 +243,25 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     }
 
     private fun updateButtonState() {
-        binding?.mbPay?.isEnabled = isAllFieldCorrect()
+        binding?.apply {
+            mbPay.isEnabled = isAllFieldCorrect()
+            if (mbPay.isEnabled) {
+                cardData = CardData(
+                    if (tilCardNumber.isVisible) {
+                        tietCardNumber.text?.toString()
+                    } else null,
+                    if (tilCardName.isVisible) {
+                        tietCardName.text?.toString()
+                    } else null,
+                    if (tilCardExpiryDate.isVisible) {
+                        CardData.getExpiryDateFromString(tietCardExpiryDate.text?.toString())
+                    } else null,
+                    if (tilCardCvc.isVisible) {
+                        tietCvc.text?.toString()
+                    } else null,
+                )
+            }
+        }
     }
 
     private fun initCardNumberView() {
@@ -422,14 +464,25 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             true
         }
 
-    private fun isCardNumberCorrect(): Boolean =
-        binding?.tilCardNumber?.editText
-            ?.text?.toString()
-            ?.isCorrectPan(
-                currentCardType.listOfCardNumberSizes,
-                currentCardType.isLunhCheckRequired
-            )
-            ?: false
+    private fun isCardNumberCorrect(): Boolean {
+        val brands = PaymentSdk.instance.checkoutWithTokenData.checkout.brands
+        return if (brands.isNullOrEmpty()) {
+            true
+        } else {
+            brands.asSequence().map { it.name }
+                .find {
+                    currentCardType.name.equals(it, true)
+                } != null
+        }
+                &&
+                binding?.tilCardNumber?.editText
+                    ?.text?.toString()
+                    ?.isCorrectPan(
+                        currentCardType.listOfCardNumberSizes,
+                        currentCardType.isLunhCheckRequired
+                    )
+                ?: false
+    }
 
     private fun isExpiryCorrect(): Boolean =
         if (binding?.tilCardExpiryDate?.isVisible == true) {

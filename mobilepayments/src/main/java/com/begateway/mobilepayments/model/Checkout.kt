@@ -1,7 +1,5 @@
-package com.begateway.mobilepayments.model.network.request
+package com.begateway.mobilepayments.model
 
-import com.begateway.mobilepayments.model.*
-import com.begateway.mobilepayments.model.network.ReadOnly
 import com.google.gson.annotations.SerializedName
 
 class Checkout(
@@ -60,6 +58,7 @@ class CustomerFields(
 ) : AdditionalFields()
 
 class Customer(
+    @SerializedName("ip") val ip: String? = null,
     @SerializedName("email") val email: String? = null,
     @SerializedName("first_name") val firstName: String? = null,
     @SerializedName("last_name") val lastName: String? = null,
@@ -70,6 +69,7 @@ class Customer(
     @SerializedName("phone") val phone: String? = null,
     @SerializedName("birth_date") val birthDate: String? = null,
     @SerializedName("country") val country: String? = null,
+    @SerializedName("device_id") val deviceId: String? = null,
 ) : AdditionalFields()
 
 class PaymentMethod(
@@ -86,7 +86,12 @@ class Erip(
 ) : AdditionalFields()
 
 class CreditCard(
-    @SerializedName("token") val token: String,
+    @SerializedName("number") val cardNumber: String? = null,
+    @SerializedName("verification_value") val verificationValue: String? = null,
+    @SerializedName("holder") val holderName: String? = null,
+    @SerializedName("exp_month") val expMonth: String? = null,
+    @SerializedName("exp_year") val expYear: String? = null,
+    @SerializedName("token") val token: String? = null,
 ) : AdditionalFields()
 
 class Travel(

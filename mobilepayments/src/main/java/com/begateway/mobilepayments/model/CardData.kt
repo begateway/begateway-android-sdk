@@ -17,14 +17,15 @@ internal data class CardData(
     companion object {
         const val EXPIRY_DATE_FORMAT_FULL = "MM/yyyy"
         private const val EXPIRY_DATE_FORMAT_SMALL = "MM/yy"
+        private const val EXPIRY_MONTH = "MM"
+        private const val EXPIRY_YEAR = "yyyy"
         private const val EXTRA_CARD = "card_extra"
 
-        fun getExpiryDateString(date: Date?) = date?.let {
+        fun getExpiryDateStringForView(date: Date?) = date?.let {
             SimpleDateFormat(EXPIRY_DATE_FORMAT_FULL, Locale.US).format(it)
         }
 
-
-        private fun getExpiryDateFromString(string: String?): Date? {
+        fun getExpiryDateFromString(string: String?): Date? {
             string ?: return null
             return try {
                 SimpleDateFormat(
@@ -61,23 +62,26 @@ internal data class CardData(
             cardHolderName: String? = null,
             expiryString: String? = null,
             cvcCode: String? = null
-        ): Intent {
-            return Intent().apply {
-                putExtra(
-                    EXTRA_CARD, CardData(
-                        cardNumber,
-                        cardHolderName,
-                        getExpiryDateFromString(expiryString),
-                        cvcCode
-                    )
+        ) = Intent().apply {
+            putExtra(
+                EXTRA_CARD, CardData(
+                    cardNumber,
+                    cardHolderName,
+                    getExpiryDateFromString(expiryString),
+                    cvcCode
                 )
-            }
+            )
         }
 
-        internal fun getCardDataFromIntent(intent: Intent?): CardData? {
-            return intent?.getParcelableExtra(EXTRA_CARD)
-        }
 
         fun getDataFromIntent(intent: Intent?): CardData? = intent?.getParcelableExtra(EXTRA_CARD)
+    }
+
+    fun getMonth(): String? = expiryDate?.let {
+        SimpleDateFormat(EXPIRY_MONTH, Locale.US).format(it)
+    }
+
+    fun getYear(): String? = expiryDate?.let {
+        SimpleDateFormat(EXPIRY_YEAR, Locale.US).format(it)
     }
 }

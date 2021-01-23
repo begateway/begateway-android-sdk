@@ -4,4 +4,5 @@
     <string name="action_get_token" translatable="false">get token</string>
     <string name="msg_use_3d" translatable="false">3d security</string>
     <string name="pay_with_card" translatable="false">Pay with card</string>
+    <string name="pay_with_checkout" translatable="false">Pay with checkout</string>
 </resources>

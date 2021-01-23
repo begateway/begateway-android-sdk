@@ -5,27 +5,17 @@ import android.content.Intent
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.model.CardData
 import com.begateway.mobilepayments.model.PaymentSdkSettings
-import com.begateway.mobilepayments.model.network.request.GetPaymentTokenRequest
+import com.begateway.mobilepayments.model.network.request.PaymentRequest
+import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
+import com.begateway.mobilepayments.model.network.response.BepaidResponse
+import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
 import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.network.Rest
 import com.begateway.mobilepayments.ui.CheckoutActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PaymentSdk private constructor() {
-    private lateinit var settings: PaymentSdkSettings
-    private lateinit var rest: Rest
-
-    internal fun applySettings(settings: PaymentSdkSettings) {
-        this.settings = settings
-        rest = Rest(settings.endpoint, settings.isDebugMode)
-    }
-
-    suspend fun getPaymentToken(
-        publicKey: String,
-        requestBody: GetPaymentTokenRequest
-    ): HttpResult<Any> {
-        return rest.getPaymentToken(publicKey, requestBody)
-    }
-
     companion object {
         @[JvmStatic Keep]
         fun getCardFormIntent(context: Context) =
@@ -59,7 +49,37 @@ class PaymentSdk private constructor() {
             cvcCode
         )
 
-        @JvmStatic
-        internal var instance = PaymentSdk()
+        internal val instance = PaymentSdk()
     }
+
+    internal lateinit var settings: PaymentSdkSettings
+    private lateinit var rest: Rest
+    internal var isSaveCard: Boolean = false
+    internal val isSdkInitialized: Boolean
+        get() = ::checkoutWithTokenData.isInitialized
+    lateinit var checkoutWithTokenData: CheckoutWithTokenData
+
+    internal fun applySettings(settings: PaymentSdkSettings) {
+        this.settings = settings
+        rest = Rest(settings.endpoint, settings.isDebugMode)
+    }
+
+    @Keep
+    suspend fun getPaymentToken(
+        requestBody: TokenCheckoutData
+    ): HttpResult<CheckoutWithTokenData> {
+        val paymentToken = rest.getPaymentToken(settings.publicKey, requestBody)
+        when (paymentToken) {
+            is HttpResult.Success -> checkoutWithTokenData = paymentToken.data
+        }
+        return paymentToken
+    }
+
+    @Keep
+    suspend fun payWithCard(
+        requestBody: PaymentRequest
+    ): HttpResult<BepaidResponse> {
+        return rest.payWithCard(settings.publicKey, requestBody)
+    }
+
 }
