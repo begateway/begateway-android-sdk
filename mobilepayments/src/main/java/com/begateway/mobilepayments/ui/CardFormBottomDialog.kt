@@ -36,7 +36,7 @@ private const val EXPIRY_DATE_LENGTH = 7
 private const val MIN_LENGTH_NAME = 3
 private const val REQUEST_CODE_SCAN_BANK_CARD = 0x56BD
 private const val BANK_CARD_REGEX = "[^\\d ]*"
-private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 21
+private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 30
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
