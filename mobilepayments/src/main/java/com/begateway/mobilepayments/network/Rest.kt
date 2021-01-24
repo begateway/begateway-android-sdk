@@ -42,20 +42,28 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
         api = retrofit.create(Api::class.java)
     }
 
-    internal suspend fun getPaymentToken(
+    suspend fun getPaymentToken(
         publicKey: String,
         requestBody: TokenCheckoutData
     ): HttpResult<CheckoutWithTokenData> {
         return safeApiCall { api.getPaymentToken(BEARER_AUTH_STRING + publicKey, requestBody) }
     }
 
-    internal suspend fun payWithCard(
+    suspend fun payWithCard(
         publicKey: String,
         requestBody: PaymentRequest
     ): HttpResult<BepaidResponse> {
         return safeApiCall { api.payWithCard(BEARER_AUTH_STRING + publicKey, requestBody) }
     }
 
+    suspend fun getPaymentStatus(
+        publicKey: String,
+        token: String
+    ): HttpResult<BepaidResponse> {
+        return safeApiCall { api.getPaymentStatus(BEARER_AUTH_STRING + publicKey, token) }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
         return try {
             val response = call()

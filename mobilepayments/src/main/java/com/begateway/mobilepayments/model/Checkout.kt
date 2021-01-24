@@ -38,9 +38,7 @@ class CardOnFile(
 
 class Settings(
     /** If returnUrl defined, then successUrl and declineUrl could be ignored. Use only with header "X-Api-Version: 2" */
-    @SerializedName("return_url") val returnUrl: String? = null,
-    @SerializedName("success_url") val successUrl: String? = null,
-    @SerializedName("decline_url") val declineUrl: String? = null,
+    @SerializedName("return_url") val returnUrl: String,
     @SerializedName("fail_url") val failUrl: String? = null,
     @SerializedName("cancel_url") val cancelUrl: String? = null,
     @SerializedName("notification_url") val notificationUrl: String? = null,

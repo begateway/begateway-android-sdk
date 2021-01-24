@@ -19,10 +19,13 @@ internal class WebViewActivity : AbstractActivity() {
             }
     }
 
+    private var isCorrect: Boolean = false
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BegatewayWebViewActivityBinding.inflate(layoutInflater).apply {
+            setContentView(root)
             setToolBar(toolbar)
             webView.settings.javaScriptEnabled = true
             webView.settings.allowFileAccess = true
@@ -34,11 +37,17 @@ internal class WebViewActivity : AbstractActivity() {
 
                 override fun onPageFinished(view: WebView, url: String) {
                     if (url.contains(PaymentSdk.instance.settings.returnUrl, true)) {
+                        isCorrect = true
                         finish()
                     }
                 }
             }
             webView.loadUrl(intent.getStringExtra(THREE_DS_URL)!!)
         }
+    }
+
+    override fun onDestroy() {
+        PaymentSdk.instance.onThreeDSecureFinished(isCorrect)
+        super.onDestroy()
     }
 }
