@@ -5,7 +5,8 @@ enum class ResponseStatus(val status: String) {
     ERROR("error"),
     CANCELED("canceled"),
     INCOMPLETE("incomplete"),
-    FAILED("failed");
+    FAILED("failed"),
+    TIME_OUT("time_out");
 
     companion object {
         fun getStatus(string: String?): ResponseStatus =

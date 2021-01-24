@@ -76,4 +76,15 @@
     <style name="begateway_TextAppearance.App.Button" parent="TextAppearance.MaterialComponents.Button">
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="begateway_CustomAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">
+            @style/begateway_ShapeAppearanceOverlay.AlertDialog.Rounded
+        </item>
+    </style>
+
+    <style name="begateway_ShapeAppearanceOverlay.AlertDialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 </resources>

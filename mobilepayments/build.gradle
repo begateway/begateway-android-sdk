@@ -46,9 +46,11 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor"
+
     implementation "ru.tinkoff.core:core-nfc:$core_nfc"
 
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
+
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

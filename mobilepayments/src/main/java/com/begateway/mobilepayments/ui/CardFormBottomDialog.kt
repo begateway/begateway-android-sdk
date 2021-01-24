@@ -2,6 +2,7 @@ package com.begateway.mobilepayments.ui
 
 import android.app.Activity
 import android.content.ComponentName
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -13,7 +14,6 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import com.begateway.mobilepayments.PaymentSdk
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.cardScanner.ui.NfcScannerActivity
@@ -23,12 +23,10 @@ import com.begateway.mobilepayments.model.CreditCard
 import com.begateway.mobilepayments.model.PaymentMethodType
 import com.begateway.mobilepayments.model.Request
 import com.begateway.mobilepayments.model.network.request.PaymentRequest
-import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
 import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -51,6 +49,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var activityInfo: ActivityInfo? = null
     private var nfcAdapter: NfcAdapter? = null
+    private var onProgressDialogListener: OnProgressDialogListener? = null
 
     private val cardInputFilterList: Array<InputFilter> = arrayOf(
         inputFilterDigits(BANK_CARD_REGEX),
@@ -84,6 +83,18 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         super.onDismiss(dialog)
         if (!isStateSaved)
             activity?.finish()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnProgressDialogListener) {
+            onProgressDialogListener = context
+        }
+    }
+
+    override fun onDetach() {
+        onProgressDialogListener = null
+        super.onDetach()
     }
 
     override fun onCreateView(
@@ -143,31 +154,23 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     }
 
     private fun pay() {
-        lifecycleScope.launch {
-            val paymentSdk = PaymentSdk.instance
-            val result = paymentSdk.payWithCard(
-                PaymentRequest(
-                    Request(
-                        paymentSdk.checkoutWithTokenData.checkout.token,
-                        PaymentMethodType.CREDIT_CARD,
-                        CreditCard(
-                            cardNumber = cardData.cardNumber,
-                            verificationValue = cardData.cvcCode,
-                            holderName = cardData.cardHolderName,
-                            expMonth = cardData.getMonth(),
-                            expYear = cardData.getYear()
-                        )
+        onProgressDialogListener?.onShowProgress()
+        val paymentSdk = PaymentSdk.instance
+        paymentSdk.payWithCard(
+            PaymentRequest(
+                Request(
+                    paymentSdk.checkoutWithTokenData.checkout.token,
+                    PaymentMethodType.CREDIT_CARD,
+                    CreditCard(
+                        cardNumber = cardData.cardNumber,
+                        verificationValue = cardData.cvcCode,
+                        holderName = cardData.cardHolderName,
+                        expMonth = cardData.getMonth(),
+                        expYear = cardData.getYear()
                     )
                 )
             )
-            when (result) {
-                is HttpResult.Success -> result.data
-                is HttpResult.UnSuccess -> result.bepaidResponse
-                is HttpResult.Error -> {
-
-                }
-            }
-        }
+        )
     }
 
     override fun onDestroyView() {
@@ -497,5 +500,4 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         } else {
             true
         }
-
 }
