@@ -166,7 +166,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
             builder.setTitle(it)
         }
         message?.let {
-            builder.setTitle(it)
+            builder.setMessage(it)
         }
         positiveOnClick?.let {
             builder.setPositiveButton(positiveButtonText, it)
