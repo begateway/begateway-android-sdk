@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         context: Context,
         title: String? = null,
         message: String? = null,
-        positiveButtonText: String? = null,
+        positiveButtonText: String = "ok",
         negativeButtonText: String? = null,
         positiveOnClick: DialogInterface.OnClickListener? = null,
         onCancelClick: DialogInterface.OnClickListener? = null,
