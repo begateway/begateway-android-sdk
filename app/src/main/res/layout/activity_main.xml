@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/default_margin"
         android:gravity="center_horizontal"
-        >
+        android:orientation="vertical"
+        android:padding="@dimen/default_margin">
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/sm_3d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/msg_use_3d"
-            app:switchPadding="@dimen/default_margin"
-            />
+            app:switchPadding="@dimen/default_margin" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_token"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_token">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -35,17 +35,19 @@
             android:id="@+id/b_get_token"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/action_get_token"/>
+            android:text="@string/action_get_token" />
+
         <Button
             android:id="@+id/b_pay_with_credit_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pay_with_card"/>
+            android:text="@string/pay_with_card" />
+
         <Button
             android:id="@+id/b_pay_with_checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pay_with_checkout"/>
+            android:text="@string/pay_with_checkout" />
 
     </LinearLayout>
 
@@ -53,15 +55,15 @@
         android:id="@+id/fl_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
         android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:focusable="true">
+        tools:visibility="visible">
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            />
+            android:layout_gravity="center" />
     </FrameLayout>
 </FrameLayout>
