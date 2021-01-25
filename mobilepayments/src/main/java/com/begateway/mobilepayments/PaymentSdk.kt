@@ -74,6 +74,11 @@ class PaymentSdk private constructor() {
     @Keep
     lateinit var checkoutWithTokenData: CheckoutWithTokenData
 
+    //only for test remove in prod
+    fun updatePublicKey(key: String) {
+        settings.publicKey = key
+    }
+
     internal fun initSdk(
         settings: PaymentSdkSettings,
         activity: Activity

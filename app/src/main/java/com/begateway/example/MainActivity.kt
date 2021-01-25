@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
 
+    private var isWithCheckout: Boolean = false
     private lateinit var sdk: PaymentSdk
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,12 +33,15 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         binding.sm3d.isChecked = false
         sdk = PaymentSdkBuilder()
             .setDebugMode(BuildConfig.DEBUG)
-            .setPublicKey(if (!binding.sm3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
+            .setPublicKey(if (binding.sm3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
             .setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
             .setReturnUrl("https://DEFAULT_RETURN_URL.com")
             .build(this, this, CoroutineScope(Dispatchers.IO))
         initView()
         listeners()
+        binding.sm3d.setOnCheckedChangeListener { _, isChecked ->
+            sdk.updatePublicKey(if (isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
+        }
     }
 
     private fun initView() {
@@ -46,13 +50,15 @@ class MainActivity : AppCompatActivity(), OnResultListener {
 
     private fun listeners() {
         binding.bGetToken.setOnClickListener {
-            getPaymentToken()
+            isWithCheckout = false
+            pay()
         }
         binding.bPayWithCreditCard.setOnClickListener {
             payWithCard()
         }
         binding.bPayWithCheckout.setOnClickListener {
-            payWithCheckout()
+            isWithCheckout = true
+            pay()
         }
     }
 
@@ -66,7 +72,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private fun payWithCheckout() {
         sdk.checkoutWithTokenData = CheckoutWithTokenData(
             CheckoutWithToken(
-                token = "572de12513b0aa5f23eb0039dfc77ca3f949cb43efc493b5f9dcb519477004d0"
+                token = binding.tilToken.editText!!.text.toString()
             )
         )
         startActivity(
@@ -99,7 +105,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     /**
      * use if you haven't anything
      */
-    private fun getPaymentToken() {
+    private fun pay() {
         isProgressVisible(true)
         sdk.getPaymentToken(
             TokenCheckoutData(
@@ -134,9 +140,14 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     override fun onTokenReady(token: String) {
-        startActivity(
-            PaymentSdk.getCardFormIntent(this@MainActivity)
-        )
+        binding.tilToken.editText?.setText(token)
+        if (isWithCheckout) {
+            payWithCheckout()
+        } else {
+            startActivity(
+                PaymentSdk.getCardFormIntent(this@MainActivity)
+            )
+        }
         isProgressVisible(false)
     }
 
