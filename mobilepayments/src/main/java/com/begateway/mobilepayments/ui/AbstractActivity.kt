@@ -117,6 +117,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
             layoutInflater.inflate(layout, null)
         builder.setView(customLayout)
         val dialog = builder.create()
+        dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
         return dialog
     }
@@ -159,8 +160,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
         isCancellableOutside: Boolean = false
     ): AlertDialog {
         val builder = MaterialAlertDialogBuilder(
-            context,
-            R.style.begateway_ShapeAppearanceOverlay_AlertDialog_Rounded
+            context
         )
         title?.let {
             builder.setTitle(it)
@@ -175,6 +175,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
             builder.setNegativeButton(negativeButtonText, it)
         }
         val dialog = builder.create()
+        dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(isCancellableOutside)
         return dialog
     }
