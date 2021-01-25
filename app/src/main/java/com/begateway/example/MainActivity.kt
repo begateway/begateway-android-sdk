@@ -156,6 +156,10 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             this,
             "Result",
             bepaidResponse.message,
+            positiveOnClick = { dialog, _ ->
+                dialog.dismiss()
+                onBackPressed()
+            },
             isCancellableOutside = false
         ).show()
         isProgressVisible(false)
