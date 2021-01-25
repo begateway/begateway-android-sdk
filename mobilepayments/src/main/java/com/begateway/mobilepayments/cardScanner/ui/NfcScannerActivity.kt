@@ -3,7 +3,6 @@ package com.begateway.mobilepayments.cardScanner.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import com.begateway.mobilepayments.databinding.BegatewayNfcScannerActivityBinding
 import com.begateway.mobilepayments.model.CardData
 import com.begateway.mobilepayments.ui.AbstractActivity
@@ -51,40 +50,47 @@ internal class NfcScannerActivity : AbstractActivity(), NfcCallbacks, NfcClarify
     }
 
     private fun onException() {
-        AlertDialog.Builder(this)
-            .setTitle("Ошибка")
-            .setMessage("В процессе сканирования произошла ошибка")
-            .setPositiveButton("Ок") { dialog, _ ->
+        showMessageDialog(
+            this,
+            title = "Ошибка",
+            message = "В процессе сканирования произошла ошибка",
+            positiveButtonText = "Ок",
+            positiveOnClick = { dialog, _ ->
                 dialog.dismiss()
                 onBackPressed()
             }
-            .show()
+        )
     }
 
     override fun onNfcDisabled() {
-        AlertDialog.Builder(this)
-            .setTitle("Ошибка")
-            .setMessage("Включите NFC")
-            .setPositiveButton("Включить") { dialog, _ ->
+        showMessageDialog(
+            this,
+            "Ошибка",
+            "Включите NFC",
+            "Включить",
+            "Отмена",
+            { dialog, _ ->
                 dialog.dismiss()
                 NfcUtils.openNfcSettingsForResult(this@NfcScannerActivity, 0)
-            }
-            .setNegativeButton("Отмена") { dialog, _ ->
+            },
+            { dialog, _ ->
                 dialog.dismiss()
                 onBackPressed()
             }
-            .show()
+        )
     }
 
     override fun onNfcNotSupported() {
-        AlertDialog.Builder(this)
-            .setTitle("Ошибка")
-            .setMessage("NFC не поддерживается")
-            .setPositiveButton("Ок") { dialog, _ ->
+        showMessageDialog(
+            this,
+            title = "Ошибка",
+            message = "NFC не поддерживается",
+            positiveButtonText = "Ок",
+            positiveOnClick = { dialog, _ ->
                 dialog.dismiss()
                 onBackPressed()
             }
-            .show()
+        )
     }
 
     override fun onResult(bundle: Bundle?) {
