@@ -1,6 +1,9 @@
 package com.begateway.example
 
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
@@ -12,6 +15,7 @@ import com.begateway.mobilepayments.model.network.request.PaymentRequest
 import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.model.network.response.BepaidResponse
 import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -137,6 +141,42 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     override fun onPaymentFinished(bepaidResponse: BepaidResponse, cardToken: String?) {
+        getMessageDialog(
+            this,
+            "Result",
+            bepaidResponse.message,
+            isCancellableOutside = false
+        ).show()
         isProgressVisible(false)
+    }
+
+    private fun getMessageDialog(
+        context: Context,
+        title: String? = null,
+        message: String? = null,
+        positiveButtonText: String? = null,
+        negativeButtonText: String? = null,
+        positiveOnClick: DialogInterface.OnClickListener? = null,
+        onCancelClick: DialogInterface.OnClickListener? = null,
+        isCancellableOutside: Boolean = false
+    ): AlertDialog {
+        val builder = MaterialAlertDialogBuilder(
+            context
+        )
+        title?.let {
+            builder.setTitle(it)
+        }
+        message?.let {
+            builder.setTitle(it)
+        }
+        positiveOnClick?.let {
+            builder.setPositiveButton(positiveButtonText, it)
+        }
+        onCancelClick?.let {
+            builder.setNegativeButton(negativeButtonText, it)
+        }
+        val dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(isCancellableOutside)
+        return dialog
     }
 }
