@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private fun payWithCard() {
         val token = binding.tilToken.editText?.text?.toString() ?: return
         val cardToken =
-            if (binding.sm3d.isChecked) "58c2ac9f-51b1-42ec-bfe8-7e5377367cf3" else "09fde0dc-aec7-4715-8257-b049628596d7"
+            if (binding.sm3d.isChecked) "3cde212e-5276-444f-8f55-d4e43b3a9dc0" else "09fde0dc-aec7-4715-8257-b049628596d7"
         isProgressVisible(true)
         sdk.payWithCard(
             PaymentRequest(
