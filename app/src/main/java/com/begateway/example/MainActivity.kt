@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private fun payWithCard() {
         val token = binding.tilToken.editText?.text?.toString() ?: return
         val cardToken =
-            if (binding.sm3d.isChecked) "e94c2a77-5498-45d3-a5b1-3155d0f0bcb3" else "09fde0dc-aec7-4715-8257-b049628596d7"
+            if (binding.sm3d.isChecked) "58c2ac9f-51b1-42ec-bfe8-7e5377367cf3" else "09fde0dc-aec7-4715-8257-b049628596d7"
         isProgressVisible(true)
         sdk.payWithCard(
             PaymentRequest(
@@ -158,7 +158,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             bepaidResponse.message,
             positiveOnClick = { dialog, _ ->
                 dialog.dismiss()
-                onBackPressed()
             },
             isCancellableOutside = false
         ).show()
