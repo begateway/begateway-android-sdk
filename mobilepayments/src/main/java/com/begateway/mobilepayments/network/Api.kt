@@ -1,9 +1,9 @@
 package com.begateway.mobilepayments.network
 
-import com.begateway.mobilepayments.model.network.request.PaymentRequest
-import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
-import com.begateway.mobilepayments.model.network.response.BepaidResponse
-import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
+import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
+import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -32,7 +32,7 @@ internal interface Api {
     suspend fun payWithCard(
         @Header("Authorization") authorization: String,
         @Body requestBody: PaymentRequest
-    ): Response<BepaidResponse>
+    ): Response<BeGatewayResponse>
 
     @Headers(
         CONTENT_TYPE,
@@ -43,5 +43,5 @@ internal interface Api {
     suspend fun getPaymentStatus(
         @Header("Authorization") authorization: String,
         @Path("token") token: String
-    ): Response<BepaidResponse>
+    ): Response<BeGatewayResponse>
 }

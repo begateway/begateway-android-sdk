@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.begateway.mobilepayments.databinding.BegatewayNfcScannerActivityBinding
-import com.begateway.mobilepayments.model.CardData
+import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.ui.AbstractActivity
 import ru.tinkoff.core.nfc.ImperfectAlgorithmException
 import ru.tinkoff.core.nfc.MalformedDataException
@@ -12,6 +12,10 @@ import ru.tinkoff.core.nfc.NfcAutoRecognizer
 import ru.tinkoff.core.nfc.NfcRecognizer.NfcCallbacks
 import ru.tinkoff.core.nfc.NfcRecognizer.NfcClarifyCallbacks
 import ru.tinkoff.core.nfc.NfcUtils
+
+private const val CARD_NUMBER_KEY = "card_number"
+private const val EXPIRY_DATE_KEY = "expire_date"
+
 
 internal class NfcScannerActivity : AbstractActivity(), NfcCallbacks, NfcClarifyCallbacks {
     companion object {
@@ -97,8 +101,8 @@ internal class NfcScannerActivity : AbstractActivity(), NfcCallbacks, NfcClarify
         setResult(
             Activity.RESULT_OK,
             CardData.getIntentWithExpiryString(
-                cardNumber = bundle?.getString("card_number"),
-                expiryString = bundle?.getString("expire_date")
+                cardNumber = bundle?.getString(CARD_NUMBER_KEY),
+                expiryString = bundle?.getString(EXPIRY_DATE_KEY)
             )
         )
         finish()

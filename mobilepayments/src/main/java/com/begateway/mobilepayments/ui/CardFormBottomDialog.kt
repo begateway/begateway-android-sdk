@@ -14,19 +14,23 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
-import com.begateway.mobilepayments.PaymentSdk
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.cardScanner.ui.NfcScannerActivity
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
-import com.begateway.mobilepayments.model.CardData
-import com.begateway.mobilepayments.model.CreditCard
-import com.begateway.mobilepayments.model.PaymentMethodType
-import com.begateway.mobilepayments.model.Request
-import com.begateway.mobilepayments.model.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.CreditCard
+import com.begateway.mobilepayments.models.network.request.PaymentMethodType
+import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.Request
+import com.begateway.mobilepayments.models.ui.CardData
+import com.begateway.mobilepayments.models.ui.CardType
+import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -156,21 +160,24 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun pay() {
         onProgressDialogListener?.onShowProgress()
         val paymentSdk = PaymentSdk.instance
-        paymentSdk.payWithCard(
-            PaymentRequest(
-                Request(
-                    paymentSdk.checkoutWithTokenData.checkout.token,
-                    PaymentMethodType.CREDIT_CARD,
-                    CreditCard(
-                        cardNumber = cardData.cardNumber,
-                        verificationValue = cardData.cvcCode,
-                        holderName = cardData.cardHolderName,
-                        expMonth = cardData.getMonth(),
-                        expYear = cardData.getYear()
+        CoroutineScope(Dispatchers.IO).launch {
+            paymentSdk.payWithCard(
+                PaymentRequest(
+                    Request(
+                        paymentSdk.checkoutWithTokenData.checkout.token,
+                        PaymentMethodType.CREDIT_CARD,
+                        CreditCard(
+                            cardNumber = cardData.cardNumber,
+                            cvc = cardData.cvcCode,
+                            holderName = cardData.cardHolderName,
+                            expMonth = cardData.getMonth(),
+                            expYear = cardData.getYear()
+                        )
                     )
-                )
+                ),
+                requireActivity()
             )
-        )
+        }
     }
 
     override fun onDestroyView() {
@@ -269,26 +276,30 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun initCardNumberView() {
         binding?.run {
-            tilCardNumber.apply {
-                requestFocus()
-                setStartIconTintList(null)
-                onFocusListener(
-                    ::isCardNumberCorrect
-                ) { getString(R.string.begateway_card_number_invalid) }
-                onTextChanged(
-                    ::updateButtonState,
-                    ::requestFocusToNextVisibleElement,
-                    ::isCardMaxLengthAccepted
-                )
-                onCardNumberWatcher(
-                    ::setCardType
-                )
-            }
+            val cardNumberFieldVisible = PaymentSdk.instance.settings.isCardNumberFieldVisible
+            tilCardNumber.isVisible = cardNumberFieldVisible
+            if (cardNumberFieldVisible) {
+                tilCardNumber.apply {
+                    requestFocus()
+                    setStartIconTintList(null)
+                    onFocusListener(
+                        ::isCardNumberCorrect
+                    ) { getString(R.string.begateway_card_number_invalid) }
+                    onTextChanged(
+                        ::updateButtonState,
+                        ::requestFocusToNextVisibleElement,
+                        ::isCardMaxLengthAccepted
+                    )
+                    onCardNumberWatcher(
+                        ::setCardType
+                    )
+                }
 
-            tietCardNumber.run {
-                onEditorListener(::requestFocusToNextVisibleElement)
-                cardNumberInputTypeMask = maskFormatWatcher(currentCardType.maskFormat)
-                installMask(cardNumberInputTypeMask!!)
+                tietCardNumber.run {
+                    onEditorListener(::requestFocusToNextVisibleElement)
+                    cardNumberInputTypeMask = maskFormatWatcher(currentCardType.maskFormat)
+                    installMask(cardNumberInputTypeMask!!)
+                }
             }
         }
     }
@@ -297,50 +308,58 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun initCardNameView() {
         binding?.run {
-            tilCardName.apply {
-                onFocusListener(
-                    ::isCardNameCorrect
-                ) { getString(R.string.begateway_cardholder_name_required) }
-                onTextChanged(
-                    ::updateButtonState,
-                    ::requestFocusToNextVisibleElement,
-                ) {
-                    false
+            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
+            tilCardName.isVisible = cardHolderFieldVisible
+            if (cardHolderFieldVisible) {
+                tilCardName.apply {
+                    onFocusListener(
+                        ::isCardNameCorrect
+                    ) { getString(R.string.begateway_cardholder_name_required) }
+                    onTextChanged(
+                        ::updateButtonState,
+                        ::requestFocusToNextVisibleElement,
+                    ) {
+                        false
+                    }
                 }
-            }
 
-            tietCardName.run {
-                onEditorListener(::requestFocusToNextVisibleElement)
+                tietCardName.run {
+                    onEditorListener(::requestFocusToNextVisibleElement)
+                }
             }
         }
     }
 
     private fun initCardExpireDateView() {
         binding?.run {
-            tilCardExpiryDate.apply {
-                onFocusListener(
-                    ::isExpiryCorrect
-                ) { getString(R.string.begateway_expiration_invalid) }
-                onTextChanged(
-                    ::updateButtonState,
-                    ::requestFocusToNextVisibleElement,
-                    ::isCardExpireLengthAccepted
-                )
-                onExpiryTextChanged()
-            }
-            tietCardExpiryDate.run {
-                onEditorListener(::requestFocusToNextVisibleElement)
-                val firstTwoNumberOfYear = minExpiry.get(Calendar.YEAR) / 100
-                expiryDateTypeMask = maskFormatWatcher(
-                    "__/${
-                        if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
-                            "${firstTwoNumberOfYear}__"
-                        } else {
-                            "${firstTwoNumberOfYear / 10}___"
-                        }
-                    }"
-                )
-                installMask(expiryDateTypeMask!!)
+            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
+            tilCardExpiryDate.isVisible = cardHolderFieldVisible
+            if (cardHolderFieldVisible) {
+                tilCardExpiryDate.apply {
+                    onFocusListener(
+                        ::isExpiryCorrect
+                    ) { getString(R.string.begateway_expiration_invalid) }
+                    onTextChanged(
+                        ::updateButtonState,
+                        ::requestFocusToNextVisibleElement,
+                        ::isCardExpireLengthAccepted
+                    )
+                    onExpiryTextChanged()
+                }
+                tietCardExpiryDate.run {
+                    onEditorListener(::requestFocusToNextVisibleElement)
+                    val firstTwoNumberOfYear = minExpiry.get(Calendar.YEAR) / 100
+                    expiryDateTypeMask = maskFormatWatcher(
+                        "__/${
+                            if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
+                                "${firstTwoNumberOfYear}__"
+                            } else {
+                                "${firstTwoNumberOfYear / 10}___"
+                            }
+                        }"
+                    )
+                    installMask(expiryDateTypeMask!!)
+                }
             }
         }
     }
@@ -349,19 +368,23 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun initCvcView() {
         binding?.run {
-            tilCardCvc.apply {
-                onFocusListener(
-                    ::isCVCCorrect,
-                    ::getCvcError
-                )
-                onTextChanged(
-                    ::updateButtonState,
-                    ::requestFocusToNextVisibleElement,
-                    ::isCardCvcLengthAccepted
-                )
-            }
+            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
+            tilCardCvc.isVisible = cardHolderFieldVisible
+            if (cardHolderFieldVisible) {
+                tilCardCvc.apply {
+                    onFocusListener(
+                        ::isCVCCorrect,
+                        ::getCvcError
+                    )
+                    onTextChanged(
+                        ::updateButtonState,
+                        ::requestFocusToNextVisibleElement,
+                        ::isCardCvcLengthAccepted
+                    )
+                }
 
-            tietCvc.onEditorListener(::requestFocusToNextVisibleElement)
+                tietCvc.onEditorListener(::requestFocusToNextVisibleElement)
+            }
         }
     }
 
@@ -467,25 +490,19 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             true
         }
 
-    private fun isCardNumberCorrect(): Boolean {
-        val brands = PaymentSdk.instance.checkoutWithTokenData.checkout.brands
-        return if (brands.isNullOrEmpty()) {
-            true
-        } else {
-            brands.asSequence().map { it.name }
-                .find {
-                    currentCardType.name.equals(it, true)
-                } != null
-        }
-                &&
-                binding?.tilCardNumber?.editText
-                    ?.text?.toString()
-                    ?.isCorrectPan(
-                        currentCardType.listOfCardNumberSizes,
-                        currentCardType.isLunhCheckRequired
-                    )
+    private fun isCardNumberCorrect(): Boolean =
+        if (binding?.tilCardNumber?.isVisible == true) {
+            binding?.tilCardNumber?.editText
+                ?.text?.toString()
+                ?.isCorrectPan(
+                    currentCardType.listOfCardNumberSizes,
+                    currentCardType.isLunhCheckRequired
+                )
                 ?: false
-    }
+        } else {
+            true
+        }
+
 
     private fun isExpiryCorrect(): Boolean =
         if (binding?.tilCardExpiryDate?.isVisible == true) {

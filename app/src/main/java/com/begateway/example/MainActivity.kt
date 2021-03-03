@@ -7,17 +7,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
-import com.begateway.mobilepayments.OnResultListener
-import com.begateway.mobilepayments.PaymentSdk
-import com.begateway.mobilepayments.PaymentSdkBuilder
-import com.begateway.mobilepayments.model.*
-import com.begateway.mobilepayments.model.network.request.PaymentRequest
-import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
-import com.begateway.mobilepayments.model.network.response.BepaidResponse
-import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.models.*
+import com.begateway.mobilepayments.models.network.request.*
+import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
+import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.sdk.OnResultListener
+import com.begateway.mobilepayments.sdk.PaymentSdk
+import com.begateway.mobilepayments.sdk.PaymentSdkBuilder
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             .setPublicKey(if (binding.sm3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
             .setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
             .setReturnUrl("https://DEFAULT_RETURN_URL.com")
-            .build(this, this, CoroutineScope(Dispatchers.IO))
+            .build()
+        sdk.addCallBackListener(this)
         initView()
         listeners()
         binding.sm3d.setOnCheckedChangeListener { _, isChecked ->
@@ -89,17 +90,20 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         val cardToken =
             if (binding.sm3d.isChecked) "3cde212e-5276-444f-8f55-d4e43b3a9dc0" else "09fde0dc-aec7-4715-8257-b049628596d7"
         isProgressVisible(true)
-        sdk.payWithCard(
-            PaymentRequest(
-                Request(
-                    token,
-                    PaymentMethodType.CREDIT_CARD,
-                    CreditCard(
-                        token = cardToken
+        CoroutineScope(Dispatchers.IO).launch {
+            sdk.payWithCard(
+                PaymentRequest(
+                    Request(
+                        token,
+                        PaymentMethodType.CREDIT_CARD,
+                        CreditCard(
+                            token = cardToken
+                        )
                     )
-                )
+                ),
+                this@MainActivity
             )
-        )
+        }
     }
 
     /**
@@ -107,35 +111,36 @@ class MainActivity : AppCompatActivity(), OnResultListener {
      */
     private fun pay() {
         isProgressVisible(true)
-        sdk.getPaymentToken(
-            TokenCheckoutData(
-                Checkout(
-                    test = true,// true only if you work in test mode
-                    transactionType = TransactionType.PAYMENT,
-                    order = Order(
-                        amount = 100,
-                        currency = "USD",
-                        description = "Payment description",
-                        trackingId = "merchant_id",
-                        additionalData = AdditionalData(
-                            contract = arrayOf(
-                                Contract.RECURRING,
-                                Contract.CARD_ON_FILE
+        CoroutineScope(Dispatchers.IO).launch {
+            sdk.getPaymentToken(
+                TokenCheckoutData(
+                    Checkout(
+                        test = true,// true only if you work in test mode
+                        transactionType = TransactionType.PAYMENT,
+                        order = Order(
+                            amount = 100,
+                            currency = "USD",
+                            description = "Payment description",
+                            trackingId = "merchant_id",
+                            additionalData = AdditionalData(
+                                contract = arrayOf(
+                                    Contract.RECURRING,
+                                    Contract.CARD_ON_FILE
+                                )
                             )
-                        )
-                    ),
-                    settings = Settings(
-                        returnUrl = "https://DEFAULT_RETURN_URL.com",
-                        autoReturn = 0,
-                    ),
+                        ),
+                        settings = Settings(
+                            returnUrl = "https://DEFAULT_RETURN_URL.com",
+                            autoReturn = 0,
+                        ),
+                    )
                 )
             )
-        )
+        }
     }
 
     override fun onDestroy() {
         sdk.removeResultListener(this)
-        sdk.resetActivity()//important for memory leaking
         super.onDestroy()
     }
 
@@ -151,11 +156,11 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         isProgressVisible(false)
     }
 
-    override fun onPaymentFinished(bepaidResponse: BepaidResponse, cardToken: String?) {
+    override fun onPaymentFinished(beGatewayResponse: BeGatewayResponse, cardToken: String?) {
         getMessageDialog(
             this,
             "Result",
-            bepaidResponse.message,
+            beGatewayResponse.message,
             positiveOnClick = { dialog, _ ->
                 dialog.dismiss()
             },

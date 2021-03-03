@@ -1,11 +1,11 @@
 package com.begateway.mobilepayments.network
 
 import android.util.Log
-import com.begateway.mobilepayments.model.network.request.PaymentRequest
-import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
-import com.begateway.mobilepayments.model.network.response.BepaidResponse
-import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
-import com.begateway.mobilepayments.parser.BepaidResponseParser
+import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
+import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
+import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -32,7 +32,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
             build()
         }
         val gsonBuilder = GsonBuilder()
-        gsonBuilder.registerTypeAdapter(BepaidResponse::class.java, BepaidResponseParser())
+        gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser())
         retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
@@ -52,14 +52,14 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
     suspend fun payWithCard(
         publicKey: String,
         requestBody: PaymentRequest
-    ): HttpResult<BepaidResponse> {
+    ): HttpResult<BeGatewayResponse> {
         return safeApiCall { api.payWithCard(BEARER_AUTH_STRING + publicKey, requestBody) }
     }
 
     suspend fun getPaymentStatus(
         publicKey: String,
         token: String
-    ): HttpResult<BepaidResponse> {
+    ): HttpResult<BeGatewayResponse> {
         return safeApiCall { api.getPaymentStatus(BEARER_AUTH_STRING + publicKey, token) }
     }
 
@@ -71,7 +71,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
                 HttpResult.Success(response.body()!!)
             } else {
                 HttpResult.UnSuccess(
-                    BepaidResponseParser().parseJson(
+                    BeGatewayResponseParser().parseJson(
                         Gson().fromJson(response.errorBody()?.string(), JsonElement::class.java)
                     )
                 )
