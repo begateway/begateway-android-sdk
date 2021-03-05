@@ -1,6 +1,5 @@
 package com.begateway.mobilepayments.ui
 
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
@@ -12,10 +11,10 @@ import android.text.InputFilter
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import com.begateway.mobilepayments.R
-import com.begateway.mobilepayments.cardScanner.ui.NfcScannerActivity
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
 import com.begateway.mobilepayments.models.network.request.CreditCard
 import com.begateway.mobilepayments.models.network.request.PaymentMethodType
@@ -31,6 +30,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.tinkoff.core.nfc.*
 import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -39,10 +39,14 @@ import java.util.*
 private const val EXPIRY_DATE_LENGTH = 7
 private const val MIN_LENGTH_NAME = 3
 private const val REQUEST_CODE_SCAN_BANK_CARD = 0x56BD
+private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
 private const val BANK_CARD_REGEX = "[^\\d ]*"
 private const val MAXIMUM_VALID_YEAR_DIFFERENCE = 30
+private const val CARD_NUMBER_KEY = "card_number"
+private const val EXPIRY_DATE_KEY = "expire_date"
 
-internal class CardFormBottomDialog : BottomSheetDialogFragment() {
+internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer.NfcCallbacks,
+    NfcRecognizer.NfcClarifyCallbacks {
 
     private val minExpiry = Calendar.getInstance()
     private var currentCardType: CardType = CardType.EMPTY
@@ -52,8 +56,12 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private var binding: BegatewayFragmentCardFormBinding? = null
     private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var activityInfo: ActivityInfo? = null
-    private var nfcAdapter: NfcAdapter? = null
     private var onProgressDialogListener: OnProgressDialogListener? = null
+    private var onMessageDialogListener: OnMessageDialogListener? = null
+
+    private var nfcRecognizer: NfcAutoRecognizer? = null
+    private var nfcDialog: AlertDialog? = null
+    private var nfcAdapter: NfcAdapter? = null
 
     private val cardInputFilterList: Array<InputFilter> = arrayOf(
         inputFilterDigits(BANK_CARD_REGEX),
@@ -73,7 +81,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         minExpiry.clear()
         minExpiry.set(year, month, 1)
         minExpiry.add(Calendar.DAY_OF_MONTH, -1)
-        setStyle(STYLE_NO_FRAME, R.style.begateway_MainDialogTheme)
     }
 
     override fun onCancel(dialog: DialogInterface) {
@@ -94,10 +101,14 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         if (context is OnProgressDialogListener) {
             onProgressDialogListener = context
         }
+        if (context is OnMessageDialogListener) {
+            onMessageDialogListener = context
+        }
     }
 
     override fun onDetach() {
         onProgressDialogListener = null
+        onMessageDialogListener = null
         super.onDetach()
     }
 
@@ -189,39 +200,31 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         expiryDateTypeMask = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_SCAN_BANK_CARD -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    applyCardDataFromIntent(data)
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onDestroy() {
+        nfcRecognizer = null
+        super.onDestroy()
     }
 
-    private fun applyCardDataFromIntent(data: Intent?) {
-        CardData.getDataFromIntent(data)?.let {
-            binding?.apply {
-                val pan = it.cardNumber.orEmpty().filter(Char::isDigit)
-                setCardType(CardType.getCardTypeByPan(pan))
-                tietCardNumber.setText(pan)
-                tietCardNumber.onFocusChangeListener?.onFocusChange(
-                    tietCardNumber,
-                    false
-                )
-                tietCardName.setText(it.cardHolderName)
-                tietCardName.onFocusChangeListener?.onFocusChange(tietCardName, false)
-                expiryDateTypeMask?.removeFromTextView()
-                tietCardExpiryDate.setText(CardData.getExpiryDateStringForView(it.expiryDate))
-                tietCardExpiryDate.onFocusChangeListener?.onFocusChange(
-                    tietCardExpiryDate,
-                    false
-                )
-                expiryDateTypeMask?.let { tietCardExpiryDate.installMask(it) }
-                tietCvc.setText(it.cvcCode)
-                tietCvc.onFocusChangeListener?.onFocusChange(tietCvc, false)
-            }
+    private fun applyCardDataFromIntent(cardData: CardData) {
+        binding?.apply {
+            val pan = cardData.cardNumber.orEmpty().filter(Char::isDigit)
+            setCardType(CardType.getCardTypeByPan(pan))
+            tietCardNumber.setText(pan)
+            tietCardNumber.onFocusChangeListener?.onFocusChange(
+                tietCardNumber,
+                false
+            )
+            tietCardName.setText(cardData.cardHolderName)
+            tietCardName.onFocusChangeListener?.onFocusChange(tietCardName, false)
+            expiryDateTypeMask?.removeFromTextView()
+            tietCardExpiryDate.setText(CardData.getExpiryDateStringForView(cardData.expiryDate))
+            tietCardExpiryDate.onFocusChangeListener?.onFocusChange(
+                tietCardExpiryDate,
+                false
+            )
+            expiryDateTypeMask?.let { tietCardExpiryDate.installMask(it) }
+            tietCvc.setText(cardData.cvcCode)
+            tietCvc.onFocusChangeListener?.onFocusChange(tietCvc, false)
         }
     }
 
@@ -240,16 +243,28 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                 true
             }
             R.id.action_scan_nfc -> {
-                activity?.let {
-                    startActivityForResult(
-                        NfcScannerActivity.getIntent(it),
-                        REQUEST_CODE_SCAN_BANK_CARD
-                    )
-                }
+                initNfcScanning()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun initNfcScanning() {
+        val activity = requireActivity()
+        if (nfcRecognizer == null) {
+            nfcRecognizer = NfcAutoRecognizer(activity, this).apply {
+                registerClarifyCallbacks(this@CardFormBottomDialog)
+            }
+        }
+        nfcRecognizer?.onCreate(activity)
+        nfcRecognizer?.start(activity)
+        nfcDialog = onMessageDialogListener?.showMessageDialog(
+            requireContext(),
+            messageId = R.string.begateway_nfc_attach_bank_card,
+            positiveButtonTextId = R.string.begateway_cancel,
+            positiveOnClick = ::nfcScanningComplete
+        )
     }
 
     private fun updateButtonState() {
@@ -517,4 +532,68 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         } else {
             true
         }
+
+
+    override fun onException(exception: Exception) {
+        onException()
+    }
+
+    override fun onClarifiedException(ex: MalformedDataException) {
+        onException()
+    }
+
+    override fun onClarifiedException(ex: ImperfectAlgorithmException) {
+        onException()
+    }
+
+    private fun onException() {
+        onMessageDialogListener?.showMessageDialog(
+            requireContext(),
+            titleId = R.string.begateway_error,
+            messageId = R.string.begateway_error_during_scanning,
+            positiveOnClick = ::nfcScanningComplete
+        )
+    }
+
+    override fun onNfcDisabled() {
+        onMessageDialogListener?.showMessageDialog(
+            requireContext(),
+            R.string.begateway_error,
+            R.string.begateway_turn_on_nfc_message,
+            R.string.begateway_turn_on,
+            R.string.begateway_cancel,
+            { dialog, _ ->
+                dialog.dismiss()
+                NfcUtils.openNfcSettingsForResult(requireActivity(), REQUEST_CODE_NFC_SETTINGS)
+            },
+            ::nfcScanningComplete
+        )
+    }
+
+    override fun onNfcNotSupported() {
+        onMessageDialogListener?.showMessageDialog(
+            requireContext(),
+            titleId = R.string.begateway_error,
+            messageId = R.string.begateway_nfc_not_supported_message,
+            positiveOnClick = ::nfcScanningComplete
+        )
+    }
+
+    override fun onResult(bundle: Bundle?) {
+        nfcScanningComplete()
+        applyCardDataFromIntent(
+            CardData(
+                cardNumber = bundle?.getString(CARD_NUMBER_KEY),
+                expiryDate = CardData.getExpiryDateFromString(bundle?.getString(EXPIRY_DATE_KEY))
+            )
+        )
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun nfcScanningComplete(dialog: DialogInterface? = null, which: Int? = null) {
+        val requireActivity = requireActivity()
+        nfcRecognizer?.stop(requireActivity)
+        nfcDialog?.dismiss()
+        dialog?.dismiss()
+    }
 }

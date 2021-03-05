@@ -19,4 +19,12 @@
     <dimen name="begateway_default_text">16sp</dimen>
     <dimen name="begateway_title_text_big">34sp</dimen>
 
+
+    <dimen name="begateway_elevation_toolbar">6dp</dimen>
+
+    <dimen name="begateway_small_component_corner_size">12dp</dimen>
+    <dimen name="begateway_large_component_corner_size">24dp</dimen>
+
+    <dimen name="begateway_min_button_height">48dp</dimen>
+
 </resources>

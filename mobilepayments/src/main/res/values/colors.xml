@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="begateway_color_primary">#F44336</color>
-    <color name="begateway_color_accent">#009688</color>
-    <color name="begateway_button_tint">#009688</color>
-    <color name="begateway_loading">#666666</color>
-    <color name="begateway_background">#f7f7f7</color>
-    <color name="begateway_button_text_link">#0070F0</color>
-    <color name="begateway_button_text_alert">#ff3333</color>
-    <color name="begateway_button_primary_disabled">#ffe1e1e1</color>
-    <color name="begateway_hint">#b3b3b3</color>
-    <color name="begateway_control_normal">#ebebeb</color>
-    <color name="begateway_text_primary">#000000</color>
-    <color name="begateway_primary_black">#000000</color>
+    <color name="begateway_primary">#00695c</color>
+    <color name="begateway_primary_light">#439889</color>
+    <color name="begateway_primary_dark">#003d33</color>
+    <color name="begateway_secondary">#006064</color>
+    <color name="begateway_secondary_light">#428e92</color>
+    <color name="begateway_secondary_dark">#00363a</color>
+    <color name="begateway_text_on_primary">#ffffff</color>
+    <color name="begateway_text_on_secondary">#ffffff</color>
+    <color name="begateway_surface">#ffffff</color>
+    <color name="begateway_error">#B00020</color>
+
 </resources>

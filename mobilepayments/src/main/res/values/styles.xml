@@ -1,90 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <style name="begateway_Theme.Transparent" parent="begateway_Theme">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
-        <item name="android:windowTranslucentNavigation" tools:targetApi="kitkat">true</item>
+    <style name="begateway_Theme.Transparent">
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
-    </style>
-
-    <style name="begateway_Theme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="colorPrimary">@color/begateway_color_primary</item>
-        <item name="colorAccent">@color/begateway_color_accent</item>
-        <item name="textInputStyle">@style/begateway_TextInputLayoutStyle</item>
-        <item name="materialButtonStyle">@style/begateway_TextInputLayoutStyle</item>
-        <item name="bottomSheetDialogTheme">@style/begateway_MainDialogTheme</item>
-        <item name="checkboxStyle">@style/begateway_CheckBox</item>
-    </style>
-
-    <style name="begateway_CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
-        <item name="materialThemeOverlay">@style/begateway_ThemeOverlay.App.CheckBox</item>
-        <item name="android:layout_marginStart">@dimen/begateway_default_margin</item>
-        <item name="android:layout_marginEnd">@dimen/begateway_default_margin</item>
-        <item name="android:layout_marginTop">@dimen/begateway_default_margin_small</item>
-    </style>
-
-    <style name="begateway_ThemeOverlay.App.CheckBox" parent="">
-        <item name="colorOnSurface">@color/begateway_button_tint</item>
-        <item name="colorSecondary">@color/begateway_button_tint</item>
-    </style>
-
-    <style name="begateway_MainDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/begateway_MainBottomSheetStyle</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="begateway_TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:layout_marginStart">@dimen/begateway_default_margin</item>
-        <item name="android:layout_marginEnd">@dimen/begateway_default_margin</item>
-        <item name="android:layout_marginTop">@dimen/begateway_default_margin_small</item>
-        <item name="errorEnabled">true</item>
-        <item name="boxStrokeColor">@color/begateway_color_primary</item>
-    </style>
+    <style name="begateway_Theme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
 
-    <style name="begateway_MainBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/begateway_dialog_background</item>
-    </style>
+        <item name="colorSecondary">@color/begateway_secondary</item>
+        <item name="colorSecondaryVariant">@color/begateway_secondary_dark</item>
+        <item name="colorOnSecondary">@color/begateway_text_on_secondary</item>
 
-    <style name="begateway_Button" parent="Widget.MaterialComponents.Button">
-        <item name="materialThemeOverlay">@style/begateway_ThemeOverlay.App.Button</item>
-        <item name="android:textAppearance">@style/begateway_TextAppearance.App.Button</item>
-        <item name="android:layout_margin">@dimen/begateway_default_margin</item>
-        <item name="android:minHeight">@dimen/begateway_min_btn_height</item>
-        <item name="android:textColor">@color/begateway_text_primary</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="colorButtonNormal">@color/begateway_button_tint</item>
-        <item name="android:disabledAlpha">1.0</item>
-    </style>
+        <item name="colorPrimary">@color/begateway_primary</item>
+        <item name="colorPrimaryDark">@color/begateway_primary_dark</item>
+        <item name="colorPrimaryVariant">@color/begateway_primary_light</item>
+        <item name="colorOnPrimary">@color/begateway_text_on_primary</item>
 
-    <style name="begateway_ThemeOverlay.App.Button" parent="">
-        <item name="colorPrimary">@color/begateway_button_tint</item>
-        <item name="colorOnPrimary">@color/begateway_button_tint</item>
-        <item name="cornerRadius">@dimen/begateway_radius_big</item>
-    </style>
+        <item name="colorError">@color/begateway_error</item>
 
-    <style name="begateway_TextAppearance.App.Button" parent="TextAppearance.MaterialComponents.Button">
-        <item name="android:textStyle">normal</item>
-    </style>
+        <item name="textInputStyle">@style/begateway_Widget.BEGateWay.TextInputLayoutStyle</item>
 
-    <style name="begateway_CustomAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="shapeAppearanceOverlay">
-            @style/begateway_ShapeAppearanceOverlay.AlertDialog.Rounded
+        <item name="buttonStyle">@style/begateway_Widget.BEGateWay.Button</item>
+
+        <item name="bottomSheetDialogTheme">@style/begateway_Widget.BEGateWay.BottomDialog</item>
+
+        <item name="checkboxStyle">@style/begateway_Widget.BEGateWay.CheckBox</item>
+
+        <item name="toolbarStyle">@style/begateway_Widget.BEGateWay.Toolbar</item>
+        <item name="shapeAppearanceSmallComponent">
+            @style/begateway_ShapeAppearance.SmallComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">
+            @style/begateway_ShapeAppearance.LargeComponent
         </item>
     </style>
 
-    <style name="begateway_ShapeAppearanceOverlay.AlertDialog.Rounded" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
+    <style name="begateway_Widget.BEGateWay.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:elevation">@dimen/begateway_elevation_toolbar</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="begateway_Widget.BEGateWay.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:layout_marginStart">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginEnd">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginTop">@dimen/begateway_default_margin_small</item>
+    </style>
+
+    <style name="begateway_Widget.BEGateWay.TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_marginStart">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginEnd">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginTop">@dimen/begateway_default_margin</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="begateway_Widget.BEGateWay.BottomDialog" parent="ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="begateway_Widget.BEGateWay.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_marginStart">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginEnd">@dimen/begateway_default_margin</item>
+        <item name="android:layout_marginTop">@dimen/begateway_default_margin_small</item>
+        <item name="android:minHeight">@dimen/begateway_min_button_height</item>
     </style>
 </resources>

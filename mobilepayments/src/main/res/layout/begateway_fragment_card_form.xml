@@ -25,7 +25,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_number"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/begateway_form_hint_card_number"
@@ -46,7 +45,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_name"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/begateway_form_hint_cardholder_name"
@@ -66,7 +64,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_expiry_date"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/begateway_form_hint_expiration"
@@ -94,7 +91,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_cvc"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/begateway_form_hint_cvv"
@@ -114,7 +110,6 @@
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/mcb_save_card"
-                style="@style/begateway_CheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/begateway_savecard"
@@ -124,7 +119,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mb_pay"
-                style="@style/begateway_Button"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_alignParentBottom="true"
                 android:text="@string/begateway_button_pay"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <resources>
     <string name="begateway_form_hint_cvv" translatable="false">@string/begateway_cvv</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Cancel</string>
+    <string name="begateway_turn_on">Turn on</string>
+    <string name="begateway_error">Error</string>
+    <string name="begateway_error_during_scanning">An error occurred during scanning</string>
+    <string name="begateway_turn_on_nfc_message">Please turn on NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC not supported</string>
+    <string name="begateway_nfc_attach_bank_card">Please attach bank card to the phone</string>
+    <string name="begateway_scan_by_camera">Scan by camera</string>
+    <string name="begateway_scan_by_nfc">Scan by NFC</string>
 
     <string name="begateway_form_hint_card_number">Card number</string>
     <string name="begateway_form_hint_expiration">Expiration date</string>
@@ -21,7 +31,7 @@
     <string name="begateway_savecard">Save card</string>
     <string name="begateway_button_pay">Pay</string>
     <string name="begateway_secure_info">Secure payment is provided by %s</string>
-    <string name="begateway_please_wait" translatable="false">Please wait</string>
+    <string name="begateway_please_wait">Please wait</string>
 
 
 </resources>

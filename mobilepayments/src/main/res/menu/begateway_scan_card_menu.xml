@@ -5,11 +5,11 @@
     <item
         android:id="@+id/action_scan_camera"
         android:icon="@drawable/begateway_ic_scan_card_data"
-        android:title="@string/begateway_form_hint_card_number"
+        android:title="@string/begateway_scan_by_camera"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_scan_nfc"
         android:icon="@drawable/begateway_ic_nfc_scan"
-        android:title="@string/begateway_form_hint_card_number"
+        android:title="@string/begateway_scan_by_nfc"
         app:showAsAction="ifRoom" />
 </menu>
