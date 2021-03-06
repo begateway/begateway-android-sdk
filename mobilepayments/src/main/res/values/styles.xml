@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="begateway_Theme.Transparent">
+    <style name="begateway_Theme.Transparent" tools="ove">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
@@ -20,13 +20,14 @@
         <item name="colorPrimary">@color/begateway_primary</item>
         <item name="colorPrimaryDark">@color/begateway_primary_dark</item>
         <item name="colorPrimaryVariant">@color/begateway_primary_light</item>
-        <item name="colorOnPrimary">@color/begateway_text_on_primary</item>
+        <item name="colorOnPrimary">@color/begateway_on_primary</item>
 
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
         <item name="colorError">@color/begateway_error</item>
 
-        <item name="textInputStyle">@style/begateway_Widget.BEGateWay.TextInputLayoutStyle</item>
+        <item name="textInputStyle">@style/begateway_Widget.TextInputLayoutStyle</item>
 
-        <item name="bottomSheetDialogTheme">@style/begateway_Widget.BEGateWay.BottomDialog</item>
+        <item name="bottomSheetDialogTheme">@style/begateway_ThemeOverlay.Widget.BottomDialog</item>
 
         <item name="shapeAppearanceSmallComponent">
             @style/begateway_ShapeAppearance.SmallComponent
@@ -36,12 +37,13 @@
         </item>
     </style>
 
-    <style name="begateway_Widget.BEGateWay.TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="begateway_Widget.TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="errorEnabled">true</item>
     </style>
 
-    <style name="begateway_Widget.BEGateWay.BottomDialog" parent="ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">
+    <style name="begateway_ThemeOverlay.Widget.BottomDialog" parent="ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+
 </resources>

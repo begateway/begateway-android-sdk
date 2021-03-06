@@ -6,7 +6,7 @@
     <color name="begateway_secondary">#006064</color>
     <color name="begateway_secondary_light">#428e92</color>
     <color name="begateway_secondary_dark">#00363a</color>
-    <color name="begateway_text_on_primary">#ffffff</color>
+    <color name="begateway_on_primary">#ffffff</color>
     <color name="begateway_text_on_secondary">#ffffff</color>
     <color name="begateway_surface">#ffffff</color>
     <color name="begateway_error">#B00020</color>
