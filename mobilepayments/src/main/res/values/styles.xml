@@ -25,7 +25,7 @@
         <item name="colorControlNormal">?attr/colorOnPrimary</item>
         <item name="colorError">@color/begateway_error</item>
 
-        <item name="textInputStyle">@style/begateway_Widget.TextInputLayoutStyle</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
 
         <item name="bottomSheetDialogTheme">@style/begateway_ThemeOverlay.Widget.BottomDialog</item>
 
@@ -35,10 +35,6 @@
         <item name="shapeAppearanceLargeComponent">
             @style/begateway_ShapeAppearance.LargeComponent
         </item>
-    </style>
-
-    <style name="begateway_Widget.TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="errorEnabled">true</item>
     </style>
 
     <style name="begateway_ThemeOverlay.Widget.BottomDialog" parent="ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">

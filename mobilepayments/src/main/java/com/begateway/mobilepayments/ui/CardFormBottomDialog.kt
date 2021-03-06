@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.ui
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
@@ -205,6 +206,17 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         super.onDestroy()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            REQUEST_CODE_SCAN_BANK_CARD -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    CardData.getDataFromIntent(data)?.let { applyCardDataFromIntent(it) }
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun applyCardDataFromIntent(cardData: CardData) {
         binding?.apply {
             val pan = cardData.cardNumber.orEmpty().filter(Char::isDigit)
@@ -259,12 +271,14 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         }
         nfcRecognizer?.onCreate(activity)
         nfcRecognizer?.start(activity)
-        nfcDialog = onMessageDialogListener?.showMessageDialog(
-            requireContext(),
-            messageId = R.string.begateway_nfc_attach_bank_card,
-            positiveButtonTextId = R.string.begateway_cancel,
-            positiveOnClick = ::nfcScanningComplete
-        )
+        if (nfcAdapter?.isEnabled == true) {
+            nfcDialog = onMessageDialogListener?.showMessageDialog(
+                requireContext(),
+                messageId = R.string.begateway_nfc_attach_bank_card,
+                positiveButtonTextId = R.string.begateway_cancel,
+                positiveOnClick = ::nfcScanningComplete
+            )
+        }
     }
 
     private fun updateButtonState() {
@@ -593,6 +607,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     private fun nfcScanningComplete(dialog: DialogInterface? = null, which: Int? = null) {
         val requireActivity = requireActivity()
         nfcRecognizer?.stop(requireActivity)
+        nfcRecognizer?.releaseCallbacks()
         nfcDialog?.dismiss()
         dialog?.dismiss()
     }
