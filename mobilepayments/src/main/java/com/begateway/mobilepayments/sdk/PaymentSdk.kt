@@ -261,7 +261,7 @@ class PaymentSdk private constructor() {
         }
     }
 
-    private fun onPaymentFinished(beGatewayResponse: BeGatewayResponse) {
+    internal fun onPaymentFinished(beGatewayResponse: BeGatewayResponse) {
         callbacks.forEach {
             it.onPaymentFinished(
                 beGatewayResponse = beGatewayResponse,

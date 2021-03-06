@@ -1,6 +1,5 @@
 package com.begateway.mobilepayments.ui
 
-import android.app.Activity
 import android.os.Bundle
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.sdk.OnResultListener
@@ -12,8 +11,9 @@ internal class CheckoutActivity : AbstractActivity(), OnResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!PaymentSdk.instance.isSdkInitialized) {
-            setResult(Activity.RESULT_CANCELED)
+            PaymentSdk.instance.onPaymentFinished(BeGatewayResponse(message = "SDK not initialized"))
             finish()
+            return
         }
         attachCardDialogFragment()
         PaymentSdk.instance.addCallBackListener(this)
