@@ -25,6 +25,4 @@
     <dimen name="begateway_small_component_corner_size">12dp</dimen>
     <dimen name="begateway_large_component_corner_size">24dp</dimen>
 
-    <dimen name="begateway_min_button_height">48dp</dimen>
-
 </resources>
