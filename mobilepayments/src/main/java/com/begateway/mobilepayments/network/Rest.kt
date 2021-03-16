@@ -9,6 +9,7 @@ import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -19,7 +20,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 internal const val BEARER_AUTH_STRING = "Bearer "
 internal const val BASIC_AUTH_STRING = "Basic "
 
-internal class Rest(baseUrl: String, isDebugMode: Boolean) {
+internal const val CONTENT_TYPE = "Content-Type: application/json; charset=utf-8"
+internal const val ACCEPT_HEADER = "Accept: application/json"
+internal const val X_API_VERSION = "X-Api-Version: 2"
+internal const val AUTORIZATION_HEADER_NAME = "Authorization"
+
+internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
 
     private val retrofit: Retrofit
     private val api: Api
@@ -29,6 +35,15 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
             if (isDebugMode) addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            addInterceptor { chain ->
+                val original = chain.request()
+                val request = original.newBuilder()
+                    .headers(Headers.headersOf(CONTENT_TYPE, ACCEPT_HEADER, X_API_VERSION))
+                    .header(AUTORIZATION_HEADER_NAME, BEARER_AUTH_STRING + publicKey)
+                    .method(original.method, original.body)
+                    .build()
+                chain.proceed(request)
+            }
             build()
         }
         val gsonBuilder = GsonBuilder()
@@ -43,24 +58,21 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
     }
 
     suspend fun getPaymentToken(
-        publicKey: String,
         requestBody: TokenCheckoutData
     ): HttpResult<CheckoutWithTokenData> {
-        return safeApiCall { api.getPaymentToken(BEARER_AUTH_STRING + publicKey, requestBody) }
+        return safeApiCall { api.getPaymentToken(requestBody) }
     }
 
     suspend fun payWithCard(
-        publicKey: String,
         requestBody: PaymentRequest
     ): HttpResult<BeGatewayResponse> {
-        return safeApiCall { api.payWithCard(BEARER_AUTH_STRING + publicKey, requestBody) }
+        return safeApiCall { api.payWithCard(requestBody) }
     }
 
     suspend fun getPaymentStatus(
-        publicKey: String,
         token: String
     ): HttpResult<BeGatewayResponse> {
-        return safeApiCall { api.getPaymentStatus(BEARER_AUTH_STRING + publicKey, token) }
+        return safeApiCall { api.getPaymentStatus(token) }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")

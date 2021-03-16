@@ -83,7 +83,7 @@ class PaymentSdk private constructor() {
         settings: PaymentSdkSettings,
     ) {
         this.settings = settings
-        rest = Rest(settings.endpoint, settings.isDebugMode)
+        rest = Rest(settings.endpoint, settings.isDebugMode, settings.publicKey)
     }
 
     @Keep
@@ -101,7 +101,7 @@ class PaymentSdk private constructor() {
         requestBody: TokenCheckoutData
     ) {
         settings.returnUrl = requestBody.checkout.settings.returnUrl
-        when (val paymentToken = rest.getPaymentToken(settings.publicKey, requestBody)) {
+        when (val paymentToken = rest.getPaymentToken(requestBody)) {
             is HttpResult.Success -> {
                 checkoutWithTokenData = paymentToken.data
                 withContext(Dispatchers.Main) {
@@ -121,7 +121,7 @@ class PaymentSdk private constructor() {
         activity: Activity
     ) {
         val localRequestBody = applyEncryption(requestBody)
-        when (val pay = rest.payWithCard(settings.publicKey, localRequestBody)) {
+        when (val pay = rest.payWithCard(localRequestBody)) {
             is HttpResult.Success -> {
                 val data = pay.data
                 if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
@@ -226,7 +226,7 @@ class PaymentSdk private constructor() {
         )
         while (startTime < TIMEOUT_MILLISECONDS) {
             val currentTime = System.currentTimeMillis()
-            when (val paymentStatus = rest.getPaymentStatus(settings.publicKey, token)) {
+            when (val paymentStatus = rest.getPaymentStatus(token)) {
                 is HttpResult.Success -> {
                     beGatewayResponse = paymentStatus.data
                     if (beGatewayResponse.status != ResponseStatus.INCOMPLETE) {
