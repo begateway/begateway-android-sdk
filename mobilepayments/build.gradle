@@ -13,13 +13,17 @@ android {
         targetSdkVersion 30
         versionCode 45
         versionName version
-
-        consumerProguardFiles 'proguard.cfg'
+        buildConfigField 'int', 'MAXIMUM_VALID_YEAR_DIFFERENCE', '30'
+        buildConfigField 'int', 'EXPIRY_DATE_LENGTH', '7'
+        buildConfigField 'String', 'NFC_CARD_NUMBER_KEY', '"card_number"'
+        buildConfigField 'String', 'NFC_EXPIRY_DATE_KEY', '"expire_date"'
+        buildConfigField 'String', 'BANK_CARD_REGEX', '"[^\\\\d ]*"'
+        buildConfigField "String", "SCAN_CARD_BANK_ACTION", '"com.begateway.mobilepayments.action.SCAN_BANK_CARD"'
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -51,7 +55,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

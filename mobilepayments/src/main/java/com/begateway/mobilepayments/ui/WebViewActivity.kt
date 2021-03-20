@@ -7,8 +7,11 @@ import android.os.Bundle
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.begateway.mobilepayments.PaymentSdk
 import com.begateway.mobilepayments.databinding.BegatewayWebViewActivityBinding
+import com.begateway.mobilepayments.sdk.PaymentSdk
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 internal class WebViewActivity : AbstractActivity() {
     companion object {
@@ -19,14 +22,12 @@ internal class WebViewActivity : AbstractActivity() {
             }
     }
 
-    private var isCorrect: Boolean = false
-
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BegatewayWebViewActivityBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setToolBar(toolbar)
+            setToolbar(toolbar)
             webView.settings.javaScriptEnabled = true
             webView.settings.allowFileAccess = true
             webView.webChromeClient = object : WebChromeClient() {}
@@ -37,17 +38,14 @@ internal class WebViewActivity : AbstractActivity() {
 
                 override fun onPageFinished(view: WebView, url: String) {
                     if (url.contains(PaymentSdk.instance.settings.returnUrl, true)) {
-                        isCorrect = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            PaymentSdk.instance.onThreeDSecureComplete()
+                        }
                         finish()
                     }
                 }
             }
             webView.loadUrl(intent.getStringExtra(THREE_DS_URL)!!)
         }
-    }
-
-    override fun onDestroy() {
-        PaymentSdk.instance.onThreeDSecureFinished(isCorrect)
-        super.onDestroy()
     }
 }

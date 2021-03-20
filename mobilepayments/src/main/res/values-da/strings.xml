@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Husk mig næste gang</string>
     <string name="begateway_button_pay">Betal</string>
     <string name="begateway_secure_info">Sikker betaling leveres af %s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Annuller</string>
+    <string name="begateway_turn_on">Aktivér</string>
+    <string name="begateway_error">Fejl</string>
+    <string name="begateway_error_during_scanning">Der opstod en fejl under scanning</string>
+    <string name="begateway_turn_on_nfc_message">Aktivér NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC er ikke understøttet</string>
+    <string name="begateway_nfc_attach_bank_card">Vedhæft bankkortet til telefonen</string>
+    <string name="begateway_scan_by_camera">Scan med kamera</string>
+    <string name="begateway_scan_by_nfc">Scan med NFC</string>
+    <string name="begateway_please_wait">Vent venligst</string>
 </resources>

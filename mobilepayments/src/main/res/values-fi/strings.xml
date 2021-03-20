@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Muista seuraavalla kerralla</string>
     <string name="begateway_button_pay">Maksa</string>
     <string name="begateway_secure_info">Turvallisen maksun tarjoaa %s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Peruuta</string>
+    <string name="begateway_turn_on">Käytä</string>
+    <string name="begateway_error">Virhe</string>
+    <string name="begateway_error_during_scanning">Skannaamisen aikana tapahtui virhe</string>
+    <string name="begateway_turn_on_nfc_message">Ota NFC käyttöön</string>
+    <string name="begateway_nfc_not_supported_message">NFC:tä ei tueta</string>
+    <string name="begateway_nfc_attach_bank_card">Liitä pankkikortti puhelimeen</string>
+    <string name="begateway_scan_by_camera">Skannaa kameralla</string>
+    <string name="begateway_scan_by_nfc">Skannaa NFC:llä</string>
+    <string name="begateway_please_wait">Odota</string>
 </resources>

@@ -19,9 +19,6 @@
             android:name="com.begateway.mobilepayments.ui.CheckoutActivity"
             android:theme="@style/begateway_Theme.Transparent" />
         <activity
-            android:name="com.begateway.mobilepayments.cardScanner.ui.NfcScannerActivity"
-            android:theme="@style/begateway_Theme" />
-        <activity
             android:name="com.begateway.mobilepayments.ui.WebViewActivity"
             android:theme="@style/begateway_Theme" />
     </application>

@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Запомнить карту</string>
     <string name="begateway_button_pay">Оплатить</string>
     <string name="begateway_secure_info">Безопасная оплата обеспечивается %s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Отменить</string>
+    <string name="begateway_turn_on">Включить</string>
+    <string name="begateway_error">Ошибка</string>
+    <string name="begateway_error_during_scanning">При сканировании произошла ошибка</string>
+    <string name="begateway_turn_on_nfc_message">Включите NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC не поддерживается</string>
+    <string name="begateway_nfc_attach_bank_card">Приложите банковскую карту к телефону</string>
+    <string name="begateway_scan_by_camera">Сканировать камерой</string>
+    <string name="begateway_scan_by_nfc">Сканировать через NFC</string>
+    <string name="begateway_please_wait">Ожидайте</string>
 </resources>

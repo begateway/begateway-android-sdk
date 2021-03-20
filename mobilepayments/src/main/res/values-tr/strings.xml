@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Sonraki sefere beni hatırla</string>
     <string name="begateway_button_pay">Öde</string>
     <string name="begateway_secure_info">Güvenli ödeme sağlayıcısı: %s</string>
+    <string name="begateway_ok">Tamam</string>
+    <string name="begateway_cancel">İptal</string>
+    <string name="begateway_turn_on">Aç</string>
+    <string name="begateway_error">Hata</string>
+    <string name="begateway_error_during_scanning">Tarama sırasında bir hata oluştu</string>
+    <string name="begateway_turn_on_nfc_message">Lütfen NFC\'yi açın</string>
+    <string name="begateway_nfc_not_supported_message">NFC desteklenmiyor</string>
+    <string name="begateway_nfc_attach_bank_card">Lütfen banka kartını telefona ekleyin</string>
+    <string name="begateway_scan_by_camera">Kamerayla tara</string>
+    <string name="begateway_scan_by_nfc">NFC ile tara</string>
+    <string name="begateway_please_wait">Lütfen bekleyin</string>
 </resources>

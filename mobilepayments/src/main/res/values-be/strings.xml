@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Запомніць картку</string>
     <string name="begateway_button_pay">Аплаціць</string>
     <string name="begateway_secure_info">Абароненыя плацяжы на платформе %s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Скасаваць</string>
+    <string name="begateway_turn_on">Уключыць</string>
+    <string name="begateway_error">Памылка</string>
+    <string name="begateway_error_during_scanning">Пры сканіраванні адбылася памылка</string>
+    <string name="begateway_turn_on_nfc_message">Уключыце NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC не падтрымліваецца</string>
+    <string name="begateway_nfc_attach_bank_card">Прыкладзіце банкаўскую карту да тэлефона</string>
+    <string name="begateway_scan_by_camera">Сканіраванне камерай</string>
+    <string name="begateway_scan_by_nfc">Сканіраванне праз NFC</string>
+    <string name="begateway_please_wait">Чакайце</string>
 </resources>

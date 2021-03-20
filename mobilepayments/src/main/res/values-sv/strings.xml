@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Kom ihåg mig nästa gång</string>
     <string name="begateway_button_pay">Betala</string>
     <string name="begateway_secure_info">Säker betalning tillhandahålls av %s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">Avbryt</string>
+    <string name="begateway_turn_on">Slå på</string>
+    <string name="begateway_error">Fel</string>
+    <string name="begateway_error_during_scanning">Ett fel inträffade vid skanning</string>
+    <string name="begateway_turn_on_nfc_message">Slå på NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC stöds inte</string>
+    <string name="begateway_nfc_attach_bank_card">Bifoga bankkort till telefonen</string>
+    <string name="begateway_scan_by_camera">Skanna med kamera</string>
+    <string name="begateway_scan_by_nfc">Skanna med NFC</string>
+    <string name="begateway_please_wait">Vänta</string>
 </resources>
