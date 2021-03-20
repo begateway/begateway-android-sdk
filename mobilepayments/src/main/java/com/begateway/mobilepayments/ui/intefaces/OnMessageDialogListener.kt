@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.ui
+package com.begateway.mobilepayments.ui.intefaces
 
 import android.content.Context
 import android.content.DialogInterface

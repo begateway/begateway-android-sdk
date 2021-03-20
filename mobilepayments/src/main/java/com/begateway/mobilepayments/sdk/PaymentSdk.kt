@@ -268,7 +268,7 @@ class PaymentSdk private constructor() {
         resetValues()
     }
 
-    private fun resetValues() {
+    internal fun resetValues() {
         isSaveCard = false
         cardToken = null
         token = null

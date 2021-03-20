@@ -11,12 +11,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
+import com.begateway.mobilepayments.ui.intefaces.OnActionbarSetup
+import com.begateway.mobilepayments.ui.intefaces.OnMessageDialogListener
+import com.begateway.mobilepayments.ui.intefaces.OnProgressDialogListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private const val IS_PROGRESS_DIALOG_SHOWED = "com.begateway.mobilepayments.IS_PROGRESS_SHOWED"
 
-internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialogListener,
-    OnMessageDialogListener {
+internal abstract class AbstractActivity : AppCompatActivity(),
+    OnProgressDialogListener,
+    OnMessageDialogListener,
+    OnActionbarSetup {
 
     private var isDialogWasShowed: Boolean = false
     private var progressDialog: AlertDialog? = null
@@ -40,11 +45,8 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
         }
     }
 
-    fun setToolBar(
-        toolbar: Toolbar,
-        title: String? = null,
-        onBackPressedAction: (() -> Unit)? = { onBackPressed() }
-    ) {
+    protected fun setToolbar(toolbar: Toolbar) = addToolBar(toolbar, null, ::onBackPressed)
+    override fun addToolBar(toolbar: Toolbar, title: String?, onBackPressedAction: (() -> Unit)?) {
         setSupportActionBar(toolbar)
 
         supportActionBar?.apply {

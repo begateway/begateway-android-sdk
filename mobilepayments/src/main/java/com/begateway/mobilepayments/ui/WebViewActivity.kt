@@ -27,7 +27,7 @@ internal class WebViewActivity : AbstractActivity() {
         super.onCreate(savedInstanceState)
         BegatewayWebViewActivityBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setToolBar(toolbar)
+            setToolbar(toolbar)
             webView.settings.javaScriptEnabled = true
             webView.settings.allowFileAccess = true
             webView.webChromeClient = object : WebChromeClient() {}
