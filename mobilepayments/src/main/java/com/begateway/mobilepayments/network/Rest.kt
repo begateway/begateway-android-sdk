@@ -29,8 +29,8 @@ internal const val AUTORIZATION_HEADER_NAME = "Authorization"
 
 internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
 
-    private val retrofit: Retrofit
     private val api: Api
+    private val gson: Gson = Gson()
 
     init {
         val client = OkHttpClient.Builder().apply {
@@ -51,13 +51,13 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         }.build()
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser())
-        retrofit = Retrofit.Builder()
+
+        api = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gsonBuilder.create()))
             .build()
-
-        api = retrofit.create(Api::class.java)
+            .create(Api::class.java)
     }
 
     suspend fun getPaymentToken(
@@ -87,7 +87,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
             } else {
                 HttpResult.UnSuccess(
                     BeGatewayResponseParser().parseJson(
-                        Gson().fromJson(response.errorBody()?.string(), JsonElement::class.java)
+                        gson.fromJson(response.errorBody()?.string(), JsonElement::class.java)
                     )
                 )
             }
