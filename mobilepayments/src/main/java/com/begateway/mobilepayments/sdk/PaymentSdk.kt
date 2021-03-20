@@ -60,19 +60,18 @@ class PaymentSdk private constructor() {
         internal val instance = PaymentSdk()
     }
 
-    internal lateinit var settings: PaymentSdkSettings
-    private lateinit var rest: Rest
-
-    internal val isSdkInitialized: Boolean
-        get() = ::checkoutWithTokenData.isInitialized
-    private var callbacks: ArrayList<OnResultListener> = arrayListOf()
-
     internal var isSaveCard: Boolean = false
-    private var token: String? = null
     internal var cardToken: String? = null
+    internal lateinit var settings: PaymentSdkSettings
+    internal val isSdkInitialized: Boolean
+        get() = checkoutWithTokenData != null
+
+    private lateinit var rest: Rest
+    private val callbacks: ArrayList<OnResultListener> = arrayListOf()
+    private var token: String? = null
 
     @Keep
-    lateinit var checkoutWithTokenData: CheckoutWithTokenData
+    var checkoutWithTokenData: CheckoutWithTokenData? = null
 
     //only for test remove in prod
     fun updatePublicKey(key: String) {
@@ -88,7 +87,7 @@ class PaymentSdk private constructor() {
 
     @Keep
     fun addCallBackListener(onResultListener: OnResultListener) {
-        this.callbacks.add(onResultListener)
+        callbacks.add(onResultListener)
     }
 
     @Keep
@@ -103,14 +102,15 @@ class PaymentSdk private constructor() {
         settings.returnUrl = requestBody.checkout.settings.returnUrl
         when (val paymentToken = rest.getPaymentToken(requestBody)) {
             is HttpResult.Success -> {
-                checkoutWithTokenData = paymentToken.data
+                val data = paymentToken.data
+                checkoutWithTokenData = data
                 withContext(Dispatchers.Main) {
                     callbacks.forEach {
-                        it.onTokenReady(checkoutWithTokenData.checkout.token)
+                        it.onTokenReady(data.checkout.token)
                     }
                 }
             }
-            else -> withContext(Dispatchers.Main) { onNotSuccess(paymentToken) }
+            else -> onNotSuccess(paymentToken)
         }
     }
 
@@ -140,7 +140,7 @@ class PaymentSdk private constructor() {
                     }
                 }
             }
-            else -> withContext(Dispatchers.Main) { onNotSuccess(pay) }
+            else -> onNotSuccess(pay)
         }
     }
 
@@ -237,10 +237,7 @@ class PaymentSdk private constructor() {
                     }
                 }
                 else -> {
-                    withContext(Dispatchers.Main) {
-                        this@PaymentSdk.token = null
-                        onNotSuccess(paymentStatus)
-                    }
+                    onNotSuccess(paymentStatus)
                     return
                 }
             }
@@ -252,11 +249,11 @@ class PaymentSdk private constructor() {
         }
     }
 
-    private fun <T : Any> onNotSuccess(result: HttpResult<T>) {
-        when (result) {
-            is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
-            is HttpResult.Error -> {
-                onPaymentFinished(result.beGatewayResponse)
+    private suspend fun <T : Any> onNotSuccess(result: HttpResult<T>) {
+        withContext(Dispatchers.Main) {
+            when (result) {
+                is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
+                is HttpResult.Error -> onPaymentFinished(result.beGatewayResponse)
             }
         }
     }
@@ -268,8 +265,13 @@ class PaymentSdk private constructor() {
                 cardToken = cardToken
             )
         }
+        resetValues()
+    }
+
+    private fun resetValues() {
         isSaveCard = false
         cardToken = null
         token = null
+        checkoutWithTokenData = null
     }
 }

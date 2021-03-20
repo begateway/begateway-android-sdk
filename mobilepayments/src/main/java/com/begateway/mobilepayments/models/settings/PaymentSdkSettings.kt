@@ -10,4 +10,5 @@ internal data class PaymentSdkSettings(
     var isCardHolderFieldVisible: Boolean = true,
     var isCardDateFieldVisible: Boolean = true,
     var isCardCVCFieldVisible: Boolean = true,
+    var isSaveCardVisible: Boolean = true,
 )

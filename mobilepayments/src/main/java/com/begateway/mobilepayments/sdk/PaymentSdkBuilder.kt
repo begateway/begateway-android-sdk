@@ -40,6 +40,10 @@ class PaymentSdkBuilder {
         apply { settings.isCardCVCFieldVisible = isVisible }
 
     @Keep
+    fun setSaveCardVisibility(isVisible: Boolean) =
+        apply { settings.isSaveCardVisible = isVisible }
+
+    @Keep
     @Throws(IllegalArgumentException::class)
     fun build(): PaymentSdk {
         require(settings.publicKey.isNotBlank()) { "Public key can not be empty" }

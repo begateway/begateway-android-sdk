@@ -19,4 +19,15 @@
     <string name="begateway_savecard">ბარათის შენახვა</string>
     <string name="begateway_button_pay">გადახდა</string>
     <string name="begateway_secure_info">უსაფრთხო გადახდა გარანტირებულია %s</string>
+    <string name="begateway_ok">კარგი</string>
+    <string name="begateway_cancel">გაუქმება</string>
+    <string name="begateway_turn_on">ჩართვა</string>
+    <string name="begateway_error">შეცდომა</string>
+    <string name="begateway_error_during_scanning">სკანირებისას გამოვლინდა შეცდომა</string>
+    <string name="begateway_turn_on_nfc_message">გთხოვთ ჩართეთ NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC არ არის მხარდაჭერილი</string>
+    <string name="begateway_nfc_attach_bank_card">გთხოვთ ტელეფონს დაუკავშირეთ თქვენი საბანკო ბარათი</string>
+    <string name="begateway_scan_by_camera">კამერის სკანირება</string>
+    <string name="begateway_scan_by_nfc">სკანირება NFC-ით</string>
+    <string name="begateway_please_wait">გთხოვთ დაელოდეთ</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.begateway.mobilepayments.models.network.response
 
+import androidx.annotation.Keep
+
+@Keep
 data class BeGatewayResponse(
     val status: ResponseStatus = ResponseStatus.ERROR,
     val message: String? = "undefined",

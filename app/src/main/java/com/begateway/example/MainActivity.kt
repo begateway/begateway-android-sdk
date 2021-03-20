@@ -157,16 +157,18 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     override fun onPaymentFinished(beGatewayResponse: BeGatewayResponse, cardToken: String?) {
-        getMessageDialog(
-            this,
-            "Result",
-            beGatewayResponse.message,
-            positiveOnClick = { dialog, _ ->
-                dialog.dismiss()
-            },
-            isCancellableOutside = false
-        ).show()
-        isProgressVisible(false)
+        if (!isFinishing) {
+            getMessageDialog(
+                this,
+                "Result",
+                beGatewayResponse.message,
+                positiveOnClick = { dialog, _ ->
+                    dialog.dismiss()
+                },
+                isCancellableOutside = false
+            ).show()
+            isProgressVisible(false)
+        }
     }
 
     private fun getMessageDialog(

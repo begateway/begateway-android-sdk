@@ -9,7 +9,6 @@ import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -20,9 +19,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 internal const val BEARER_AUTH_STRING = "Bearer "
 internal const val BASIC_AUTH_STRING = "Basic "
 
-internal const val CONTENT_TYPE = "Content-Type: application/json; charset=utf-8"
-internal const val ACCEPT_HEADER = "Accept: application/json"
-internal const val X_API_VERSION = "X-Api-Version: 2"
+internal const val CONTENT_TYPE = "Content-Type"
+internal const val CONTENT_TYPE_VALUE = "application/json; charset=utf-8"
+internal const val ACCEPT_HEADER = "Accept"
+internal const val ACCEPT_HEADER_VALUE = " application/json"
+internal const val X_API_VERSION = "X-Api-Version"
+internal const val X_API_VERSION_VALUE = "2"
 internal const val AUTORIZATION_HEADER_NAME = "Authorization"
 
 internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
@@ -31,21 +33,22 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
     private val api: Api
 
     init {
-        val client = OkHttpClient.Builder().run {
-            if (isDebugMode) addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+        val client = OkHttpClient.Builder().apply {
             addInterceptor { chain ->
                 val original = chain.request()
                 val request = original.newBuilder()
-                    .headers(Headers.headersOf(CONTENT_TYPE, ACCEPT_HEADER, X_API_VERSION))
-                    .header(AUTORIZATION_HEADER_NAME, BEARER_AUTH_STRING + publicKey)
+                    .addHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE)
+                    .addHeader(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+                    .addHeader(X_API_VERSION, X_API_VERSION_VALUE)
+                    .addHeader(AUTORIZATION_HEADER_NAME, BEARER_AUTH_STRING + publicKey)
                     .method(original.method, original.body)
                     .build()
                 chain.proceed(request)
             }
-            build()
-        }
+            if (isDebugMode) addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+        }.build()
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser())
         retrofit = Retrofit.Builder()
