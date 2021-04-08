@@ -19,4 +19,15 @@
     <string name="begateway_savecard">下次记住我</string>
     <string name="begateway_button_pay">支付</string>
     <string name="begateway_secure_info">安全付款提供方：%s</string>
+    <string name="begateway_ok">确定</string>
+    <string name="begateway_cancel">取消</string>
+    <string name="begateway_turn_on">打开</string>
+    <string name="begateway_error">错误</string>
+    <string name="begateway_error_during_scanning">扫描过程中发生错误</string>
+    <string name="begateway_turn_on_nfc_message">请开启 NFC</string>
+    <string name="begateway_nfc_not_supported_message">不支持 NFC</string>
+    <string name="begateway_nfc_attach_bank_card">请将银行卡紧贴手机</string>
+    <string name="begateway_scan_by_camera">用摄像头扫描</string>
+    <string name="begateway_scan_by_nfc">用 NFC 扫描</string>
+    <string name="begateway_please_wait">请稍等</string>
 </resources>

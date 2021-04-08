@@ -19,4 +19,15 @@
     <string name="begateway_savecard">次回もこれを使用する</string>
     <string name="begateway_button_pay">支払う</string>
     <string name="begateway_secure_info">セキュア決済の提供元：%s</string>
+    <string name="begateway_ok">OK</string>
+    <string name="begateway_cancel">キャンセル</string>
+    <string name="begateway_turn_on">オンにする</string>
+    <string name="begateway_error">エラー</string>
+    <string name="begateway_error_during_scanning">スキャン中にエラーが発生しました</string>
+    <string name="begateway_turn_on_nfc_message">NFCをオンにしてください</string>
+    <string name="begateway_nfc_not_supported_message">NFCはサポートされていません</string>
+    <string name="begateway_nfc_attach_bank_card">電話に銀行カードを添付してください</string>
+    <string name="begateway_scan_by_camera">カメラでスキャンする</string>
+    <string name="begateway_scan_by_nfc">NFCでスキャンする</string>
+    <string name="begateway_please_wait">お待ちください</string>
 </resources>

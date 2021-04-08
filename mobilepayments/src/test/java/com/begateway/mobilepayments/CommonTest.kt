@@ -1,10 +1,5 @@
 package com.begateway.mobilepayments
 
-import com.begateway.mobilepayments.model.TransactionType
-import com.begateway.mobilepayments.model.network.request.Checkout
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import org.junit.Test
 
 class CommonTest {

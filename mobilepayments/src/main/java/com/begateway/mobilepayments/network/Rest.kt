@@ -1,11 +1,11 @@
 package com.begateway.mobilepayments.network
 
 import android.util.Log
-import com.begateway.mobilepayments.model.network.request.PaymentRequest
-import com.begateway.mobilepayments.model.network.request.TokenCheckoutData
-import com.begateway.mobilepayments.model.network.response.BepaidResponse
-import com.begateway.mobilepayments.model.network.response.CheckoutWithTokenData
-import com.begateway.mobilepayments.parser.BepaidResponseParser
+import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
+import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
+import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -19,48 +19,63 @@ import retrofit2.converter.gson.GsonConverterFactory
 internal const val BEARER_AUTH_STRING = "Bearer "
 internal const val BASIC_AUTH_STRING = "Basic "
 
-internal class Rest(baseUrl: String, isDebugMode: Boolean) {
+internal const val CONTENT_TYPE = "Content-Type"
+internal const val CONTENT_TYPE_VALUE = "application/json; charset=utf-8"
+internal const val ACCEPT_HEADER = "Accept"
+internal const val ACCEPT_HEADER_VALUE = " application/json"
+internal const val X_API_VERSION = "X-Api-Version"
+internal const val X_API_VERSION_VALUE = "2"
+internal const val AUTORIZATION_HEADER_NAME = "Authorization"
 
-    private val retrofit: Retrofit
+internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
+
     private val api: Api
+    private val gson: Gson = Gson()
 
     init {
-        val client = OkHttpClient.Builder().run {
+        val client = OkHttpClient.Builder().apply {
+            addInterceptor { chain ->
+                val original = chain.request()
+                val request = original.newBuilder()
+                    .addHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE)
+                    .addHeader(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+                    .addHeader(X_API_VERSION, X_API_VERSION_VALUE)
+                    .addHeader(AUTORIZATION_HEADER_NAME, BEARER_AUTH_STRING + publicKey)
+                    .method(original.method, original.body)
+                    .build()
+                chain.proceed(request)
+            }
             if (isDebugMode) addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            build()
-        }
+        }.build()
         val gsonBuilder = GsonBuilder()
-        gsonBuilder.registerTypeAdapter(BepaidResponse::class.java, BepaidResponseParser())
-        retrofit = Retrofit.Builder()
+        gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser())
+
+        api = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gsonBuilder.create()))
             .build()
-
-        api = retrofit.create(Api::class.java)
+            .create(Api::class.java)
     }
 
     suspend fun getPaymentToken(
-        publicKey: String,
         requestBody: TokenCheckoutData
     ): HttpResult<CheckoutWithTokenData> {
-        return safeApiCall { api.getPaymentToken(BEARER_AUTH_STRING + publicKey, requestBody) }
+        return safeApiCall { api.getPaymentToken(requestBody) }
     }
 
     suspend fun payWithCard(
-        publicKey: String,
         requestBody: PaymentRequest
-    ): HttpResult<BepaidResponse> {
-        return safeApiCall { api.payWithCard(BEARER_AUTH_STRING + publicKey, requestBody) }
+    ): HttpResult<BeGatewayResponse> {
+        return safeApiCall { api.payWithCard(requestBody) }
     }
 
     suspend fun getPaymentStatus(
-        publicKey: String,
         token: String
-    ): HttpResult<BepaidResponse> {
-        return safeApiCall { api.getPaymentStatus(BEARER_AUTH_STRING + publicKey, token) }
+    ): HttpResult<BeGatewayResponse> {
+        return safeApiCall { api.getPaymentStatus(token) }
     }
 
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
@@ -70,8 +85,8 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
                 HttpResult.Success(response.body()!!)
             } else {
                 HttpResult.UnSuccess(
-                    BepaidResponseParser().parseJson(
-                        Gson().fromJson(response.errorBody()?.charStream(), JsonElement::class.java)
+                    BeGatewayResponseParser().parseJson(
+                        gson.fromJson(response.errorBody()?.charStream(), JsonElement::class.java)
                     )
                 )
             }

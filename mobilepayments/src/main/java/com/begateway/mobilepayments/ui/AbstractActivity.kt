@@ -6,19 +6,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
-import com.begateway.mobilepayments.utils.applyTintColorOnDrawable
+import com.begateway.mobilepayments.ui.intefaces.OnActionbarSetup
+import com.begateway.mobilepayments.ui.intefaces.OnMessageDialogListener
+import com.begateway.mobilepayments.ui.intefaces.OnProgressDialogListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-private const val IS_DIALOG_SHOWED = "com.begateway.mobilepayments.IS_PROGRESS_SHOWED"
+private const val IS_PROGRESS_DIALOG_SHOWED = "com.begateway.mobilepayments.IS_PROGRESS_SHOWED"
 
-internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialogListener {
+internal abstract class AbstractActivity : AppCompatActivity(),
+    OnProgressDialogListener,
+    OnMessageDialogListener,
+    OnActionbarSetup {
 
     private var isDialogWasShowed: Boolean = false
     private var progressDialog: AlertDialog? = null
@@ -31,7 +34,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
             )
         super.onCreate(savedInstanceState)
         savedInstanceState?.let {
-            isDialogWasShowed = it.getBoolean(IS_DIALOG_SHOWED)
+            isDialogWasShowed = it.getBoolean(IS_PROGRESS_DIALOG_SHOWED)
         }
     }
 
@@ -42,35 +45,22 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
         }
     }
 
-    fun setToolBar(
-        toolbar: Toolbar,
-        @ColorInt navIconColor: Int = ContextCompat.getColor(
-            this@AbstractActivity,
-            R.color.begateway_primary_black
-        ),
-        @ColorInt toolbarBackgroundColor: Int = ContextCompat.getColor(
-            this@AbstractActivity,
-            R.color.begateway_color_accent
-        ),
-        title: String? = null,
-        onBackPressedAction: (() -> Unit)? = { onBackPressed() }
-    ) {
+    protected fun setToolbar(toolbar: Toolbar) = addToolBar(toolbar, null, ::onBackPressed)
+    override fun addToolBar(toolbar: Toolbar, title: String?, onBackPressedAction: (() -> Unit)?) {
         setSupportActionBar(toolbar)
 
         supportActionBar?.apply {
             this.title = title
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            toolbar.navigationIcon?.applyTintColorOnDrawable(navIconColor)
             toolbar.setNavigationOnClickListener {
                 onBackPressedAction?.invoke() ?: onBackPressed()
             }
-            toolbar.setBackgroundColor(toolbarBackgroundColor)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(IS_DIALOG_SHOWED, isDialogWasShowed)
+        outState.putBoolean(IS_PROGRESS_DIALOG_SHOWED, isDialogWasShowed)
         super.onSaveInstanceState(outState)
     }
 
@@ -109,10 +99,7 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
         layout: Int,
         layoutInflater: LayoutInflater,
     ): AlertDialog {
-        val builder = MaterialAlertDialogBuilder(
-            context,
-            R.style.begateway_ShapeAppearanceOverlay_AlertDialog_Rounded
-        )
+        val builder = MaterialAlertDialogBuilder(context)
         val customLayout: View =
             layoutInflater.inflate(layout, null)
         builder.setView(customLayout)
@@ -122,61 +109,41 @@ internal abstract class AbstractActivity : AppCompatActivity(), OnProgressDialog
         return dialog
     }
 
-    protected fun showMessageDialog(
+    override fun showMessageDialog(
         context: Context,
-        title: String? = null,
-        message: String? = null,
-        positiveButtonText: String = "ok",
-        negativeButtonText: String = "cancel",
-        positiveOnClick: DialogInterface.OnClickListener? = null,
-        onCancelClick: DialogInterface.OnClickListener? = null,
-        isCancellableOutside: Boolean = false
-    ) {
+        titleId: Int?,
+        messageId: Int?,
+        positiveButtonTextId: Int?,
+        negativeButtonTextId: Int?,
+        positiveOnClick: DialogInterface.OnClickListener?,
+        onCancelClick: DialogInterface.OnClickListener?,
+        isCancellableOutside: Boolean
+    ): AlertDialog? {
         onDismissAlertDialog()
-        if (!isFinishing) {
-            alertDialog = getMessageDialog(
-                context,
-                title,
-                message,
-                positiveButtonText,
-                negativeButtonText,
-                positiveOnClick,
-                onCancelClick,
-                isCancellableOutside
+        return if (!isFinishing) {
+            val builder = MaterialAlertDialogBuilder(
+                context
             )
+            titleId?.let {
+                builder.setTitle(it)
+            }
+            messageId?.let {
+                builder.setMessage(it)
+            }
+            positiveOnClick?.let {
+                builder.setPositiveButton(positiveButtonTextId ?: R.string.begateway_ok, it)
+            }
+            onCancelClick?.let {
+                builder.setNegativeButton(negativeButtonTextId ?: R.string.begateway_cancel, it)
+            }
+            val dialog = builder.create()
+            dialog.setCancelable(false)
+            dialog.setCanceledOnTouchOutside(isCancellableOutside)
+            alertDialog = dialog
             alertDialog?.show()
+            dialog
+        } else {
+            null
         }
-
-    }
-
-    private fun getMessageDialog(
-        context: Context,
-        title: String? = null,
-        message: String? = null,
-        positiveButtonText: String,
-        negativeButtonText: String,
-        positiveOnClick: DialogInterface.OnClickListener? = null,
-        onCancelClick: DialogInterface.OnClickListener? = null,
-        isCancellableOutside: Boolean = false
-    ): AlertDialog {
-        val builder = MaterialAlertDialogBuilder(
-            context
-        )
-        title?.let {
-            builder.setTitle(it)
-        }
-        message?.let {
-            builder.setMessage(it)
-        }
-        positiveOnClick?.let {
-            builder.setPositiveButton(positiveButtonText, it)
-        }
-        onCancelClick?.let {
-            builder.setNegativeButton(negativeButtonText, it)
-        }
-        val dialog = builder.create()
-        dialog.setCancelable(false)
-        dialog.setCanceledOnTouchOutside(isCancellableOutside)
-        return dialog
     }
 }

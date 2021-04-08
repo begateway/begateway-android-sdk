@@ -7,13 +7,18 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -23,15 +28,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/start_margin"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/begateway_default_margin" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/end_margin"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/begateway_default_margin" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_number"
-                style="@style/begateway_TextInputLayoutStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:hint="@string/begateway_form_hint_card_number"
                 app:endIconMode="clear_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -46,13 +65,13 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_name"
-                style="@style/begateway_TextInputLayoutStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:hint="@string/begateway_form_hint_cardholder_name"
                 app:endIconMode="clear_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toBottomOf="@+id/til_card_number">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -66,19 +85,20 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_expiry_date"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:hint="@string/begateway_form_hint_expiration"
                 app:endIconMode="clear_text"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/center"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toBottomOf="@+id/til_card_name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tiet_card_expiry_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/begateway_default_margin_small"
                     android:imeOptions="actionNext"
                     android:inputType="number|textNoSuggestions"
                     android:maxLength="7"
@@ -86,21 +106,22 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/center"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_cvc"
-                style="@style/begateway_TextInputLayoutStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/begateway_default_margin_small"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:hint="@string/begateway_form_hint_cvv"
                 app:endIconMode="clear_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/guideline"
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintStart_toEndOf="@+id/center"
                 app:layout_constraintTop_toBottomOf="@+id/til_card_name">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -112,24 +133,33 @@
                     android:maxLength="4" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="til_card_cvc,til_card_expiry_date" />
+
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/mcb_save_card"
-                style="@style/begateway_CheckBox"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:text="@string/begateway_savecard"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_card_expiry_date" />
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
+                app:layout_constraintTop_toBottomOf="@+id/barrier" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mb_pay"
-                style="@style/begateway_Button"
-                android:layout_alignParentBottom="true"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
+                android:minHeight="@dimen/begateway_min_btn_height"
                 android:text="@string/begateway_button_pay"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toBottomOf="@+id/mcb_save_card" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

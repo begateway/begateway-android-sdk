@@ -19,4 +19,15 @@
     <string name="begateway_savecard">Recordarme la siguiente vez</string>
     <string name="begateway_button_pay">Pagar</string>
     <string name="begateway_secure_info">Pago seguro proporcionado por %s</string>
+    <string name="begateway_ok">Aceptar</string>
+    <string name="begateway_cancel">Cancelar</string>
+    <string name="begateway_turn_on">Activar</string>
+    <string name="begateway_error">Error</string>
+    <string name="begateway_error_during_scanning">Ocurrió un error durante el escaneo</string>
+    <string name="begateway_turn_on_nfc_message">Active NFC</string>
+    <string name="begateway_nfc_not_supported_message">NFC no admitido</string>
+    <string name="begateway_nfc_attach_bank_card">Adjunte la tarjeta bancaria al teléfono</string>
+    <string name="begateway_scan_by_camera">Escanear con la cámara</string>
+    <string name="begateway_scan_by_nfc">Escanear por NFC</string>
+    <string name="begateway_please_wait">Espere</string>
 </resources>
