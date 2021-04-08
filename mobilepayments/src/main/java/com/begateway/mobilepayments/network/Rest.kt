@@ -63,7 +63,6 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
         return safeApiCall { api.getPaymentStatus(BEARER_AUTH_STRING + publicKey, token) }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
         return try {
             val response = call()
@@ -72,7 +71,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean) {
             } else {
                 HttpResult.UnSuccess(
                     BepaidResponseParser().parseJson(
-                        Gson().fromJson(response.errorBody()?.string(), JsonElement::class.java)
+                        Gson().fromJson(response.errorBody()?.charStream(), JsonElement::class.java)
                     )
                 )
             }
