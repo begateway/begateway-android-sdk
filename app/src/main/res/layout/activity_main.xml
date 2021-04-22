@@ -15,7 +15,7 @@
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/checkboxFlow"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="mcb_save_card_visibility,mcb_3d,mcb_encryption,mcb_card_number_visibility,mcb_holder_visibility,mcb_date_visibility,mcb_cvv_visibility"
             app:flow_firstHorizontalStyle="spread"
@@ -74,7 +74,7 @@
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/buttonFlow"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="b_get_token,b_pay_with_credit_card,b_pay_with_checkout"
             app:flow_firstHorizontalStyle="spread"
@@ -104,8 +104,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_token"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:hint="@string/hint_token"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
