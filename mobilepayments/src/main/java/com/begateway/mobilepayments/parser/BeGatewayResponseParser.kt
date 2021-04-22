@@ -30,7 +30,7 @@ class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
                         if (PaymentSdk.instance.isSaveCard) {
                             val creditCard = response.getAsJsonObject("credit_card")
                             if (creditCard != null && !creditCard.isJsonNull) {
-                                PaymentSdk.instance.cardToken = getString("token", response)
+                                PaymentSdk.instance.cardToken = getString("token", creditCard)
                             }
                         }
                         response

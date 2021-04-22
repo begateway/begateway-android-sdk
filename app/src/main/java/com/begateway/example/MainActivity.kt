@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
 import com.begateway.mobilepayments.models.*
@@ -18,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
@@ -29,39 +31,72 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.sm3d.isChecked = false
-        sdk = PaymentSdkBuilder()
-            .setDebugMode(BuildConfig.DEBUG)
-            .setPublicKey(if (binding.sm3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
-            .setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
-            .setReturnUrl("https://DEFAULT_RETURN_URL.com")
-            .build()
-        sdk.addCallBackListener(this)
-        initView()
         listeners()
-        binding.sm3d.setOnCheckedChangeListener { _, isChecked ->
-            sdk.updatePublicKey(if (isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
-        }
     }
 
-    private fun initView() {
-
+    private fun initPaymentSdk() = PaymentSdkBuilder().apply {
+        setDebugMode(BuildConfig.DEBUG)
+        with(binding) {
+            setPublicKey(if (mcb3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
+            setEncryptionMode(mcbEncryption.isChecked)
+            setCardNumberFieldVisibility(mcbCardNumberVisibility.isChecked)
+            setCardCVCFieldVisibility(mcbCvvVisibility.isChecked)
+            setCardDateFieldVisibility(mcbDateVisibility.isChecked)
+            setCardHolderFieldVisibility(mcbHolderVisibility.isChecked)
+            setSaveCardVisibility(mcbSaveCardVisibility.isChecked)
+        }
+        setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
+        setReturnUrl("https://DEFAULT_RETURN_URL.com")
+    }.build().apply {
+        addCallBackListener(this@MainActivity)
+    }.also {
+        sdk = it
     }
 
     private fun listeners() {
         binding.bGetToken.setOnClickListener {
-            isWithCheckout = false
             pay()
         }
         binding.bPayWithCreditCard.setOnClickListener {
-            payWithCard()
+            if (!isTokenEmpty()) {
+                val cardToken = getPreferences().getString("be_paid_card_token", null)
+                if (cardToken.isNullOrEmpty()) {
+                    getMessageDialog(
+                        this,
+                        "Error",
+                        "There is no card token data",
+                        positiveOnClick = { dialog, _ ->
+                            dialog.dismiss()
+                        },
+                        isCancellableOutside = false
+                    ).show()
+                } else {
+                    payWithCard(cardToken)
+                }
+            }
         }
         binding.bPayWithCheckout.setOnClickListener {
-            isWithCheckout = true
-            pay()
+            if (!isTokenEmpty()) {
+                isWithCheckout = true
+                pay()
+            }
         }
     }
+
+    private fun isTokenEmpty(): Boolean =
+        (binding.tilToken.editText?.text?.toString().isNullOrEmpty()).also {
+            if (it) {
+                getMessageDialog(
+                    this,
+                    "Error",
+                    "Please use get token first",
+                    positiveOnClick = { dialog, _ ->
+                        dialog.dismiss()
+                    },
+                    isCancellableOutside = false
+                ).show()
+            }
+        }
 
     private fun isProgressVisible(isVisible: Boolean) {
         binding.flProgressBar.isVisible = isVisible
@@ -83,15 +118,13 @@ class MainActivity : AppCompatActivity(), OnResultListener {
 
 
     /**
-     * use if you already have payment token and card info(card token or card data)
+     * use if you already have payment token or card info(card token or card data)
      */
-    private fun payWithCard() {
+    private fun payWithCard(cardToken: String) {
         val token = binding.tilToken.editText?.text?.toString() ?: return
-        val cardToken =
-            if (binding.sm3d.isChecked) "3cde212e-5276-444f-8f55-d4e43b3a9dc0" else "09fde0dc-aec7-4715-8257-b049628596d7"
         isProgressVisible(true)
         CoroutineScope(Dispatchers.IO).launch {
-            sdk.payWithCard(
+            initPaymentSdk().payWithCard(
                 PaymentRequest(
                     Request(
                         token,
@@ -112,10 +145,10 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private fun pay() {
         isProgressVisible(true)
         CoroutineScope(Dispatchers.IO).launch {
-            sdk.getPaymentToken(
+            initPaymentSdk().getPaymentToken(
                 TokenCheckoutData(
                     Checkout(
-                        test = true,// true only if you work in test mode
+                        test = BuildConfig.DEBUG,// true only if you work in test mode
                         transactionType = TransactionType.PAYMENT,
                         order = Order(
                             amount = 100,
@@ -148,6 +181,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         binding.tilToken.editText?.setText(token)
         if (isWithCheckout) {
             payWithCheckout()
+            isWithCheckout = false
         } else {
             startActivity(
                 PaymentSdk.getCardFormIntent(this@MainActivity)
@@ -156,12 +190,17 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         isProgressVisible(false)
     }
 
+    private fun getPreferences() = getSharedPreferences("BE_PAID_PREFS", Context.MODE_PRIVATE)
     override fun onPaymentFinished(beGatewayResponse: BeGatewayResponse, cardToken: String?) {
         if (!isFinishing) {
+            cardToken?.let {
+                getPreferences().edit { putString("be_paid_card_token", cardToken) }
+            }
+            isWithCheckout = false
             getMessageDialog(
                 this,
                 "Result",
-                beGatewayResponse.message,
+                beGatewayResponse.message + "; card token=" + cardToken,
                 positiveOnClick = { dialog, _ ->
                     dialog.dismiss()
                 },

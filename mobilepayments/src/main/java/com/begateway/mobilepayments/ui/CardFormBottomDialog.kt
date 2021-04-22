@@ -269,6 +269,9 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
             nfcRecognizer = NfcAutoRecognizer(activity, this).apply {
                 registerClarifyCallbacks(this@CardFormBottomDialog)
             }
+        } else {
+            nfcRecognizer?.registerCallbacks(this)
+            nfcRecognizer?.registerClarifyCallbacks(this)
         }
         nfcRecognizer?.onCreate(activity)
         nfcRecognizer?.start(activity)
@@ -374,9 +377,9 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCardExpireDateView() {
         binding?.run {
-            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
-            tilCardExpiryDate.isVisible = cardHolderFieldVisible
-            if (cardHolderFieldVisible) {
+            val isCardDateFieldVisible = PaymentSdk.instance.settings.isCardDateFieldVisible
+            tilCardExpiryDate.isVisible = isCardDateFieldVisible
+            if (isCardDateFieldVisible) {
                 tilCardExpiryDate.apply {
                     onFocusListener(
                         ::isExpiryCorrect
@@ -410,9 +413,9 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCvcView() {
         binding?.run {
-            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
-            tilCardCvc.isVisible = cardHolderFieldVisible
-            if (cardHolderFieldVisible) {
+            val isCardCVCFieldVisible = PaymentSdk.instance.settings.isCardCVCFieldVisible
+            tilCardCvc.isVisible = isCardCVCFieldVisible
+            if (isCardCVCFieldVisible) {
                 tilCardCvc.apply {
                     onFocusListener(
                         ::isCVCCorrect,

@@ -6,30 +6,83 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="@dimen/default_margin">
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/sm_3d"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/msg_use_3d"
-            app:switchPadding="@dimen/default_margin" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_token"
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/checkboxFlow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_token">
+            app:constraint_referenced_ids="mcb_save_card_visibility,mcb_3d,mcb_encryption,mcb_card_number_visibility,mcb_holder_visibility,mcb_date_visibility,mcb_cvv_visibility"
+            app:flow_firstHorizontalStyle="spread"
+            app:flow_firstVerticalStyle="spread"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_3d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_use_3d" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_encryption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/data_encryption" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_card_number_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/card_visibility" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_holder_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/card_holder_visibility" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_date_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/card_date_visibility" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_cvv_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/cvv_visibility" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_save_card_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/save_card_visibility" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/buttonFlow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="b_get_token,b_pay_with_credit_card,b_pay_with_checkout"
+            app:flow_firstHorizontalStyle="spread"
+            app:flow_firstVerticalStyle="spread"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkboxFlow" />
 
         <Button
             android:id="@+id/b_get_token"
@@ -41,7 +94,7 @@
             android:id="@+id/b_pay_with_credit_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pay_with_card" />
+            android:text="@string/pay_with_card_token" />
 
         <Button
             android:id="@+id/b_pay_with_checkout"
@@ -49,7 +102,20 @@
             android:layout_height="wrap_content"
             android:text="@string/pay_with_checkout" />
 
-    </LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_token"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:hint="@string/hint_token"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonFlow">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fl_progress_bar"

@@ -18,7 +18,9 @@ import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.network.Rest
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Keep
 class PaymentSdk private constructor() {
@@ -73,11 +75,6 @@ class PaymentSdk private constructor() {
     @Keep
     var checkoutWithTokenData: CheckoutWithTokenData? = null
 
-    //only for test remove in prod
-    fun updatePublicKey(key: String) {
-        settings.publicKey = key
-    }
-
     internal fun initSdk(
         settings: PaymentSdkSettings,
     ) {
@@ -87,7 +84,8 @@ class PaymentSdk private constructor() {
 
     @Keep
     fun addCallBackListener(onResultListener: OnResultListener) {
-        callbacks.add(onResultListener)
+        if (!callbacks.contains(onResultListener))
+            callbacks.add(onResultListener)
     }
 
     @Keep
