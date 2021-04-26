@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         setDebugMode(BuildConfig.DEBUG)
         with(binding) {
             setPublicKey(if (mcb3d.isChecked) TestData.PUBLIC_STORE_KEY_3D else TestData.PUBLIC_STORE_KEY)
-            setEncryptionMode(mcbEncryption.isChecked)
             setCardNumberFieldVisibility(mcbCardNumberVisibility.isChecked)
             setCardCVCFieldVisibility(mcbCvvVisibility.isChecked)
             setCardDateFieldVisibility(mcbDateVisibility.isChecked)

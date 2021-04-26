@@ -5,7 +5,6 @@ internal data class PaymentSdkSettings(
     var isDebugMode: Boolean = false,
     var publicKey: String = "",
     var returnUrl: String = "",
-    var isWithEncryption: Boolean = false,
     var isCardNumberFieldVisible: Boolean = true,
     var isCardHolderFieldVisible: Boolean = true,
     var isCardDateFieldVisible: Boolean = true,
