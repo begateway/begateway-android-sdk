@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.encryption.RSA
-import com.begateway.mobilepayments.models.network.request.CreditCard
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
-import com.begateway.mobilepayments.models.network.request.Request
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
@@ -78,6 +76,7 @@ class PaymentSdk private constructor() {
     internal fun initSdk(
         settings: PaymentSdkSettings,
     ) {
+        resetValues()
         this.settings = settings
         rest = Rest(settings.endpoint, settings.isDebugMode, settings.publicKey)
     }
@@ -118,8 +117,7 @@ class PaymentSdk private constructor() {
         requestBody: PaymentRequest,
         activity: Activity
     ) {
-        val localRequestBody = applyEncryption(requestBody)
-        when (val pay = rest.payWithCard(localRequestBody)) {
+        when (val pay = rest.payWithCard(requestBody)) {
             is HttpResult.Success -> {
                 val data = pay.data
                 if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
@@ -142,68 +140,8 @@ class PaymentSdk private constructor() {
         }
     }
 
-    private fun applyEncryption(requestBody: PaymentRequest) =
-        if (settings.isWithEncryption) {
-            val request = requestBody.request
-            val creditCard = request.creditCard
-            val cardNumber = creditCard?.cardNumber
-            val cvc = creditCard?.cvc
-            val holderName = creditCard?.holderName
-            val expMonth = creditCard?.expMonth
-            val expYear = creditCard?.expYear
-            requestBody.copy(
-                request = Request(
-                    token = request.token,
-                    paymentMethod = request.paymentMethod,
-                    creditCard = null,
-                    encryptedCreditCard = CreditCard(
-                        cardNumber = if (cardNumber != null) {
-                            RSA.encryptData(
-                                cardNumber,
-                                settings.publicKey
-                            )
-                        } else {
-                            null
-                        },
-                        cvc = if (cvc != null) {
-                            RSA.encryptData(
-                                cvc,
-                                settings.publicKey
-                            )
-                        } else {
-                            null
-                        },
-                        holderName = if (holderName != null) {
-                            RSA.encryptData(
-                                holderName,
-                                settings.publicKey
-                            )
-                        } else {
-                            null
-                        },
-                        expMonth = if (expMonth != null) {
-                            RSA.encryptData(
-                                expMonth,
-                                settings.publicKey
-                            )
-                        } else {
-                            null
-                        },
-                        expYear = if (expYear != null) {
-                            RSA.encryptData(
-                                expYear,
-                                settings.publicKey
-                            )
-                        } else {
-                            null
-                        },
-                        token = creditCard?.token
-                    )
-                )
-            )
-        } else {
-            requestBody
-        }
+    @Keep
+    fun encryptData(data: String) = RSA.encryptData(data, settings.publicKey)
 
     internal suspend fun onThreeDSecureComplete() {
         token?.let {

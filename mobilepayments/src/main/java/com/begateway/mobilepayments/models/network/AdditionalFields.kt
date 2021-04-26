@@ -1,12 +1,13 @@
 package com.begateway.mobilepayments.models.network
 
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
+import kotlin.IllegalArgumentException
 
 open class AdditionalFields(
     @Transient
-    open var fields: MutableList<JsonElement> = mutableListOf()
+    open val fields: MutableList<JsonObject> = mutableListOf()
 ) {
     fun addCustomField(name: String, value: Number) {
         fields.add(JsonObject().apply { addProperty(name, value) })
@@ -24,11 +25,21 @@ open class AdditionalFields(
         fields.add(JsonObject().apply { addProperty(name, value) })
     }
 
+    @Throws(IllegalArgumentException::class)
     fun addCustomJsonElementFromString(jsonString: String) {
-        fields.add(JsonParser().parse(jsonString))
+        try {
+            val newElement = JsonParser().parse(jsonString)
+            if (newElement.isJsonObject) {
+                fields.add(newElement.asJsonObject)
+            } else {
+                throw IllegalArgumentException("argument is not JsonObject")
+            }
+        } catch (e: JsonSyntaxException) {
+            throw IllegalArgumentException(e.message)
+        }
     }
 
-    fun addCustomJsonElement(jsonElement: JsonElement) {
-        fields.add(jsonElement)
+    fun addCustomJsonObject(jsonObject: JsonObject) {
+        fields.add(jsonObject)
     }
 }

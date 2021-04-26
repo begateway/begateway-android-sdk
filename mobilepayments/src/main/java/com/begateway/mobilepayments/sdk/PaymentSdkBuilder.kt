@@ -21,9 +21,6 @@ class PaymentSdkBuilder {
     fun setReturnUrl(returnUrl: String) = apply { settings.returnUrl = returnUrl }
 
     @Keep
-    fun setEncryptionMode(isEnabled: Boolean) = apply { settings.isWithEncryption = isEnabled }
-
-    @Keep
     fun setCardNumberFieldVisibility(isVisible: Boolean) =
         apply { settings.isCardNumberFieldVisible = isVisible }
 

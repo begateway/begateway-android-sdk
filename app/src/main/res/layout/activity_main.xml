@@ -17,7 +17,7 @@
             android:id="@+id/checkboxFlow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="mcb_save_card_visibility,mcb_3d,mcb_encryption,mcb_card_number_visibility,mcb_holder_visibility,mcb_date_visibility,mcb_cvv_visibility"
+            app:constraint_referenced_ids="mcb_save_card_visibility,mcb_3d,mcb_card_number_visibility,mcb_holder_visibility,mcb_date_visibility,mcb_cvv_visibility"
             app:flow_firstHorizontalStyle="spread"
             app:flow_firstVerticalStyle="spread"
             app:flow_wrapMode="chain"
@@ -30,12 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/msg_use_3d" />
-
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/mcb_encryption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/data_encryption" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/mcb_card_number_visibility"
