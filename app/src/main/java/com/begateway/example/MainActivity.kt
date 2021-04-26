@@ -165,8 +165,10 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                             returnUrl = "https://DEFAULT_RETURN_URL.com",
                             autoReturn = 0,
                         ),
-                    )
-                )
+                    ),
+                ).apply {
+                    addCustomField("customField", "custom string")
+                }
             )
         }
     }

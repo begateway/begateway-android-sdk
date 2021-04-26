@@ -1,12 +1,14 @@
-package com.begateway.mobilepayments
+package com.begateway.mobilepayments.parser
 
 import com.begateway.mobilepayments.models.network.AdditionalFields
-import com.google.gson.*
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
-import java.lang.reflect.Field
 import java.lang.reflect.Type
 
-class CustomSerializer<T : AdditionalFields> : JsonSerializer<T> {
+internal class CustomSerializer<T : AdditionalFields> : JsonSerializer<T> {
     override fun serialize(
         src: T,
         typeOfSrc: Type,

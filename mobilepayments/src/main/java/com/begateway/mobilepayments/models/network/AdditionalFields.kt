@@ -7,7 +7,7 @@ import kotlin.IllegalArgumentException
 
 open class AdditionalFields(
     @Transient
-    open var fields: MutableList<JsonObject> = mutableListOf()
+    open val fields: MutableList<JsonObject> = mutableListOf()
 ) {
     fun addCustomField(name: String, value: Number) {
         fields.add(JsonObject().apply { addProperty(name, value) })
