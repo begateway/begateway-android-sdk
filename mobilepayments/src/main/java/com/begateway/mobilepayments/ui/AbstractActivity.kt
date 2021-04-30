@@ -9,8 +9,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
+import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.ui.intefaces.OnActionbarSetup
 import com.begateway.mobilepayments.ui.intefaces.OnMessageDialogListener
 import com.begateway.mobilepayments.ui.intefaces.OnProgressDialogListener
@@ -27,7 +27,7 @@ internal abstract class AbstractActivity : AppCompatActivity(),
     private var progressDialog: AlertDialog? = null
     protected var alertDialog: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!BuildConfig.DEBUG)
+        if (!PaymentSdk.instance.settings.isDebugMode)
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE
