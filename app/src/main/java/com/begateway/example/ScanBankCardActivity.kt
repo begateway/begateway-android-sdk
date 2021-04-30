@@ -15,8 +15,11 @@ class ScanBankCardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val scanIntent = Intent(this, CardIOActivity::class.java)
-        scanIntent.putExtra(CardIOActivity.EXTRA_SCAN_EXPIRY, true)
-        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CARDHOLDER_NAME, true)
+        scanIntent
+            .putExtra(CardIOActivity.EXTRA_HIDE_CARDIO_LOGO, true)
+            .putExtra(CardIOActivity.EXTRA_USE_PAYPAL_ACTIONBAR_ICON, false)
+            .putExtra(CardIOActivity.EXTRA_SCAN_EXPIRY, true)
+            .putExtra(CardIOActivity.EXTRA_REQUIRE_CARDHOLDER_NAME, true)
         startActivityForResult(scanIntent, REQUEST_CODE)
     }
 

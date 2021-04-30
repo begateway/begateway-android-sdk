@@ -25,7 +25,9 @@ class PaymentSdk private constructor() {
     companion object {
         @[JvmStatic Keep]
         fun getCardFormIntent(context: Context) =
-            Intent(context, CheckoutActivity::class.java)
+            Intent(context, CheckoutActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
 
         @[JvmStatic JvmOverloads Keep]
         fun getCardDataIntent(
