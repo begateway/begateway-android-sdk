@@ -1,10 +1,11 @@
 package com.begateway.mobilepayments.models.network
 
+import androidx.annotation.Keep
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import kotlin.IllegalArgumentException
 
+@Keep
 open class AdditionalFields(
     @Transient
     open val fields: MutableList<JsonObject> = mutableListOf()

@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.parser
 
+import androidx.annotation.Keep
 import com.begateway.mobilepayments.models.network.AdditionalFields
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -8,7 +9,8 @@ import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
 import java.lang.reflect.Type
 
-internal class CustomSerializer<T : AdditionalFields> : JsonSerializer<T> {
+@Keep
+class CustomSerializer<T : AdditionalFields> : JsonSerializer<T> {
     override fun serialize(
         src: T,
         typeOfSrc: Type,

@@ -15,7 +15,6 @@ Add it in your root build.gradle at the end of repositories:
 ```groovy
 allprojects {
 	repositories {
-		...
 		maven { url 'https://jitpack.io' }
 	}
 }
@@ -26,239 +25,234 @@ Import the component module by adding it to your `build.gradle` file.
 ```groovy
    implementation 'com.github.begateway:begateway-android-sdk:1.0.6'
 ```
-You can give a look to the full java sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/master/samplejava)
+You can give a look to the full java sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/kotlin_version/app)
 
 ## Usage
 
-### 1) Setup
+### Setup
 
 Initilize payment module:
-```java
-PaymentModule paymentModule = new PaymentBuilder()
-    .setEndpoint(YOUR_CHECKOUT_ENDPOINT)
-    .setPaymentResultListener(MainActivity.this)
-    .build(getApplicationContext(), MainActivity.this);
-```
-Example YOUR_CHECKOUT_ENDPOINT = "https://checkout.begateway.com/ctp/api/"
 
-You can setup your return_url to process 3D SECURE:
-```java
-    .setReturnUrl("https://YOUR_RETURN_URL.com")
-```
-You can setup your notification_url to process transactions on your backend:
-```java
-    .setNotificationUrl("https://YOUR_NOTIFICATION_URL.com")
-```
-
-You can setup trasaction type. Use one of valid types: PAYMENT, AUTHORIZATION, VERIFY:
-```java
-    .setTransactionType(TransactionType.PAYMENT)
-```
-
-Don't forget to add premissions to your manifest:
-```java
+Don't forget to add permissions to your manifest:
+```xml
 <uses-permission android:name="android.permission.INTERNET" />
 ```
+init of `PaymentSdk` class
+```kotlin
+PaymentSdkBuilder().apply {
+        setDebugMode(BuildConfig.DEBUG)
+        setPublicKey(TestData.PUBLIC_STORE_KEY_3D)
+        setCardNumberFieldVisibility(true)
+        setCardCVCFieldVisibility(false)
+        setCardDateFieldVisibility(true)
+        setCardHolderFieldVisibility(true)
+        setSaveCardVisibility(true)
+        setEndpoint(YOUR_CHECKOUT_ENDPOINT)
+        setReturnUrl("https://DEFAULT_RETURN_URL.com")
+    }.build()
+```
+in `PaymentSdkBuilder` you can find full list for of properties
 
-### 2) Implement OnPaymentResultListener
-```java 
-public class MainActivity extends AppCompatActivity implements OnPaymentResultListener{
+### Implement OnResultListener
+```kotlin
+class MainActivity : AppCompatActivity(), OnResultListener {
 
-    @Override
-    public void onPaymentResult(PaymentResultResponse paymentResult) {
-      // process payment callback
+    //here you will receive payment token
+    override fun onTokenReady(token: String) {
+    }
+    
+    //here you will receive final status of payment and token of credit card
+    override fun onPaymentFinished(beGatewayResponse: BeGatewayResponse, cardToken: String?) {
     }
 }
 ```
-PaymentResultResponse parameters:
-```java
-* ResponseCode getStatus() // Status of request ResponseCode.SUCCESS, ResponseCode.CANCELED, ResponseCode.ERROR, ResponseCode.TIMEOUT
-* boolean isSaveCard() // User toggle state of save card checkbox
-* String getTokenCard() // Get card token when payment was successful
-* String getPaymentStatus() // Payment status that returned in payment response
-* int getResponseCode() // Get response code 200 - success
-* String getError() // Get error during request. If no errors return NULL
+BeGatewayResponse parameters:
+```kotlin
+    val status: ResponseStatus
+    //SUCCESS("successful"),
+    //ERROR("error"),
+    //CANCELED("canceled"),
+    //INCOMPLETE("incomplete"),
+    //FAILED("failed"),
+    //TIME_OUT("time_out");
+    
+    val message: String?     //details message about `ResponseStatus`
 ```
-### Start payment 
+### Start payment
 
-#### Start payment with `PUBLIC_STORE_KEY`
-
-Create ORDER_JSON with order information:
-```java
-{
-   "amount": "100",
-   "currency": "USD",
-   "description": "Payment description", 
-   "tracking_id" : "merchant_id", 
-   "additional_data": {
-      "contract": [ "recurring", "card_on_file" ] 
-   }
-}
+#### You can receive payment token
+```kotlin
+            sdk.getPaymentToken(
+                TokenCheckoutData(
+                    Checkout(
+                        test = BuildConfig.DEBUG,// true only if you work in test mode
+                        transactionType = TransactionType.PAYMENT,
+                        order = Order(
+                            amount = 100,
+                            currency = "USD",
+                            description = "Payment description",
+                            trackingId = "merchant_id",
+                            additionalData = AdditionalData(
+                                contract = arrayOf(
+                                    Contract.RECURRING,
+                                    Contract.CARD_ON_FILE
+                                )
+                            )
+                        ),
+                        settings = Settings(
+                            returnUrl = "https://DEFAULT_RETURN_URL.com",
+                            autoReturn = 0,
+                        ),
+                    ),
+                ).apply {
+                    addCustomField("customField", "custom string")
+                }
+            )
 ```
-Use your `PUBLIC_STORE_KEY` to start payment
-```java
-paymentModule.payWithPublicKey(PUBLIC_STORE_KEY, ORDER_JSON);
+### With this payment token you can do:
+#### 1. Start payment with card form
+```kotlin
+            startActivity(
+                PaymentSdk.getCardFormIntent(this@MainActivity)
+            )
 ```
 
-#### Start payment with `CHECKOUT_JSON`
+#### 2. Start payment with bank card token or credit card data if you have
+```kotlin
+            sdk.payWithCard(
+                PaymentRequest(
+                    Request(
+                        token,
+                        PaymentMethodType.CREDIT_CARD,
+                        CreditCard(
+                            token = cardToken
+                        )
+                    )
+                ),
+                this@MainActivity
+            )
+```
+#### 3. Start payment with `CheckoutWithTokenData`
+here you also can use payment token from your server or etc.
 
-Get `CHECKOUT_JSON` from YOUR_CHECKOUT_ENDPOINT/checkouts
-Example:
-```json
-{
-    "checkout": {
-        "token": "623b342e6fa003ce273c6197380400137057cee5a4640822c2274f0fd3e278e2",
-        "redirect_url": "https://checkout.begateway.com/checkout?token=623b342e6fa003ce273c6197380400137057cee5a4640822c2274f0fd3e278e2",
-        "brands": [
-            {
-                "alternative": false,
-                "name": "visa"
-            },
-            {
-                "alternative": false,
-                "name": "master"
-            },
-            {
-                "alternative": false,
-                "name": "belkart"
-            },
-            {
-                "alternative": false,
-                "name": "visa"
-            },
-            {
-                "alternative": false,
-                "name": "master"
-            },
-            {
-                "alternative": false,
-                "name": "maestro"
-            }
-        ],
-        "company": {
-            "name": "beGateway",
-            "site": "https://begateway.com"
-        },
-        "description": "Payment description",
-        "card_info": {}
+```kotlin
+    private fun payWithCheckout() {
+        sdk.checkoutWithTokenData = CheckoutWithTokenData(
+            CheckoutWithToken(
+                token = token
+            )
+        )
+        startActivity(
+            PaymentSdk.getCardFormIntent(this@MainActivity)
+        )
     }
-}
 ```
-```java
-paymentModule.payWithCheckoutJson(CHECKOUT_JSON);
+## Dynamic Fields
+To any object of request you can add dynamic field by using methods that
+provide `AdditionalFields` class.
+```kotlin
+        Checkout(
+            test = true,
+            transactionType = TransactionType.PAYMENT,
+            order = Order(
+                amount = 100,
+                currency = "USD",
+                description = "Payment description",
+                trackingId = "merchant_id",
+                additionalData = AdditionalData(
+                    contract = arrayOf(
+                        Contract.RECURRING,
+                        Contract.CARD_ON_FILE
+                    )
+                ).apply {
+                    addCustomField("orderCustomBooleanKey", true)
+                }
+            ).apply {
+                    addCustomJsonObject(JsonObject().apply {
+                        add("toOrder", JsonArray().apply {
+                            add("str")
+                            add("str2")
+                            add("str3")
+                            add(true)
+                        })
+                    })
+            },
+            settings = Settings(
+                returnUrl = "https://DEFAULT_RETURN_URL.com",
+                autoReturn = 0,
+            ).apply {
+                addCustomField("settingsCustomIntKey", 14006)
+            },
+        ).apply {
+            addCustomField("checkoutCustomStrKey", "checkoutCustomStrValue")
+        }
 ```
-
-#### Start payment with `CREDIT_CARD_JSON` with credit card token
-
-Example
-```json
-{
-   "request": {
-      "token": "ccf6700bf372168e81fd3f4c2dd2e821524982a166ee83db7faa300e60a0f3e4", 
-      "payment_method": "credit_card",
-      "credit_card": {
-          "number": "*",
-          "token": "123e4567-e89b-12d3-a456-426655440000" 
-      }
-   }
-}
-```
-
-```java
-paymentModule.payWithCreditCard(CREDIT_CARD_JSON);
-```
-### Encryption
-Use `encryptCardData` with your PUBLIC_STORE_KEY to get encrypted credit card data
+ You have access to our serializer `CustomSerializer` and `AdditionalFields`.
+## Encryption
+Use PaymentSdk.encryptData(data: String) to get encrypted credit card data
 
 For example:
-```java 
-String ENCRYPTED_NUMBER = paymentModule.encryptCardData("4200000000000000", PUBLIC_STORE_KEY);
-String ENCRYPTED_CVV = paymentModule.encryptCardData("123", PUBLIC_STORE_KEY);
-String ENCRYPTED_HOLDER = paymentModule.encryptCardData("IVAN IVANOV", PUBLIC_STORE_KEY);
-String ENCRYPTED_EXPMONTH = paymentModule.encryptCardData("01", PUBLIC_STORE_KEY);
-String ENCRYPTED_EXPYEAR = paymentModule.encryptCardData("2020", PUBLIC_STORE_KEY);
+```kotlin
+val encryptedCardNumber = sdk.encryptData("4200000000000000")
+val encryptedHolder = sdk.encryptData("IVAN IVANOV")
+val encryptedCvv = sdk.encryptData("123")
 ```
 
-### Customization
-You can customize card form view with `StyleSettings`
-
-#### Create `StyleSettings`
-```java
-StyleSettings styleSettings = new StyleSettings();
-```
-StyleSettings parameters:
-```java
-* .setRequiredCardHolderName(false); // turn on/off card holder name field
-* .setRequiredCardNumber(false); // turn on/off card number field
-* .styleSettings.setMaskCVV(false); // turn on/off mask for CVV field
-* .styleSettings.setMaskCardNumber(true); // turn on/off mask for card number field
-* .setRequiredExpDate(false); // turn on/off expiration date field
-* .setRequiredCVV(false); // turn on/off CVV field
-* .setSaveCardCheckboxDefaultState(false); // set default state for save card toogle
-* .setSaveCardCheckBoxVisible(false); // turn on/off visability of save card toogle
-* .setSecuredLabelVisible(false); // turn on/off visability of secured label
-* .setScanCardVisible(false); // turn on/off visability of scan card button
-```
-
-#### Set style settings to PaymentBuilder
-
-```java
-PaymentModule paymentModule = new PaymentBuilder()
-    .setEndpoint(YOUR_CHECKOUT_ENDPOINT)
-    .setPaymentResultListener(MainActivity.this)
-    .setStyleSettings(styleSettings)
-    .build(getApplicationContext(), MainActivity.this);
-```
-#### Cusomize using styles.xml
-You can override styles for card form view elements in your styles.xml
+## Customizing
+#### Customize using styles.xml
+You can rewrite main style for card form view elements in your styles.xml
 
 ```xml
-<style name="begateway_generic_button" parent="@android:style/TextAppearance">
-	<item name="android:textColor">@color/begateway_black</item>
-</style>
+    <style name="begateway_Theme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
 ```
+#### Customize using string.xml
+You can rewrite string for card form view elements in your string.xml, just put in your project string with same names but other values
 ```xml
-<style name="begateway_form_fullscreen" parent="Theme.AppCompat.Light">
-	<item name="windowNoTitle">true</item>
-	<item name="android:background">@android:color/transparent</item>
-	<item name="colorPrimary">@color/light_theme_primary</item>
-	<item name="colorPrimaryDark">@color/light_theme_primary_dark</item>
-	<item name="colorAccent">@color/light_theme_accent</item>
-</style>
-```
-```xml
-<style name="begateway_secured_label" parent="@android:style/TextAppearance">
-	<item name="android:textSize">15dp</item>
-	<item name="android:textColor">@color/begateway_black</item>
-</style>
-```
-```xml
-<style name="begateway_base_textview">
-	<item name="android:textSize">@dimen/begateway_input_text_size</item>
-	<item name="android:fontFamily">sans-serif-light</item>
-</style>
-```
-```xml
-<style name="begateway_text_input_layout">
-	<item name="android:layout_width">match_parent</item>
-	<item name="android:layout_height">wrap_content</item>
-	<item name="android:layout_marginTop">12dp</item>
-	<item name="android:accessibilityLiveRegion" tools:targetApi="kitkat">polite</item>
-</style>
-```
-```xml
-<style name="begateway_card_form_field" parent="begateway_base_textview">
-	<item name="android:layout_width">match_parent</item>
-	<item name="android:layout_height">60dp</item>
-	<item name="android:paddingTop">@dimen/begateway_margin</item>
-	<item name="android:textColorHint">@color/begateway_light_gray</item>
-	<item name="android:textCursorDrawable" tools:ignore="NewApi">@null</item>
-</style>
+<resources>
+    <string name="begateway_form_hint_card_number">Card number</string>
+    <string name="begateway_form_hint_expiration">Expiration date</string>
+    <string name="begateway_form_hint_cardholder_name">Name on card</string>
+</resources>
 ```
 
-## See also
-You can use gson library for json serialization/deserialization: https://github.com/google/gson 
-
+## Bank card scanning
+### NFC
+if device has nfc sdk will show to user button for scanning
+### By Camera
+you can choose any library that you want to use, just add to your manifest `ScanBankCardActivity` activity with our action
+```xml
+        <activity android:name=".ScanBankCardActivity">
+            <intent-filter>
+                <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD"/>
+            </intent-filter>
+        </activity>
+```
+and implement logic of library that you've chosen and when you will have a result send to our sdk
+```kotlin
+                setResult(
+                      Activity.RESULT_OK,
+                      PaymentSdk.getCardDataIntent(
+                          scanResult.cardNumber,
+                          scanResult.cardholderName,
+                          scanResult.expiryMonth.toString(),//02
+                          scanResult.expiryYear.toString(),//2021 or 21
+                          scanResult.cvv                   // or you can use getCardDataIntentWithExpiryString() where expiryString can be 02/21 or 02/2021
+                      )
+                  )
+                  finish()
+```
 ## License
 
 This repository is open source and available under the MIT license. For more information, see the LICENSE file.
