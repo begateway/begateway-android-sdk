@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
-import com.begateway.mobilepayments.models.*
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData

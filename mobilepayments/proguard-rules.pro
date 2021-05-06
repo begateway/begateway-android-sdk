@@ -38,5 +38,7 @@
 -keep class retrofit2.http.** { *; }
 
 -keepnames class android.os.Bundle {*;}
+-dontwarn com.begateway.mobilepayments.models.**
+-dontwarn com.begateway.mobilepayments.sdk.**
 -keep class com.begateway.mobilepayments.models.** { *; }
 -keep class com.begateway.mobilepayments.sdk.** { *; }
