@@ -20,10 +20,13 @@
         </activity>
         <activity android:name=".ScanBankCardActivity">
             <intent-filter>
-                <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD"/>
+                <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD" />
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
     </application>
 
 </manifest>
