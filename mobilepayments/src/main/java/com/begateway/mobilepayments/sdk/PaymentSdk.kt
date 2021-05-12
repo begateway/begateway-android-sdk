@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.encryption.RSA
+import com.begateway.mobilepayments.models.network.gateway.GatewayPaymentRequest
+import com.begateway.mobilepayments.models.network.request.CreditCard
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
@@ -14,8 +16,10 @@ import com.begateway.mobilepayments.models.settings.PaymentSdkSettings
 import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.network.Rest
+import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
+import com.google.android.gms.wallet.AutoResolveHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -71,6 +75,7 @@ class PaymentSdk private constructor() {
     private lateinit var rest: Rest
     private val callbacks: ArrayList<OnResultListener> = arrayListOf()
     private var token: String? = null
+    private var gatewayPaymentRequest: GatewayPaymentRequest? = null
 
     @Keep
     var checkoutWithTokenData: CheckoutWithTokenData? = null
@@ -156,6 +161,76 @@ class PaymentSdk private constructor() {
         getPaymentStatus(token)
     }
 
+    @Keep
+    fun checkGoogleButtonVisibility(
+        activity: Activity,
+        onChecked: (isSuccess: Boolean) -> Unit
+    ) = GooglePayHelper.checkIsReadyToPayTask(activity, onChecked)
+
+    @Keep
+    fun initGooglePay(
+        activity: Activity,
+        returnCode: Int,
+        gatewayPaymentRequest: GatewayPaymentRequest
+    ) {
+        this.gatewayPaymentRequest = gatewayPaymentRequest
+        GooglePayHelper.startPaymentFlow(activity, returnCode, gatewayPaymentRequest.request)
+    }
+
+    @Keep
+    suspend fun payWithGooglePay(resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            GooglePayHelper.getGooglePayResponse(data)?.let { gPayResponse ->
+                when (
+                    val pay = rest.payWithCardGateway(
+                        getRequestWithGooglePayToken(
+                            gPayResponse.paymentMethodData.tokenizationData.token
+                        )
+                    )
+                ) {
+                    is HttpResult.Success -> {
+                        withContext(Dispatchers.Main) {
+                            onPaymentFinished(pay.data)
+                        }
+                    }
+                    else -> onNotSuccess(pay)
+                }
+                return
+            }
+        } else {
+            if (resultCode == AutoResolveHelper.RESULT_ERROR) {
+                AutoResolveHelper.getStatusFromIntent(data)?.let {
+                    withContext(Dispatchers.Main) {
+                        onPaymentFinished(
+                            BeGatewayResponse(
+                                message = "statusCode = ${it.statusCode}, message = ${it.statusMessage}"
+                            )
+                        )
+                    }
+                }
+                return
+            }
+        }
+        withContext(Dispatchers.Main) {
+            onPaymentFinished(
+                BeGatewayResponse()
+            )
+        }
+    }
+
+    private fun getRequestWithGooglePayToken(token: String): GatewayPaymentRequest {
+        val formattedToken = GooglePayHelper.TOKEN_PREFIX + GooglePayHelper.getEncodedToken(
+            token
+        )
+        return gatewayPaymentRequest!!.copy(
+            request = gatewayPaymentRequest!!.request.copy(
+                creditCard = gatewayPaymentRequest!!.request.creditCard?.copy(
+                    token = formattedToken
+                ) ?: CreditCard(token = formattedToken)
+            )
+        )
+    }
+
     private suspend fun getPaymentStatus(token: String) {
         var startTime = 0L
         var beGatewayResponse = BeGatewayResponse(
@@ -192,6 +267,7 @@ class PaymentSdk private constructor() {
             when (result) {
                 is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
                 is HttpResult.Error -> onPaymentFinished(result.beGatewayResponse)
+                is HttpResult.Success -> TODO()
             }
         }
     }
@@ -211,5 +287,6 @@ class PaymentSdk private constructor() {
         cardToken = null
         token = null
         checkoutWithTokenData = null
+        gatewayPaymentRequest = null
     }
 }

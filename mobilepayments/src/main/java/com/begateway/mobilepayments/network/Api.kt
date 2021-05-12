@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.network
 
+import com.begateway.mobilepayments.models.network.gateway.GatewayPaymentRequest
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
@@ -20,6 +21,11 @@ internal interface Api {
     @POST("payments")
     suspend fun payWithCard(
         @Body requestBody: PaymentRequest
+    ): Response<BeGatewayResponse>
+
+    @POST("payments")
+    suspend fun payWithCardGateway(
+        @Body requestBody: GatewayPaymentRequest
     ): Response<BeGatewayResponse>
 
     @GET("checkouts/{token}")

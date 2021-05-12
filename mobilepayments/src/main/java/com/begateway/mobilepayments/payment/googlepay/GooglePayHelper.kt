@@ -8,32 +8,35 @@ import android.util.Log
 import com.begateway.mobilepayments.models.googlepay.request.*
 import com.begateway.mobilepayments.models.googlepay.request.TransactionInfo
 import com.begateway.mobilepayments.models.googlepay.response.GooglePayResponse
+import com.begateway.mobilepayments.models.network.gateway.GatewayRequest
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.utils.getFormattedAmount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import java.util.*
 
-object GooglePayHelper {
+internal object GooglePayHelper {
+    const val TOKEN_PREFIX = "\$begateway_google_pay_1_0_0\$"
     private val CARD_TYPES = listOf("VISA", "MASTERCARD")
     private val CARD_AUTH = listOf("PAN_ONLY", "CRYPTOGRAM_3DS")
-    private val GATEWAY = "ecomcharge"
+    private const val GATEWAY = "ecomcharge"
     fun startPaymentFlow(
-        activity: Activity
+        activity: Activity,
+        requestCode: Int,
+        request: GatewayRequest
     ) {
         AutoResolveHelper.resolveTask(
             createPaymentsClient(activity).loadPaymentData(
                 getPaymentDataRequest(
-                    paymentMethod,
-                    orderConfirmation
+                    request
                 )
             ),
             activity,
-            GOOGLE_PAY_APP_REQUEST_CODE
+            requestCode
         )
     }
 
-    fun createPaymentsClient(activity: Activity): PaymentsClient {
+    private fun createPaymentsClient(activity: Activity): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
             .setEnvironment(if (PaymentSdk.instance.settings.isDebugMode) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
             .build()
@@ -42,27 +45,31 @@ object GooglePayHelper {
     }
 
     @SuppressLint("DefaultLocale")
-    private fun getPaymentDataRequest(): PaymentDataRequest = PaymentDataRequestLocal(
-        allowedPaymentMethods = arrayListOf(
-            AllowedPaymentMethods(
-                parameters = PaymentTypeParameters(
-                    CARD_AUTH,
-                    CARD_TYPES
-                ),
-                tokenizationSpecification = TokenizationSpecification(
-                    parameters = Parameters(
-                        GATEWAY,
-                        PaymentSdk.instance.settings.publicKey
+    private fun getPaymentDataRequest(request: GatewayRequest): PaymentDataRequest {
+        val currency = Currency.getInstance(request.currency)
+        return PaymentDataRequestLocal(
+            allowedPaymentMethods = arrayListOf(
+                AllowedPaymentMethods(
+                    parameters = PaymentTypeParameters(
+                        CARD_AUTH,
+                        CARD_TYPES
+                    ),
+                    tokenizationSpecification = TokenizationSpecification(
+                        parameters = Parameters(
+                            GATEWAY,
+                            PaymentSdk.instance.settings.publicKey
+                        )
                     )
                 )
+            ),
+            transactionInfo = TransactionInfo(
+                totalPrice = request.amount.getFormattedAmount(currency),
+                currencyCode = currency.currencyCode
             )
-        ),
-        transactionInfo = TransactionInfo(
-            totalPrice = "100".getFormattedAmount(Currency.getInstance("USD")),
-            currencyCode = "USD"
-        )
-    ).convertToPaymentRequest()
+        ).convertToPaymentRequest()
+    }
 
+    @JvmStatic
     fun checkIsReadyToPayTask(
         activity: Activity,
         onChecked: (isSuccess: Boolean) -> Unit

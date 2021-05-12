@@ -2,6 +2,7 @@ package com.begateway.mobilepayments.network
 
 import android.util.Log
 import com.begateway.mobilepayments.models.network.AdditionalFields
+import com.begateway.mobilepayments.models.network.gateway.GatewayPaymentRequest
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
@@ -95,6 +96,12 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         requestBody: PaymentRequest
     ): HttpResult<BeGatewayResponse> {
         return safeApiCall { api.payWithCard(requestBody) }
+    }
+
+    suspend fun payWithCardGateway(
+        requestBody: GatewayPaymentRequest
+    ): HttpResult<BeGatewayResponse> {
+        return safeApiCall { api.payWithCardGateway(requestBody) }
     }
 
     suspend fun getPaymentStatus(
