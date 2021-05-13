@@ -70,7 +70,7 @@
             android:id="@+id/buttonFlow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="b_get_token,b_pay_with_credit_card,b_pay_with_checkout,b_pay_with_googlepay"
+            app:constraint_referenced_ids="b_get_token,b_pay_with_credit_card,b_pay_with_checkout"
             app:flow_firstHorizontalStyle="spread"
             app:flow_firstVerticalStyle="spread"
             app:flow_wrapMode="chain"
@@ -95,12 +95,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pay_with_checkout" />
-
-        <Button
-            android:id="@+id/b_pay_with_googlepay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_with_googlepay" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_token"

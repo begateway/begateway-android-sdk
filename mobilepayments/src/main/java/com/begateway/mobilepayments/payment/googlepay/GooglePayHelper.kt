@@ -3,12 +3,11 @@ package com.begateway.mobilepayments.payment.googlepay
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Base64
 import android.util.Log
-import com.begateway.mobilepayments.models.googlepay.request.*
-import com.begateway.mobilepayments.models.googlepay.request.TransactionInfo
-import com.begateway.mobilepayments.models.googlepay.response.GooglePayResponse
-import com.begateway.mobilepayments.models.network.gateway.GatewayRequest
+import com.begateway.mobilepayments.models.googlepay.android.request.*
+import com.begateway.mobilepayments.models.googlepay.android.request.TransactionInfo
+import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
+import com.begateway.mobilepayments.models.network.request.Order
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.utils.getFormattedAmount
 import com.google.android.gms.common.api.ApiException
@@ -16,19 +15,17 @@ import com.google.android.gms.wallet.*
 import java.util.*
 
 internal object GooglePayHelper {
-    const val TOKEN_PREFIX = "\$begateway_google_pay_1_0_0\$"
     private val CARD_TYPES = listOf("VISA", "MASTERCARD")
     private val CARD_AUTH = listOf("PAN_ONLY", "CRYPTOGRAM_3DS")
-    private const val GATEWAY = "ecomcharge"
     fun startPaymentFlow(
         activity: Activity,
         requestCode: Int,
-        request: GatewayRequest
+        order: Order
     ) {
         AutoResolveHelper.resolveTask(
             createPaymentsClient(activity).loadPaymentData(
                 getPaymentDataRequest(
-                    request
+                    order
                 )
             ),
             activity,
@@ -45,8 +42,9 @@ internal object GooglePayHelper {
     }
 
     @SuppressLint("DefaultLocale")
-    private fun getPaymentDataRequest(request: GatewayRequest): PaymentDataRequest {
-        val currency = Currency.getInstance(request.currency)
+    private fun getPaymentDataRequest(order: Order): PaymentDataRequest {
+        val currency = Currency.getInstance(order.currency)
+        val googlePay = PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay!!
         return PaymentDataRequestLocal(
             allowedPaymentMethods = arrayListOf(
                 AllowedPaymentMethods(
@@ -56,14 +54,14 @@ internal object GooglePayHelper {
                     ),
                     tokenizationSpecification = TokenizationSpecification(
                         parameters = Parameters(
-                            GATEWAY,
-                            PaymentSdk.instance.settings.publicKey
+                            googlePay.gateway_id,
+                            googlePay.gateway_merchant_id
                         )
                     )
                 )
             ),
             transactionInfo = TransactionInfo(
-                totalPrice = request.amount.getFormattedAmount(currency),
+                totalPrice = order.amount.getFormattedAmount(currency),
                 currencyCode = currency.currencyCode
             )
         ).convertToPaymentRequest()
@@ -102,8 +100,6 @@ internal object GooglePayHelper {
                 )
             )
         ).convertToIsReadyToPayRequest()
-
-    fun getEncodedToken(token: String) = String(Base64.encode(token.toByteArray(), Base64.NO_WRAP))
 
     fun getGooglePayResponse(data: Intent): GooglePayResponse? =
         GooglePayResponse.getGooglePayResponse(data)

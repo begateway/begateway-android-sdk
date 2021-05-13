@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.models.googlepay.response
+package com.begateway.mobilepayments.models.googlepay.android.response
 
 import android.content.Intent
 import com.google.android.gms.wallet.PaymentData

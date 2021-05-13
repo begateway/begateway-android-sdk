@@ -65,8 +65,7 @@ internal abstract class AbstractActivity : AppCompatActivity(),
     }
 
     override fun onShowProgress() {
-        onHideProgress()
-        if (!isFinishing) {
+        if (!isFinishing && progressDialog?.isShowing != true) {
             progressDialog = getProgressDialog(
                 this,
                 R.layout.begateway_progress,

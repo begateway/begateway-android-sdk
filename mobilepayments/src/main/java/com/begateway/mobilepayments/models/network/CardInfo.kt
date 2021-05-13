@@ -1,6 +1,6 @@
-package com.begateway.mobilepayments.models.network.request
+package com.begateway.mobilepayments.models.network
 
-import com.begateway.mobilepayments.models.network.AdditionalFields
+import com.begateway.mobilepayments.models.network.request.CreditCard
 import com.google.gson.annotations.SerializedName
 
 class CardInfo(

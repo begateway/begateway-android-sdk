@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.models.googlepay.request
+package com.begateway.mobilepayments.models.googlepay.android.request
 
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.gson.Gson

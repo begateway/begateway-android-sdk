@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.models.googlepay.response
+package com.begateway.mobilepayments.models.googlepay.android.response
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,7 @@
 package com.begateway.mobilepayments
 
 import com.begateway.mobilepayments.models.network.AdditionalFields
+import com.begateway.mobilepayments.models.network.CheckoutWithToken
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.parser.CustomSerializer
 import com.google.gson.*

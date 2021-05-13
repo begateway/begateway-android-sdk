@@ -9,8 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
-import com.begateway.mobilepayments.models.network.gateway.GatewayPaymentRequest
-import com.begateway.mobilepayments.models.network.gateway.GatewayRequest
+import com.begateway.mobilepayments.models.network.CheckoutWithToken
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
@@ -23,8 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
-private const val GOOGLE_PAY_RETURN_CODE = 100
-
 class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
 
@@ -36,8 +33,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         listeners()
-        initPaymentSdk()
-        sdk.checkGoogleButtonVisibility(this, ::updateGooglePayButton)
     }
 
     private fun initPaymentSdk() = PaymentSdkBuilder().apply {
@@ -56,17 +51,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         addCallBackListener(this@MainActivity)
     }.also {
         sdk = it
-    }
-
-    private fun updateGooglePayButton(isSuccess: Boolean) {
-        with(binding) {
-            bPayWithGooglepay.isVisible = isSuccess
-            if (isSuccess) {
-                bPayWithGooglepay.setOnClickListener {
-                    initGooglePay()
-                }
-            }
-        }
     }
 
     private fun listeners() {
@@ -187,35 +171,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                     addCustomField("customField", "custom string")
                 }
             )
-        }
-    }
-
-    /**
-     * init google pay
-     */
-    private fun initGooglePay() {
-        isProgressVisible(true)
-        sdk.initGooglePay(
-            this@MainActivity,
-            GOOGLE_PAY_RETURN_CODE,
-            GatewayPaymentRequest(
-                GatewayRequest(
-                    100,
-                    "USD",
-                    "Pay with googlepay",
-                    "track_id_100",
-                    test = true
-                )
-            )
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GOOGLE_PAY_RETURN_CODE) {
-            CoroutineScope(Dispatchers.IO).launch {
-                sdk.payWithGooglePay(resultCode, data)
-            }
         }
     }
 

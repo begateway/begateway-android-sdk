@@ -1,6 +1,7 @@
 package com.begateway.mobilepayments.network
 
-import com.begateway.mobilepayments.models.network.gateway.GatewayPaymentRequest
+import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
+import com.begateway.mobilepayments.models.network.request.Checkout
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
@@ -23,13 +24,18 @@ internal interface Api {
         @Body requestBody: PaymentRequest
     ): Response<BeGatewayResponse>
 
-    @POST("payments")
-    suspend fun payWithCardGateway(
-        @Body requestBody: GatewayPaymentRequest
-    ): Response<BeGatewayResponse>
-
     @GET("checkouts/{token}")
     suspend fun getPaymentStatus(
         @Path("token") token: String
+    ): Response<BeGatewayResponse>
+
+    @GET("checkouts/{token}")
+    suspend fun getPaymentData(
+        @Path("token") token: String
+    ): Response<TokenCheckoutData>
+
+    @POST("google_pay/payment")
+    suspend fun payWithGooglePay(
+        @Body requestBody: GPaymentRequest
     ): Response<BeGatewayResponse>
 }
