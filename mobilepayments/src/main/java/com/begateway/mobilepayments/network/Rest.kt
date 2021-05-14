@@ -1,7 +1,11 @@
 package com.begateway.mobilepayments.network
 
 import android.util.Log
+import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
 import com.begateway.mobilepayments.models.network.AdditionalFields
+import com.begateway.mobilepayments.models.network.CardInfo
+import com.begateway.mobilepayments.models.network.CheckoutWithToken
+import com.begateway.mobilepayments.models.network.Company
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
@@ -97,10 +101,22 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         return safeApiCall { api.payWithCard(requestBody) }
     }
 
+    suspend fun payWithGooglePay(
+        requestBody: GPaymentRequest
+    ): HttpResult<BeGatewayResponse> {
+        return safeApiCall { api.payWithGooglePay(requestBody) }
+    }
+
     suspend fun getPaymentStatus(
         token: String
     ): HttpResult<BeGatewayResponse> {
         return safeApiCall { api.getPaymentStatus(token) }
+    }
+
+    suspend fun getPaymentData(
+        token: String
+    ): HttpResult<TokenCheckoutData> {
+        return safeApiCall { api.getPaymentData(token) }
     }
 
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {

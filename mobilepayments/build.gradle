@@ -6,7 +6,7 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         minSdkVersion 21
@@ -51,6 +51,10 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor"
+
+    implementation("com.google.android.gms:play-services-wallet:$walletPlayVer", {
+        exclude group: "com.android.support"
+    })
 
     implementation "ru.tinkoff.core:core-nfc:$core_nfc"
 

@@ -25,7 +25,7 @@ Import the component module by adding it to your `build.gradle` file.
 ```groovy
    implementation 'com.github.begateway:begateway-android-sdk:1.0.6'
 ```
-You can give a look to the full java sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/kotlin_version/app)
+You can give a look to the full kotlin sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/kotlin_version/app)
 
 ## Usage
 
@@ -252,6 +252,14 @@ and implement logic of library that you've chosen and when you will have a resul
                       )
                   )
                   finish()
+```
+## Google Pay
+
+if you want pay with google pay add this to your manifest
+```xml
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
 ```
 ## License
 

@@ -84,7 +84,7 @@ class Erip(
     @SerializedName("service_info") val serviceInfo: Array<String>? = null,
 ) : AdditionalFields()
 
-class CreditCard(
+data class CreditCard(
     @SerializedName("number") val cardNumber: String? = null,
     @SerializedName("verification_value") val cvc: String? = null,
     @SerializedName("holder") val holderName: String? = null,

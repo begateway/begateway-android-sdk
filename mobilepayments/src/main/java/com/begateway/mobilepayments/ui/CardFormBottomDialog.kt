@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.text.InputFilter
@@ -24,6 +25,7 @@ import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.Request
 import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.models.ui.CardType
+import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.ui.intefaces.OnActionbarSetup
 import com.begateway.mobilepayments.ui.intefaces.OnMessageDialogListener
@@ -153,7 +155,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
             }
         }
         view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
-        updateCardState()
+        initGooglePayButton()
         binding?.run {
             onActionbarSetup?.addToolBar(toolbar, null, ::dismissAllowingStateLoss)
             mbPay.setOnClickListener {
@@ -166,6 +168,48 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         initCardExpireDateView()
         initCvcView()
         applyCardTypeValues()
+    }
+
+    private fun initGooglePayButton() {
+        try {
+            val context = context ?: return
+            val metadata = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            ).metaData
+            if (
+                PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay != null
+                && metadata.getBoolean(
+                    "com.google.android.gms.wallet.api.enabled"
+                )
+            ) {
+                GooglePayHelper.checkIsReadyToPayTask(requireActivity(), ::updateGooglePayButton)
+            }
+        } catch (ex: PackageManager.NameNotFoundException) {
+        }
+    }
+
+    private fun updateGooglePayButton(isSuccess: Boolean) {
+        binding?.run {
+            mbGooglePay.isVisible = isSuccess
+            if (isSuccess) {
+                mbGooglePay.setOnClickListener {
+                    onProgressDialogListener?.onShowProgress()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val orderDetails = PaymentSdk.instance.getOrderDetails()
+                        if (orderDetails != null) {
+                            GooglePayHelper.startPaymentFlow(
+                                requireActivity(),
+                                GOOGLE_PAY_RETURN_CODE,
+                                orderDetails
+                            )
+                        } else {
+                            onProgressDialogListener?.onHideProgress()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun pay() {

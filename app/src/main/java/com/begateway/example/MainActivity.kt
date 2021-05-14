@@ -2,12 +2,14 @@ package com.begateway.example
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import com.begateway.example.databinding.ActivityMainBinding
+import com.begateway.mobilepayments.models.network.CheckoutWithToken
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     /**
-     * use if you already have payment token
+     * use if you already have payment token, also if you want pay with google pay fill the googlePay section with correct data
      */
     private fun payWithCheckout() {
         sdk.checkoutWithTokenData = CheckoutWithTokenData(
