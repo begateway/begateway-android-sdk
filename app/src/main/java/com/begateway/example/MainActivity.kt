@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     /**
-     * use if you already have payment token
+     * use if you already have payment token, also if you want pay with google pay fill the googlePay section with correct data
      */
     private fun payWithCheckout() {
         sdk.checkoutWithTokenData = CheckoutWithTokenData(
