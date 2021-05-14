@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.text.InputFilter
@@ -170,8 +171,21 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     }
 
     private fun initGooglePayButton() {
-        if (PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay != null) {
-            GooglePayHelper.checkIsReadyToPayTask(requireActivity(), ::updateGooglePayButton)
+        try {
+            val context = context ?: return
+            val metadata = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            ).metaData
+            if (
+                PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay != null
+                && metadata.getBoolean(
+                    "com.google.android.gms.wallet.api.enabled"
+                )
+            ) {
+                GooglePayHelper.checkIsReadyToPayTask(requireActivity(), ::updateGooglePayButton)
+            }
+        } catch (ex: PackageManager.NameNotFoundException) {
         }
     }
 
