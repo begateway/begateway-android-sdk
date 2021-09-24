@@ -135,6 +135,12 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         container,
         false
     ).also {
+        if (!PaymentSdk.instance.settings.isDebugMode) {
+            dialog?.window?.setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+            )
+        }
         nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
         setHasOptionsMenu(true)
         binding = it

@@ -64,6 +64,7 @@ class PaymentSdk private constructor() {
 
         private const val TIMEOUT_MILLISECONDS: Long = 60000L
         private const val ATTEMPT_INTERVAL_MILLISECONDS: Long = 5000L
+        internal const val REQUEST_WEBVIEW_ACTIVITY = 1234
         internal val instance = PaymentSdk()
     }
 
@@ -129,11 +130,12 @@ class PaymentSdk private constructor() {
                 if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
                     token = data.paymentToken
                     withContext(Dispatchers.Main) {
-                        activity.startActivity(
+                        activity.startActivityForResult(
                             WebViewActivity.getThreeDSIntent(
                                 activity,
                                 data.threeDSUrl
-                            )
+                            ),
+                            REQUEST_WEBVIEW_ACTIVITY
                         )
                     }
                 } else {

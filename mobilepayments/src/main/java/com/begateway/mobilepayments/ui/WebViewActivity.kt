@@ -41,11 +41,17 @@ internal class WebViewActivity : AbstractActivity() {
                         CoroutineScope(Dispatchers.IO).launch {
                             PaymentSdk.instance.onThreeDSecureComplete()
                         }
+                        setResult(RESULT_OK)
                         finish()
                     }
                 }
             }
             webView.loadUrl(intent.getStringExtra(THREE_DS_URL)!!)
         }
+    }
+
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        super.onBackPressed()
     }
 }
