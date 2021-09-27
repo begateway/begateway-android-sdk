@@ -27,12 +27,12 @@ internal abstract class AbstractActivity : AppCompatActivity(),
     private var progressDialog: AlertDialog? = null
     protected var alertDialog: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (!PaymentSdk.instance.settings.isDebugMode)
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE
             )
-        super.onCreate(savedInstanceState)
         savedInstanceState?.let {
             isDialogWasShowed = it.getBoolean(IS_PROGRESS_DIALOG_SHOWED)
         }
