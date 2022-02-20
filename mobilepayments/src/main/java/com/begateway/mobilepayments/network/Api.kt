@@ -1,11 +1,11 @@
 package com.begateway.mobilepayments.network
 
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
-import com.begateway.mobilepayments.models.network.request.Checkout
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.models.network.response.PaymentData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -25,14 +25,9 @@ internal interface Api {
     ): Response<BeGatewayResponse>
 
     @GET("checkouts/{token}")
-    suspend fun getPaymentStatus(
-        @Path("token") token: String
-    ): Response<BeGatewayResponse>
-
-    @GET("checkouts/{token}")
     suspend fun getPaymentData(
         @Path("token") token: String
-    ): Response<TokenCheckoutData>
+    ): Response<PaymentData>
 
     @POST("google_pay/payment")
     suspend fun payWithGooglePay(

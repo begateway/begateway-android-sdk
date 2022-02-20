@@ -39,7 +39,9 @@ class CardOnFile(
 
 class Settings(
     /** If returnUrl defined, then successUrl and declineUrl could be ignored. Use only with header "X-Api-Version: 2" */
-    @SerializedName("return_url") val returnUrl: String,
+    @SerializedName("return_url") val returnUrl: String? = null,
+    @SerializedName("success_url") val successUrl: String? = null,
+    @SerializedName("decline_url") val declineUrl: String? = null,
     @SerializedName("fail_url") val failUrl: String? = null,
     @SerializedName("cancel_url") val cancelUrl: String? = null,
     @SerializedName("notification_url") val notificationUrl: String? = null,
@@ -49,7 +51,12 @@ class Settings(
     @SerializedName("button_next_text") val buttonNextText: String? = null,
     @SerializedName("language") val language: Language? = null,
     @SerializedName("customer_fields") val customerFields: CustomerFields? = null,
+    @SerializedName("save_card_toggle") val saveCardPolicy: SaveCardPolicy?,
 ) : AdditionalFields()
+
+class SaveCardPolicy(
+    @SerializedName("customer_contract") val customerContract: Boolean?,
+)
 
 class CustomerFields(
     @SerializedName("read_only") val readOnly: Array<ReadOnly>? = null,
@@ -91,6 +98,7 @@ data class CreditCard(
     @SerializedName("exp_month") val expMonth: String? = null,
     @SerializedName("exp_year") val expYear: String? = null,
     @SerializedName("token") val token: String? = null,
+    @SerializedName("save_card") val isSaveCard: Boolean? = null,
 ) : AdditionalFields()
 
 class Travel(

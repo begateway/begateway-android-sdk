@@ -9,11 +9,14 @@ import com.begateway.mobilepayments.models.network.Company
 import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.models.network.response.PaymentData
 import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.begateway.mobilepayments.parser.CustomSerializer
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -107,29 +110,28 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         return safeApiCall { api.payWithGooglePay(requestBody) }
     }
 
-    suspend fun getPaymentStatus(
-        token: String
-    ): HttpResult<BeGatewayResponse> {
-        return safeApiCall { api.getPaymentStatus(token) }
-    }
-
     suspend fun getPaymentData(
         token: String
-    ): HttpResult<TokenCheckoutData> {
+    ): HttpResult<PaymentData> {
         return safeApiCall { api.getPaymentData(token) }
     }
 
     private suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>): HttpResult<T> {
         return try {
-            val response = call()
-            if (response.isSuccessful) {
-                HttpResult.Success(response.body()!!)
-            } else {
-                HttpResult.UnSuccess(
-                    BeGatewayResponseParser().parseJson(
-                        gson.fromJson(response.errorBody()?.charStream(), JsonElement::class.java)
+            withContext(Dispatchers.IO) {
+                val response = call()
+                if (response.isSuccessful) {
+                    HttpResult.Success(response.body()!!)
+                } else {
+                    HttpResult.UnSuccess(
+                        BeGatewayResponseParser().parseJson(
+                            gson.fromJson(
+                                response.errorBody()?.charStream(),
+                                JsonElement::class.java
+                            )
+                        )
                     )
-                )
+                }
             }
         } catch (e: Exception) {
             Log.e("mobilepayments", "unknown error", e)

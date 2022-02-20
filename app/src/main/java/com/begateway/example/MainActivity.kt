@@ -2,7 +2,6 @@ package com.begateway.example
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
 
     private var isWithCheckout: Boolean = false
-    private lateinit var sdk: PaymentSdk
+    private var sdk: PaymentSdk? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +42,8 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             setCardCVCFieldVisibility(mcbCvvVisibility.isChecked)
             setCardDateFieldVisibility(mcbDateVisibility.isChecked)
             setCardHolderFieldVisibility(mcbHolderVisibility.isChecked)
-            setSaveCardVisibility(mcbSaveCardVisibility.isChecked)
         }
         setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
-        setReturnUrl("https://DEFAULT_RETURN_URL.com")
     }.build().apply {
         addCallBackListener(this@MainActivity)
     }.also {
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         binding.bPayWithCheckout.setOnClickListener {
             if (!isTokenEmpty()) {
                 isWithCheckout = true
-                pay()
+                payWithCheckout()
             }
         }
     }
@@ -106,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
      * use if you already have payment token, also if you want pay with google pay fill the googlePay section with correct data
      */
     private fun payWithCheckout() {
-        sdk.checkoutWithTokenData = CheckoutWithTokenData(
+        sdk?.checkoutWithTokenData = CheckoutWithTokenData(
             CheckoutWithToken(
                 token = binding.tilToken.editText!!.text.toString()
             )
@@ -118,7 +115,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
 
 
     /**
-     * use if you already have payment token or card info(card token or card data)
+     * use if you already have payment token and card info(card token or card data)
      */
     private fun payWithCard(cardToken: String) {
         val token = binding.tilToken.editText?.text?.toString() ?: return
@@ -165,6 +162,9 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                         settings = Settings(
                             returnUrl = "https://DEFAULT_RETURN_URL.com",
                             autoReturn = 0,
+                            saveCardPolicy = SaveCardPolicy(
+                                binding.mcbSaveCardVisibility.isChecked
+                            )
                         ),
                     ),
                 ).apply {
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     override fun onDestroy() {
-        sdk.removeResultListener(this)
+        sdk?.removeResultListener(this)
         super.onDestroy()
     }
 
@@ -193,6 +193,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     }
 
     private fun getPreferences() = getSharedPreferences("BE_PAID_PREFS", Context.MODE_PRIVATE)
+
     override fun onPaymentFinished(beGatewayResponse: BeGatewayResponse, cardToken: String?) {
         if (!isFinishing) {
             cardToken?.let {

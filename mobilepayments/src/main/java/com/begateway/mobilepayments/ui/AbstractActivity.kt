@@ -28,7 +28,7 @@ internal abstract class AbstractActivity : AppCompatActivity(),
     protected var alertDialog: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!PaymentSdk.instance.settings.isDebugMode)
+        if (!PaymentSdk.instance.sdkSettings.isDebugMode)
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE

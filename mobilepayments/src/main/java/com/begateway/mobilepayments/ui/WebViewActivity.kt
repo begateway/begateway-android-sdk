@@ -37,7 +37,8 @@ internal class WebViewActivity : AbstractActivity() {
                 }
 
                 override fun onPageFinished(view: WebView, url: String) {
-                    if (url.contains(PaymentSdk.instance.settings.returnUrl, true)) {
+                    val resultUrl = PaymentSdk.instance.paymentData?.checkout?.resultUrl
+                    if (!resultUrl.isNullOrEmpty() && url.contains(resultUrl, true)) {
                         CoroutineScope(Dispatchers.IO).launch {
                             PaymentSdk.instance.onThreeDSecureComplete()
                         }

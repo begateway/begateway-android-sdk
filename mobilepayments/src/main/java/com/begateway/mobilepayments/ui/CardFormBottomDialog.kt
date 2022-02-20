@@ -19,10 +19,7 @@ import androidx.core.view.isVisible
 import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
-import com.begateway.mobilepayments.models.network.request.CreditCard
-import com.begateway.mobilepayments.models.network.request.PaymentMethodType
-import com.begateway.mobilepayments.models.network.request.PaymentRequest
-import com.begateway.mobilepayments.models.network.request.Request
+import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.models.ui.CardType
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
@@ -135,7 +132,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         container,
         false
     ).also {
-        if (!PaymentSdk.instance.settings.isDebugMode) {
+        if (!PaymentSdk.instance.sdkSettings.isDebugMode) {
             dialog?.window?.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE
@@ -225,14 +222,15 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
             paymentSdk.payWithCard(
                 PaymentRequest(
                     Request(
-                        paymentSdk.checkoutWithTokenData!!.checkout.token,
-                        PaymentMethodType.CREDIT_CARD,
-                        CreditCard(
+                        token = paymentSdk.checkoutWithTokenData!!.checkout.token,
+                        paymentMethod = PaymentMethodType.CREDIT_CARD,
+                        creditCard = CreditCard(
                             cardNumber = cardData.cardNumber,
                             cvc = cardData.cvcCode,
                             holderName = cardData.cardHolderName,
                             expMonth = cardData.getMonth(),
-                            expYear = cardData.getYear()
+                            expYear = cardData.getYear(),
+                            isSaveCard = paymentSdk.isSaveCard
                         )
                     )
                 ),
@@ -359,11 +357,13 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun iniSaveCardCheckBox() {
         binding?.run {
-            val saveCardFieldVisible = PaymentSdk.instance.settings.isSaveCardVisible
+            val instance = PaymentSdk.instance
+            val saveCardFieldVisible =
+                instance.paymentData?.checkout?.settings?.saveCardPolicy?.customerContract == true
             mcbSaveCard.isVisible = saveCardFieldVisible
             if (saveCardFieldVisible) {
                 mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
-                    PaymentSdk.instance.isSaveCard = isChecked
+                    instance.isSaveCard = isChecked
                 }
             }
         }
@@ -371,7 +371,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCardNumberView() {
         binding?.run {
-            val cardNumberFieldVisible = PaymentSdk.instance.settings.isCardNumberFieldVisible
+            val cardNumberFieldVisible = PaymentSdk.instance.sdkSettings.isCardNumberFieldVisible
             tilCardNumber.isVisible = cardNumberFieldVisible
             if (cardNumberFieldVisible) {
                 tilCardNumber.apply {
@@ -403,7 +403,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCardNameView() {
         binding?.run {
-            val cardHolderFieldVisible = PaymentSdk.instance.settings.isCardHolderFieldVisible
+            val cardHolderFieldVisible = PaymentSdk.instance.sdkSettings.isCardHolderFieldVisible
             tilCardName.isVisible = cardHolderFieldVisible
             if (cardHolderFieldVisible) {
                 tilCardName.apply {
@@ -427,7 +427,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCardExpireDateView() {
         binding?.run {
-            val isCardDateFieldVisible = PaymentSdk.instance.settings.isCardDateFieldVisible
+            val isCardDateFieldVisible = PaymentSdk.instance.sdkSettings.isCardDateFieldVisible
             tilCardExpiryDate.isVisible = isCardDateFieldVisible
             if (isCardDateFieldVisible) {
                 tilCardExpiryDate.apply {
@@ -463,7 +463,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
 
     private fun initCvcView() {
         binding?.run {
-            val isCardCVCFieldVisible = PaymentSdk.instance.settings.isCardCVCFieldVisible
+            val isCardCVCFieldVisible = PaymentSdk.instance.sdkSettings.isCardCVCFieldVisible
             tilCardCvc.isVisible = isCardCVCFieldVisible
             if (isCardCVCFieldVisible) {
                 tilCardCvc.apply {

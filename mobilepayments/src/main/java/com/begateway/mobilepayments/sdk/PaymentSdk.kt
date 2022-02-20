@@ -8,11 +8,13 @@ import com.begateway.mobilepayments.encryption.RSA
 import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
 import com.begateway.mobilepayments.models.googlepay.api.GRequest
+import com.begateway.mobilepayments.models.network.request.Contract
 import com.begateway.mobilepayments.models.network.request.Order
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
+import com.begateway.mobilepayments.models.network.response.PaymentData
 import com.begateway.mobilepayments.models.network.response.ResponseStatus
 import com.begateway.mobilepayments.models.settings.PaymentSdkSettings
 import com.begateway.mobilepayments.models.ui.CardData
@@ -70,13 +72,13 @@ class PaymentSdk private constructor() {
 
     internal var isSaveCard: Boolean = false
     internal var cardToken: String? = null
-    internal lateinit var settings: PaymentSdkSettings
+    internal lateinit var sdkSettings: PaymentSdkSettings
     internal val isSdkInitialized: Boolean
         get() = checkoutWithTokenData != null
+    internal var paymentData: PaymentData? = null
 
     private lateinit var rest: Rest
     private val callbacks: ArrayList<OnResultListener> = arrayListOf()
-    private var token: String? = null
 
     @Keep
     var checkoutWithTokenData: CheckoutWithTokenData? = null
@@ -85,7 +87,7 @@ class PaymentSdk private constructor() {
         settings: PaymentSdkSettings,
     ) {
         resetValues()
-        this.settings = settings
+        this.sdkSettings = settings
         rest = Rest(settings.endpoint, settings.isDebugMode, settings.publicKey)
     }
 
@@ -104,11 +106,15 @@ class PaymentSdk private constructor() {
     suspend fun getPaymentToken(
         requestBody: TokenCheckoutData
     ) {
-        settings.returnUrl = requestBody.checkout.settings.returnUrl
         when (val paymentToken = rest.getPaymentToken(requestBody)) {
             is HttpResult.Success -> {
                 val data = paymentToken.data
                 checkoutWithTokenData = data
+                getPaymentData(
+                    token = data.checkout.token,
+                    onSuccess = {},
+                    onError = {}
+                )
                 withContext(Dispatchers.Main) {
                     callbacks.forEach {
                         it.onTokenReady(data.checkout.token)
@@ -128,17 +134,30 @@ class PaymentSdk private constructor() {
             is HttpResult.Success -> {
                 val data = pay.data
                 if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
-                    token = data.paymentToken
-                    withContext(Dispatchers.Main) {
-                        activity.startActivityForResult(
-                            WebViewActivity.getThreeDSIntent(
-                                activity,
-                                data.threeDSUrl
-                            ),
-                            REQUEST_WEBVIEW_ACTIVITY
-                        )
-                    }
+                    getPaymentData(
+                        token = requestBody.request.token,
+                        onSuccess = {
+                            updateCardToken(it)
+                            withContext(Dispatchers.Main) {
+                                activity.startActivityForResult(
+                                    WebViewActivity.getThreeDSIntent(
+                                        activity,
+                                        data.threeDSUrl
+                                    ),
+                                    REQUEST_WEBVIEW_ACTIVITY
+                                )
+                            }
+                        },
+                        onError = {
+                            onNotSuccess(it)
+                        }
+                    )
                 } else {
+                    getPaymentData(
+                        token = requestBody.request.token,
+                        onSuccess = ::updateCardToken,
+                        onError = {}
+                    )
                     withContext(Dispatchers.Main) {
                         onPaymentFinished(data)
                     }
@@ -148,18 +167,78 @@ class PaymentSdk private constructor() {
         }
     }
 
+    private suspend fun getPaymentData(
+        token: String,
+        onSuccess: suspend (paymentData: PaymentData) -> Unit,
+        onError: suspend (error: HttpResult<PaymentData>) -> Unit
+    ) {
+        paymentData
+            ?.takeIf { it.checkout.token == token }
+            ?.let { onSuccess(it) }
+            ?: kotlin.run {
+                when (val data = rest.getPaymentData(token)) {
+                    is HttpResult.Success -> {
+                        onSuccess(data.data.also { this.paymentData = it })
+                    }
+                    else -> onError(data)
+                }
+            }
+    }
+
+    private fun updateCardToken(paymentData: PaymentData) {
+        val checkout = paymentData.checkout
+        if (checkout.settings?.saveCardPolicy?.customerContract == true) {
+            if (checkout.order?.additionalData?.contract?.contains(Contract.SAVE_CARD) != true) {
+                cardToken = null
+            }
+        }
+    }
+
     @Keep
-    fun encryptData(data: String) = RSA.encryptData(data, settings.publicKey)
+    fun encryptData(data: String) = RSA.encryptData(data, sdkSettings.publicKey)
 
     internal suspend fun onThreeDSecureComplete() {
-        token?.let {
+        paymentData?.checkout?.token?.let {
             checkPaymentStatus(it)
         }
     }
 
     @Keep
     suspend fun checkPaymentStatus(token: String) {
-        getPaymentStatus(token)
+        var startTime = 0L
+        var beGatewayResponse = BeGatewayResponse(
+            status = ResponseStatus.TIME_OUT,
+            message = "Please check payment status"
+        )
+        while (startTime < TIMEOUT_MILLISECONDS) {
+            val currentTime = System.currentTimeMillis()
+            when (val paymentStatus = rest.getPaymentData(token)) {
+                is HttpResult.Success -> {
+                    val data = paymentStatus.data
+                    val checkout = data.checkout
+                    val status = checkout.status
+                    beGatewayResponse = BeGatewayResponse(
+                        status = status,
+                        message = checkout.message,
+                    )
+                    if (status != ResponseStatus.INCOMPLETE) {
+                        withContext(Dispatchers.Main) {
+                            onPaymentFinished(beGatewayResponse)
+                        }
+                        return
+                    }
+                }
+                else -> {
+                    onNotSuccess(paymentStatus)
+                    return
+                }
+            }
+            delay(ATTEMPT_INTERVAL_MILLISECONDS)
+            startTime += (System.currentTimeMillis() - currentTime)
+        }
+        withContext(Dispatchers.Main) {
+            onPaymentFinished(beGatewayResponse)
+        }
     }
 
     @Keep
@@ -191,51 +270,29 @@ class PaymentSdk private constructor() {
         )
     }
 
-    private suspend fun getPaymentStatus(token: String) {
-        var startTime = 0L
-        var beGatewayResponse = BeGatewayResponse(
-            status = ResponseStatus.TIME_OUT,
-            message = "Please check payment status"
-        )
-        while (startTime < TIMEOUT_MILLISECONDS) {
-            val currentTime = System.currentTimeMillis()
-            when (val paymentStatus = rest.getPaymentStatus(token)) {
-                is HttpResult.Success -> {
-                    beGatewayResponse = paymentStatus.data
-                    if (beGatewayResponse.status != ResponseStatus.INCOMPLETE) {
-                        withContext(Dispatchers.Main) {
-                            onPaymentFinished(paymentStatus.data)
-                        }
-                        return
+    internal suspend fun getOrderDetails(): Order? {
+        val token = checkoutWithTokenData!!.checkout.token
+        return paymentData
+            ?.takeIf { it.checkout.token == token }
+            ?.checkout
+            ?.order
+            ?: kotlin.run {
+                when (val pay = rest.getPaymentData(token)) {
+                    is HttpResult.Success -> {
+                        pay.data.checkout.order
                     }
-                }
-                else -> {
-                    onNotSuccess(paymentStatus)
-                    return
+                    else -> null
                 }
             }
-            delay(ATTEMPT_INTERVAL_MILLISECONDS)
-            startTime += (System.currentTimeMillis() - currentTime)
-        }
-        withContext(Dispatchers.Main) {
-            onPaymentFinished(beGatewayResponse)
-        }
     }
 
-    internal suspend fun getOrderDetails(): Order? =
-        when (val pay = rest.getPaymentData(checkoutWithTokenData!!.checkout.token)) {
-            is HttpResult.Success -> {
-                pay.data.checkout.order
-            }
-            else -> null
-        }
 
     private suspend fun <T : Any> onNotSuccess(result: HttpResult<T>) {
         withContext(Dispatchers.Main) {
             when (result) {
                 is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
                 is HttpResult.Error -> onPaymentFinished(result.beGatewayResponse)
-                is HttpResult.Success -> TODO()
+                is HttpResult.Success -> throw IllegalStateException("Can't work with success there")
             }
         }
     }
@@ -244,7 +301,11 @@ class PaymentSdk private constructor() {
         callbacks.forEach {
             it.onPaymentFinished(
                 beGatewayResponse = beGatewayResponse,
-                cardToken = cardToken
+                cardToken = if (beGatewayResponse.status == ResponseStatus.SUCCESS) {
+                    cardToken
+                } else {
+                    null
+                }
             )
         }
         resetValues()
@@ -253,7 +314,7 @@ class PaymentSdk private constructor() {
     internal fun resetValues() {
         isSaveCard = false
         cardToken = null
-        token = null
         checkoutWithTokenData = null
+        paymentData = null
     }
 }
