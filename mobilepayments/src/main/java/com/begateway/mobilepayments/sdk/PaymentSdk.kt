@@ -156,7 +156,9 @@ class PaymentSdk private constructor() {
                     getPaymentData(
                         token = requestBody.request.token,
                         onSuccess = ::updateCardToken,
-                        onError = {}
+                        onError = {
+                            cardToken = null
+                        }
                     )
                     withContext(Dispatchers.Main) {
                         onPaymentFinished(data)
