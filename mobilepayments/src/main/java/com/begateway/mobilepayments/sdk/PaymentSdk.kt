@@ -136,6 +136,7 @@ class PaymentSdk private constructor() {
                 if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
                     getPaymentData(
                         token = requestBody.request.token,
+                        isMustBeUpdated = true,
                         onSuccess = {
                             updateCardToken(it)
                             withContext(Dispatchers.Main) {
@@ -171,11 +172,12 @@ class PaymentSdk private constructor() {
 
     private suspend fun getPaymentData(
         token: String,
+        isMustBeUpdated: Boolean = false,
         onSuccess: suspend (paymentData: PaymentData) -> Unit,
         onError: suspend (error: HttpResult<PaymentData>) -> Unit
     ) {
         paymentData
-            ?.takeIf { it.checkout.token == token }
+            ?.takeIf { it.checkout.token == token && isMustBeUpdated.not() }
             ?.let { onSuccess(it) }
             ?: kotlin.run {
                 when (val data = rest.getPaymentData(token)) {

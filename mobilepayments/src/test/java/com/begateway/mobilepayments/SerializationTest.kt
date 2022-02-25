@@ -71,6 +71,9 @@ class SerializationTest {
             settings = Settings(
                 returnUrl = "https://DEFAULT_RETURN_URL.com",
                 autoReturn = 0,
+                saveCardPolicy = SaveCardPolicy(
+                    true
+                )
             ).apply {
                 addCustomField("settingsCustomIntKey", 14006)
             },
