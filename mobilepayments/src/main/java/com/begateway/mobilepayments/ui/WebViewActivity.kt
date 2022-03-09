@@ -1,7 +1,7 @@
 package com.begateway.mobilepayments.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebChromeClient
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 internal class WebViewActivity : AbstractActivity() {
     companion object {
         private const val THREE_DS_URL = "om.begateway.mobilepayments.THREE_DS_URL"
-        fun getThreeDSIntent(context: Activity, url: String) =
+        fun getThreeDSIntent(context: Context, url: String) =
             Intent(context, WebViewActivity::class.java).apply {
                 putExtra(THREE_DS_URL, url)
             }

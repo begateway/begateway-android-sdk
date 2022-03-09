@@ -17,7 +17,7 @@ internal enum class CardType(
 ) {
     MIR(
         "mir",
-        Pattern.compile("^220[1-4]"),
+        Pattern.compile("^220\\d*"),
         R.drawable.begateway_ic_mir,
         arrayListOf(19),
         arrayListOf(3),

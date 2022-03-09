@@ -7,7 +7,6 @@ import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.sdk.OnResultListener
 import com.begateway.mobilepayments.sdk.PaymentSdk
-import com.begateway.mobilepayments.sdk.PaymentSdk.Companion.REQUEST_WEBVIEW_ACTIVITY
 import com.google.android.gms.wallet.AutoResolveHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,11 +72,6 @@ internal class CheckoutActivity : AbstractActivity(), OnResultListener {
                             }
                         )
                     }
-                    onHideProgress()
-                }
-            }
-            REQUEST_WEBVIEW_ACTIVITY -> {
-                if (resultCode != Activity.RESULT_OK) {
                     onHideProgress()
                 }
             }

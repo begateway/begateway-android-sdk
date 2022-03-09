@@ -13,13 +13,17 @@ import android.text.InputFilter
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
-import com.begateway.mobilepayments.models.network.request.*
+import com.begateway.mobilepayments.models.network.request.CreditCard
+import com.begateway.mobilepayments.models.network.request.PaymentMethodType
+import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.Request
 import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.models.ui.CardType
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
@@ -40,7 +44,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val REQUEST_CODE_SCAN_BANK_CARD = 0x56BD
 private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer.NfcCallbacks,
@@ -77,6 +80,21 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     private var cardNumberInputTypeMask: DescriptorFormatWatcher? = null
     private var expiryDateTypeMask: DescriptorFormatWatcher? = null
     private lateinit var cardData: CardData
+    private val scanBankCardLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            CardData.getDataFromIntent(result.data)?.let { applyCardData(it) }
+        }
+    }
+
+    private val paymentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != Activity.RESULT_OK) {
+            onProgressDialogListener?.onHideProgress()
+        }
+    }
 
     init {
         val year = minExpiry.get(Calendar.YEAR)
@@ -220,7 +238,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         val paymentSdk = PaymentSdk.instance
         CoroutineScope(Dispatchers.IO).launch {
             paymentSdk.payWithCard(
-                PaymentRequest(
+                requestBody = PaymentRequest(
                     Request(
                         token = paymentSdk.checkoutWithTokenData!!.checkout.token,
                         paymentMethod = PaymentMethodType.CREDIT_CARD,
@@ -234,7 +252,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
                         )
                     )
                 ),
-                requireActivity()
+                context = requireActivity(),
+                launcher = paymentLauncher
             )
         }
     }
@@ -251,17 +270,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     override fun onDestroy() {
         nfcRecognizer = null
         super.onDestroy()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_SCAN_BANK_CARD -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    CardData.getDataFromIntent(data)?.let { applyCardData(it) }
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun applyCardData(cardData: CardData) {
@@ -300,7 +308,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         return when (item.itemId) {
             R.id.action_scan_camera -> {
                 intent.component = ComponentName(activityInfo!!.packageName, activityInfo!!.name)
-                startActivityForResult(intent, REQUEST_CODE_SCAN_BANK_CARD)
+                scanBankCardLauncher.launch(intent)
                 true
             }
             R.id.action_scan_nfc -> {

@@ -1,8 +1,8 @@
 package com.begateway.mobilepayments.sdk
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.encryption.RSA
 import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
@@ -66,7 +66,6 @@ class PaymentSdk private constructor() {
 
         private const val TIMEOUT_MILLISECONDS: Long = 60000L
         private const val ATTEMPT_INTERVAL_MILLISECONDS: Long = 5000L
-        internal const val REQUEST_WEBVIEW_ACTIVITY = 1234
         internal val instance = PaymentSdk()
     }
 
@@ -128,7 +127,8 @@ class PaymentSdk private constructor() {
     @Keep
     suspend fun payWithCard(
         requestBody: PaymentRequest,
-        activity: Activity
+        context: Context,
+        launcher: ActivityResultLauncher<Intent>? = null
     ) {
         when (val pay = rest.payWithCard(requestBody)) {
             is HttpResult.Success -> {
@@ -140,13 +140,15 @@ class PaymentSdk private constructor() {
                         onSuccess = {
                             updateCardToken(it)
                             withContext(Dispatchers.Main) {
-                                activity.startActivityForResult(
-                                    WebViewActivity.getThreeDSIntent(
-                                        activity,
-                                        data.threeDSUrl
-                                    ),
-                                    REQUEST_WEBVIEW_ACTIVITY
+                                val threeDSIntent = WebViewActivity.getThreeDSIntent(
+                                    context,
+                                    data.threeDSUrl
                                 )
+                                (launcher?.let {
+                                    launcher.launch(threeDSIntent)
+                                } ?: kotlin.run {
+                                    context.startActivity(threeDSIntent)
+                                })
                             }
                         },
                         onError = {

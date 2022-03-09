@@ -19,7 +19,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class MainActivity : AppCompatActivity(), OnResultListener {
     private lateinit var binding: ActivityMainBinding
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         isProgressVisible(true)
         CoroutineScope(Dispatchers.IO).launch {
             initPaymentSdk().payWithCard(
-                PaymentRequest(
+                requestBody = PaymentRequest(
                     Request(
                         token,
                         PaymentMethodType.CREDIT_CARD,
@@ -131,7 +130,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                         )
                     )
                 ),
-                this@MainActivity
+                context = this@MainActivity
             )
         }
     }

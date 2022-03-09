@@ -17,9 +17,11 @@
 
         <activity
             android:name="com.begateway.mobilepayments.ui.CheckoutActivity"
+            android:exported="true"
             android:theme="@style/begateway_Theme.Transparent" />
         <activity
             android:name="com.begateway.mobilepayments.ui.WebViewActivity"
+            android:exported="true"
             android:theme="@style/begateway_Theme" />
     </application>
 
