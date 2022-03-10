@@ -16,9 +16,11 @@ import kotlinx.coroutines.launch
 internal class WebViewActivity : AbstractActivity() {
     companion object {
         private const val THREE_DS_URL = "om.begateway.mobilepayments.THREE_DS_URL"
-        fun getThreeDSIntent(context: Context, url: String) =
+        private const val RESULT_URl = "om.begateway.mobilepayments.RESULT_URl"
+        fun getThreeDSIntent(context: Context, url: String, resultUrl: String) =
             Intent(context, WebViewActivity::class.java).apply {
                 putExtra(THREE_DS_URL, url)
+                putExtra(RESULT_URl, resultUrl)
             }
     }
 
@@ -37,8 +39,8 @@ internal class WebViewActivity : AbstractActivity() {
                 }
 
                 override fun onPageFinished(view: WebView, url: String) {
-                    val resultUrl = PaymentSdk.instance.paymentData?.checkout?.resultUrl
-                    if (!resultUrl.isNullOrEmpty() && url.contains(resultUrl, true)) {
+                    val resultUrl = intent.getStringExtra(RESULT_URl)!!
+                    if (url.contains(resultUrl, true)) {
                         CoroutineScope(Dispatchers.IO).launch {
                             PaymentSdk.instance.onThreeDSecureComplete()
                         }

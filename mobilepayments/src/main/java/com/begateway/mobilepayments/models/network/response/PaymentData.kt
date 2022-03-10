@@ -10,7 +10,6 @@ data class PaymentData(
 
 data class PaymentCheckout(
     @SerializedName("token") val token: String,
-    @SerializedName("result_url") val resultUrl: String,
     @SerializedName("order") val order: Order? = null,
     @SerializedName("settings") val settings: Settings? = null,
     @SerializedName("status") private val _status: ResponseStatus? = null,

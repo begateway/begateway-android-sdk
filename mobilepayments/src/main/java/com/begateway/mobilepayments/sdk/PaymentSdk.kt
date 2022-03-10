@@ -133,16 +133,16 @@ class PaymentSdk private constructor() {
         when (val pay = rest.payWithCard(requestBody)) {
             is HttpResult.Success -> {
                 val data = pay.data
-                if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null) {
+                if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null && data.resultUrl != null) {
                     getPaymentData(
                         token = requestBody.request.token,
-                        isMustBeUpdated = true,
                         onSuccess = {
                             updateCardToken(it)
                             withContext(Dispatchers.Main) {
                                 val threeDSIntent = WebViewActivity.getThreeDSIntent(
-                                    context,
-                                    data.threeDSUrl
+                                    context = context,
+                                    url = data.threeDSUrl,
+                                    resultUrl = data.resultUrl
                                 )
                                 (launcher?.let {
                                     launcher.launch(threeDSIntent)
@@ -174,12 +174,11 @@ class PaymentSdk private constructor() {
 
     private suspend fun getPaymentData(
         token: String,
-        isMustBeUpdated: Boolean = false,
         onSuccess: suspend (paymentData: PaymentData) -> Unit,
         onError: suspend (error: HttpResult<PaymentData>) -> Unit
     ) {
         paymentData
-            ?.takeIf { it.checkout.token == token && isMustBeUpdated.not() }
+            ?.takeIf { it.checkout.token == token }
             ?.let { onSuccess(it) }
             ?: kotlin.run {
                 when (val data = rest.getPaymentData(token)) {
