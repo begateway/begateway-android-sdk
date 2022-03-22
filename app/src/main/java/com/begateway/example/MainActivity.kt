@@ -159,6 +159,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                             )
                         ),
                         settings = Settings(
+                            autoReturn = 0,
                             returnUrl = "https://DEFAULT_RETURN_URL.com",
                             saveCardPolicy = SaveCardPolicy(
                                 binding.mcbSaveCardVisibility.isChecked
