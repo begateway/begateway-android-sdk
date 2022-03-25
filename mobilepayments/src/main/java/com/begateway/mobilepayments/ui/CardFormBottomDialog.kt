@@ -49,10 +49,15 @@ private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
 internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer.NfcCallbacks,
     NfcRecognizer.NfcClarifyCallbacks {
 
+    private val minExpiry = Calendar.getInstance()
+
     //date
     private val expiryFormat =
-        SimpleDateFormat(CardData.EXPIRY_DATE_FORMAT_FULL, Locale.US)
-    private val minExpiry = Calendar.getInstance()
+        SimpleDateFormat(CardData.EXPIRY_DATE_FORMAT_SMALL, Locale.US).apply {
+            val now = Calendar.getInstance()
+            now.set(Calendar.YEAR, (now.get(Calendar.YEAR) / 100) * 100)
+            set2DigitYearStart(now.time)
+        }
     private var currentCardType: CardType = CardType.EMPTY
     private val intent = Intent(BuildConfig.SCAN_CARD_BANK_ACTION)
     private var binding: BegatewayFragmentCardFormBinding? = null
@@ -451,16 +456,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
                 }
                 tietCardExpiryDate.run {
                     onEditorListener(::requestFocusToNextVisibleElement)
-                    val firstTwoNumberOfYear = minExpiry.get(Calendar.YEAR) / 100
-                    expiryDateTypeMask = maskFormatWatcher(
-                        "__/${
-                            if (firstTwoNumberOfYear == (minExpiry.get(Calendar.YEAR) + BuildConfig.MAXIMUM_VALID_YEAR_DIFFERENCE) / 100) {
-                                "${firstTwoNumberOfYear}__"
-                            } else {
-                                "${firstTwoNumberOfYear / 10}___"
-                            }
-                        }"
-                    )
+                    expiryDateTypeMask = maskFormatWatcher("__/__")
                     installMask(expiryDateTypeMask!!)
                 }
             }
