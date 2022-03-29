@@ -137,7 +137,6 @@ class PaymentSdk private constructor() {
                     getPaymentData(
                         token = requestBody.request.token,
                         onSuccess = {
-                            updateCardToken(it)
                             withContext(Dispatchers.Main) {
                                 val threeDSIntent = WebViewActivity.getThreeDSIntent(
                                     context = context,
@@ -156,13 +155,6 @@ class PaymentSdk private constructor() {
                         }
                     )
                 } else {
-                    getPaymentData(
-                        token = requestBody.request.token,
-                        onSuccess = ::updateCardToken,
-                        onError = {
-                            cardToken = null
-                        }
-                    )
                     withContext(Dispatchers.Main) {
                         onPaymentFinished(data)
                     }

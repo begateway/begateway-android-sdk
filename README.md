@@ -127,7 +127,8 @@ BeGatewayResponse parameters:
                         )
                     )
                 ),
-                this@MainActivity
+                this@MainActivity,
+                launcher // used for starting activity for 3d secure
             )
 ```
 #### 3. Start payment with `CheckoutWithTokenData`
