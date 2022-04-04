@@ -8,7 +8,6 @@ import com.begateway.mobilepayments.encryption.RSA
 import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
 import com.begateway.mobilepayments.models.googlepay.api.GRequest
-import com.begateway.mobilepayments.models.network.request.Contract
 import com.begateway.mobilepayments.models.network.request.Order
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
@@ -180,15 +179,6 @@ class PaymentSdk private constructor() {
                     else -> onError(data)
                 }
             }
-    }
-
-    private fun updateCardToken(paymentData: PaymentData) {
-        val checkout = paymentData.checkout
-        if (checkout.settings?.saveCardPolicy?.customerContract == true) {
-            if (checkout.order?.additionalData?.contract?.contains(Contract.SAVE_CARD) != true) {
-                cardToken = null
-            }
-        }
     }
 
     @Keep
