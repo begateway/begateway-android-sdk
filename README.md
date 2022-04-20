@@ -46,9 +46,7 @@ PaymentSdkBuilder().apply {
         setCardCVCFieldVisibility(false)
         setCardDateFieldVisibility(true)
         setCardHolderFieldVisibility(true)
-        setSaveCardVisibility(true)
         setEndpoint(YOUR_CHECKOUT_ENDPOINT)
-        setReturnUrl("https://DEFAULT_RETURN_URL.com")
     }.build()
 ```
 in `PaymentSdkBuilder` you can find full list for of properties
@@ -129,7 +127,8 @@ BeGatewayResponse parameters:
                         )
                     )
                 ),
-                this@MainActivity
+                this@MainActivity,
+                launcher // used for starting activity for 3d secure
             )
 ```
 #### 3. Start payment with `CheckoutWithTokenData`

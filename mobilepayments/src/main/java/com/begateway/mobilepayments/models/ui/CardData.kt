@@ -15,14 +15,14 @@ internal data class CardData(
     val cvcCode: String? = null
 ) : Parcelable {
     companion object {
-        const val EXPIRY_DATE_FORMAT_FULL = "MM/yyyy"
-        private const val EXPIRY_DATE_FORMAT_SMALL = "MM/yy"
+        private const val EXPIRY_DATE_FORMAT_FULL = "MM/yyyy"
+        const val EXPIRY_DATE_FORMAT_SMALL = "MM/yy"
         private const val EXPIRY_MONTH = "MM"
-        private const val EXPIRY_YEAR = "yyyy"
+        private const val EXPIRY_YEAR = "yy"
         private const val EXTRA_CARD = "card_extra"
 
         fun getExpiryDateStringForView(date: Date?) = date?.let {
-            SimpleDateFormat(EXPIRY_DATE_FORMAT_FULL, Locale.US).format(it)
+            SimpleDateFormat(EXPIRY_DATE_FORMAT_SMALL, Locale.US).format(it)
         }
 
         fun getExpiryDateFromString(string: String?): Date? {

@@ -18,9 +18,6 @@ class PaymentSdkBuilder {
     fun setPublicKey(publicKey: String) = apply { settings.publicKey = publicKey }
 
     @Keep
-    fun setReturnUrl(returnUrl: String) = apply { settings.returnUrl = returnUrl }
-
-    @Keep
     fun setCardNumberFieldVisibility(isVisible: Boolean) =
         apply { settings.isCardNumberFieldVisible = isVisible }
 
@@ -37,15 +34,10 @@ class PaymentSdkBuilder {
         apply { settings.isCardCVCFieldVisible = isVisible }
 
     @Keep
-    fun setSaveCardVisibility(isVisible: Boolean) =
-        apply { settings.isSaveCardVisible = isVisible }
-
-    @Keep
     @Throws(IllegalArgumentException::class)
     fun build(): PaymentSdk {
         require(settings.publicKey.isNotBlank()) { "Public key can not be empty" }
         require(settings.endpoint.isNotBlank()) { "Endpoint can not be empty" }
-        require(settings.returnUrl.isNotBlank()) { "Return url can not be empty" }
         return PaymentSdk.instance.apply {
             initSdk(
                 this@PaymentSdkBuilder.settings,

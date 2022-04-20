@@ -22,6 +22,7 @@ class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
             var status: String? = null
             var message: String? = null
             var url: String? = null
+            var resultUrl: String? = null
             var paymentToken: String? = null
             json.asJsonObject?.let { body ->
                 val jsonObject = when {
@@ -45,14 +46,16 @@ class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
                 status = getString("status", jsonObject)
                 message = getString("message", jsonObject)
                 url = getString("url", jsonObject)
+                resultUrl = getString("result_url", jsonObject)
                 paymentToken = getString("token", jsonObject)
             }
 
             BeGatewayResponse(
-                ResponseStatus.getStatus(status),
-                message,
-                paymentToken,
-                url,
+                status = ResponseStatus.getStatus(status),
+                message = message,
+                paymentToken = paymentToken,
+                threeDSUrl = url,
+                resultUrl = resultUrl
             )
         } else {
             BeGatewayResponse()

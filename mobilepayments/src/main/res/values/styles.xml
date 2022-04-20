@@ -25,10 +25,12 @@
         <item name="colorControlNormal">?attr/colorOnPrimary</item>
         <item name="colorError">@color/begateway_error</item>
 
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
+        </item>
 
         <item name="bottomSheetDialogTheme">@style/begateway_ThemeOverlay.Widget.BottomDialog</item>
-
+        <item name="materialAlertDialogTheme">@style/begateway.Widget.MaterialDialog</item>
+        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="shapeAppearanceSmallComponent">
             @style/begateway_ShapeAppearance.SmallComponent
         </item>
@@ -37,9 +39,13 @@
         </item>
     </style>
 
-    <style name="begateway_ThemeOverlay.Widget.BottomDialog" parent="ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">
+    <style name="begateway_ThemeOverlay.Widget.BottomDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="begateway.Widget.MaterialDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:backgroundDimAmount">0.6</item>
     </style>
 
 </resources>

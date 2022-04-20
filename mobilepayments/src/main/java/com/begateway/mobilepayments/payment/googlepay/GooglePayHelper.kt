@@ -35,7 +35,7 @@ internal object GooglePayHelper {
 
     private fun createPaymentsClient(activity: Activity): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
-            .setEnvironment(if (PaymentSdk.instance.settings.isDebugMode) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
+            .setEnvironment(if (PaymentSdk.instance.sdkSettings.isDebugMode) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
             .build()
 
         return Wallet.getPaymentsClient(activity, walletOptions)

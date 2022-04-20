@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/begateway_Theme">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"

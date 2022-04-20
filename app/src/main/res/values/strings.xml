@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name" translatable="false">BePaid Payments Example</string>
+    <string name="app_name" translatable="false">BeGateway Payments</string>
     <string name="hint_token" translatable="false">token</string>
     <string name="action_get_token" translatable="false">get token</string>
     <string name="msg_use_3d" translatable="false">3d security</string>
     <string name="pay_with_card_token" translatable="false">Pay with card token</string>
-    <string name="pay_with_checkout" translatable="false">Pay with checkout</string>
+    <string name="pay_with_checkout" translatable="false">Pay with token</string>
     <string name="data_encryption" translatable="false">data encryption</string>
     <string name="card_visibility" translatable="false">card number visibility</string>
     <string name="card_holder_visibility" translatable="false">card holder visibility</string>

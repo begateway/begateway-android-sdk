@@ -7,5 +7,8 @@ enum class Contract {
     @SerializedName("oneclick") ONE_CLICK,
     @SerializedName("credit") CREDIT,
     /** use only when transaction_type=authorization */
-    @SerializedName("card_on_file") CARD_ON_FILE,
+    @SerializedName("card_on_file")
+    CARD_ON_FILE,
+    @SerializedName("save_card")
+    SAVE_CARD,
 }
