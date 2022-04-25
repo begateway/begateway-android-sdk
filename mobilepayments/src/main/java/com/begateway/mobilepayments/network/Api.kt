@@ -2,10 +2,12 @@ package com.begateway.mobilepayments.network
 
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
+import com.begateway.mobilepayments.models.network.request.SamsungPayTokenRequest
 import com.begateway.mobilepayments.models.network.request.TokenCheckoutData
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
 import com.begateway.mobilepayments.models.network.response.PaymentData
+import com.begateway.mobilepayments.models.network.response.SamsungPayResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -32,5 +34,15 @@ internal interface Api {
     @POST("google_pay/payment")
     suspend fun payWithGooglePay(
         @Body requestBody: GPaymentRequest
+    ): Response<BeGatewayResponse>
+
+    @POST("samsung_pay/create")
+    suspend fun createSamsungPayTransaction(
+        @Body requestBody: SamsungPayTokenRequest
+    ): Response<SamsungPayResponse>
+
+    @POST("samsung_pay/payment")
+    suspend fun payWithSamsungPay(
+        @Body requestBody: SamsungPayTokenRequest
     ): Response<BeGatewayResponse>
 }

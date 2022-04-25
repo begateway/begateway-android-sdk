@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn com.samsung.android.sdk.samsungpay.**
+-keep class com.samsung.android.sdk.** { *; }
+-keep interface com.samsung.android.sdk.** { *; }

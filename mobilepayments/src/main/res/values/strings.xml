@@ -32,5 +32,9 @@
     <string name="begateway_savecard">Save card</string>
     <string name="begateway_button_pay">Pay</string>
     <string name="begateway_secure_info">Secure payment is provided by %s</string>
+    <string name="begateway_app_name" translatable="false">BeGateway</string>
+    <string name="begateway_samsung_pay_not_set_up_error_message">"Samsung Pay need to update or to complete setup."</string>
+    <string name="begateway_payment_samsung_pay_title" translatable="false">"Samsung Pay"</string>
+
 
 </resources>

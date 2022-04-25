@@ -2,6 +2,7 @@ package com.begateway.mobilepayments.sdk
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.encryption.RSA
@@ -20,8 +21,13 @@ import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.network.Rest
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
+import com.begateway.mobilepayments.payment.samsungpay.SamsungPayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
+import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo
+import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -273,17 +279,6 @@ class PaymentSdk private constructor() {
             }
     }
 
-
-    private suspend fun <T : Any> onNotSuccess(result: HttpResult<T>) {
-        withContext(Dispatchers.Main) {
-            when (result) {
-                is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
-                is HttpResult.Error -> onPaymentFinished(result.beGatewayResponse)
-                is HttpResult.Success -> throw IllegalStateException("Can't work with success there")
-            }
-        }
-    }
-
     internal fun onPaymentFinished(beGatewayResponse: BeGatewayResponse) {
         callbacks.forEach {
             it.onPaymentFinished(
@@ -298,10 +293,74 @@ class PaymentSdk private constructor() {
         resetValues()
     }
 
+    internal suspend fun payWithSamsungPay(
+        context: Context,
+    ) {
+        getOrderDetails()?.let { orderDetails ->
+//            when (
+//                val pay = rest.createSamsungPayTransaction(
+//                    SamsungPayTokenRequest(
+//                        SamsungPayRequest(
+//                            token = checkoutWithTokenData!!.checkout.token
+//                        )
+//                    )
+//                )
+//            ) {
+//                is HttpResult.Success -> {
+            SamsungPayHelper.startInAppPayWithCustomSheet(
+                context = context.applicationContext,
+                order = orderDetails,
+                listener = object :
+                    PaymentManager.CustomSheetTransactionInfoListener {
+                    override fun onCardInfoUpdated(
+                        p0: CardInfo?,
+                        customSheet: CustomSheet?
+                    ) {
+                        try { // mandatory, regardless if there is no updates
+                            SamsungPayHelper.updateCustomSheet(
+                                context.applicationContext,
+                                sdkSettings.samsungPayServiceId,
+                                customSheet
+                            )
+                        } catch (e: Throwable) {
+                        }
+                    }
+
+                    override fun onSuccess(
+                        response: CustomSheetPaymentInfo,
+                        paymentCredentials: String,
+                        extraPaymentData: Bundle?
+                    ) {
+                        // TODO
+                        SamsungPayHelper.extractSamsungDataBlock(paymentCredentials)
+                    }
+
+                    override fun onFailure(p0: Int, p1: Bundle?) {
+                        onPaymentFinished(BeGatewayResponse(message = "Samsung Pay failed"))
+                    }
+                },
+                serviceId = sdkSettings.samsungPayServiceId,
+            )
+//                }
+//                else -> onNotSuccess(pay)
+//            }
+        }
+    }
+
     internal fun resetValues() {
         isSaveCard = false
         cardToken = null
         checkoutWithTokenData = null
         paymentData = null
+    }
+
+    private suspend fun <T : Any> onNotSuccess(result: HttpResult<T>) {
+        withContext(Dispatchers.Main) {
+            when (result) {
+                is HttpResult.UnSuccess -> onPaymentFinished(result.beGatewayResponse)
+                is HttpResult.Error -> onPaymentFinished(result.beGatewayResponse)
+                is HttpResult.Success -> throw IllegalStateException("Can't work with success there")
+            }
+        }
     }
 }

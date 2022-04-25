@@ -10,6 +10,7 @@ import com.begateway.mobilepayments.models.network.request.*
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenData
 import com.begateway.mobilepayments.models.network.response.PaymentData
+import com.begateway.mobilepayments.models.network.response.SamsungPayResponse
 import com.begateway.mobilepayments.parser.BeGatewayResponseParser
 import com.begateway.mobilepayments.parser.CustomSerializer
 import com.google.gson.Gson
@@ -32,10 +33,10 @@ internal const val CONTENT_TYPE_VALUE = "application/json; charset=utf-8"
 internal const val ACCEPT_HEADER = "Accept"
 internal const val ACCEPT_HEADER_VALUE = " application/json"
 internal const val X_API_VERSION = "X-Api-Version"
-internal const val X_API_VERSION_VALUE = "2"
+internal const val X_API_VERSION_VALUE = "2.1"
 internal const val AUTORIZATION_HEADER_NAME = "Authorization"
 
-internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
+internal class Rest(baseUrl: String, isDebugMode: Boolean, private val publicKey: String) {
 
     private val api: Api
     private val gson: Gson = Gson()
@@ -48,7 +49,14 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
                     .addHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE)
                     .addHeader(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
                     .addHeader(X_API_VERSION, X_API_VERSION_VALUE)
-                    .addHeader(AUTORIZATION_HEADER_NAME, BEARER_AUTH_STRING + publicKey)
+                    .addHeader(
+                        AUTORIZATION_HEADER_NAME,
+                        if (original.url.toString().contains("samsung_pay")) {
+                            BASIC_AUTH_STRING + publicKey
+                        } else {
+                            BEARER_AUTH_STRING + publicKey
+                        }
+                    )
                     .method(original.method, original.body)
                     .build()
                 chain.proceed(request)
@@ -108,6 +116,16 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         requestBody: GPaymentRequest
     ): HttpResult<BeGatewayResponse> {
         return safeApiCall { api.payWithGooglePay(requestBody) }
+    }
+
+    suspend fun createSamsungPayTransaction(
+        requestBody: SamsungPayTokenRequest
+    ): HttpResult<SamsungPayResponse> {
+        return safeApiCall {
+            api.createSamsungPayTransaction(
+                requestBody = requestBody
+            )
+        }
     }
 
     suspend fun getPaymentData(

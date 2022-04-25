@@ -7,6 +7,6 @@ import java.util.*
 fun Long.getFormattedAmount(currency: Currency): String {
     return BigDecimal(this)
         .divide(BigDecimal(100))
-        .setScale(currency.defaultFractionDigits, RoundingMode.HALF_EVEN)
+        .setScale(currency.defaultFractionDigits.takeIf { it != -1 } ?: 0, RoundingMode.HALF_EVEN)
         .toString()
 }

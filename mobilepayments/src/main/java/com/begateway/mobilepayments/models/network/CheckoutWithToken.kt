@@ -9,4 +9,5 @@ class CheckoutWithToken(
     @SerializedName("description") val description: String? = null,
     @SerializedName("card_info") val cardInfo: CardInfo? = null,
     @SerializedName("google_pay") val googlePay: GooglePay? = null,
+    @SerializedName("samsung_pay") val samsungPay: SamsungPay? = null,
 ) : AdditionalFields()

@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             setCardCVCFieldVisibility(mcbCvvVisibility.isChecked)
             setCardDateFieldVisibility(mcbDateVisibility.isChecked)
             setCardHolderFieldVisibility(mcbHolderVisibility.isChecked)
+            // TODO remove
+            setSamsungPayServiceId()
         }
         setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
     }.build().apply {
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                         test = BuildConfig.DEBUG,// true only if you work in test mode
                         transactionType = TransactionType.PAYMENT,
                         order = Order(
-                            amount = 100,
+                            amount = 1,
                             currency = "USD",
                             description = "Payment description",
                             trackingId = "merchant_id",

@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation files('libs/SamsungPaySDK_2.17.00_release.jar')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.core:core-ktx:$ktx"
     implementation "androidx.appcompat:appcompat:$appcompat"

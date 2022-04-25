@@ -62,6 +62,26 @@
                 app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mb_samsung_pay"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/begateway_samsung_pay_height"
+                android:layout_marginHorizontal="@dimen/begateway_default_margin"
+                android:layout_marginTop="@dimen/begateway_default_margin_small"
+                android:background="@drawable/begateway_samsung_pay"
+                android:backgroundTint="@null"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:visibility="gone"
+                app:backgroundTint="@null"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@null"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/end_margin"
+                app:layout_constraintStart_toEndOf="@+id/start_margin"
+                app:layout_constraintTop_toBottomOf="@id/mb_google_pay" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_card_number"
                 android:layout_width="0dp"
@@ -71,7 +91,7 @@
                 app:endIconMode="clear_text"
                 app:layout_constraintEnd_toStartOf="@+id/end_margin"
                 app:layout_constraintStart_toEndOf="@+id/start_margin"
-                app:layout_constraintTop_toBottomOf="@id/mb_google_pay">
+                app:layout_constraintTop_toBottomOf="@id/mb_samsung_pay">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tiet_card_number"

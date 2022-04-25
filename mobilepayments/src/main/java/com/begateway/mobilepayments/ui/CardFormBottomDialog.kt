@@ -27,6 +27,7 @@ import com.begateway.mobilepayments.models.network.request.Request
 import com.begateway.mobilepayments.models.ui.CardData
 import com.begateway.mobilepayments.models.ui.CardType
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
+import com.begateway.mobilepayments.payment.samsungpay.SamsungPayHelper
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.ui.intefaces.OnActionbarSetup
 import com.begateway.mobilepayments.ui.intefaces.OnMessageDialogListener
@@ -100,6 +101,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
             onProgressDialogListener?.onHideProgress()
         }
     }
+
+    private var samsungPayNotReadyAction: (() -> Unit)? = null
 
     init {
         val year = minExpiry.get(Calendar.YEAR)
@@ -182,6 +185,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         }
         view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
         initGooglePayButton()
+        initSamsungPayButton()
         binding?.run {
             onActionbarSetup?.addToolBar(toolbar, null, ::dismissAllowingStateLoss)
             mbPay.setOnClickListener {
@@ -215,13 +219,31 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         }
     }
 
+    private fun initSamsungPayButton() {
+        PaymentSdk.instance.sdkSettings.samsungPayServiceId
+            .takeIf { it.isNotEmpty() }
+            ?.let { serviceId ->
+                SamsungPayHelper.checkSamsungStatus(
+                    serviceId = serviceId,
+                    requireActivity().applicationContext,
+                    onSuccess = { updateSamsungPayButton(serviceId) },
+                    onNotReady = { action ->
+                        samsungPayNotReadyAction = action
+                        updateSamsungPayButton(serviceId)
+                    },
+                    onUnSuccess = { binding?.mbGooglePay?.isVisible = false }
+                )
+            }
+
+    }
+
     private fun updateGooglePayButton(isSuccess: Boolean) {
         binding?.run {
             mbGooglePay.isVisible = isSuccess
             if (isSuccess) {
                 mbGooglePay.setOnClickListener {
-                    onProgressDialogListener?.onShowProgress()
                     CoroutineScope(Dispatchers.Main).launch {
+                        onProgressDialogListener?.onShowProgress()
                         val orderDetails = PaymentSdk.instance.getOrderDetails()
                         if (orderDetails != null) {
                             GooglePayHelper.startPaymentFlow(
@@ -229,6 +251,36 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
                                 GOOGLE_PAY_RETURN_CODE,
                                 orderDetails
                             )
+                        } else {
+                            onProgressDialogListener?.onHideProgress()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateSamsungPayButton(serviceId: String) {
+        binding?.run {
+            mbSamsungPay.isVisible = true
+            mbSamsungPay.setOnClickListener {
+                if (samsungPayNotReadyAction != null) {
+                    onMessageDialogListener?.showMessageDialog(
+                        requireContext(),
+                        titleId = R.string.begateway_payment_samsung_pay_title,
+                        messageId = R.string.begateway_samsung_pay_not_set_up_error_message,
+                        positiveOnClick = { dialog, _ ->
+                            dialog.dismiss()
+                            samsungPayNotReadyAction?.invoke()
+                            samsungPayNotReadyAction = null
+                        }
+                    )
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val orderDetails = PaymentSdk.instance.getOrderDetails()
+                        if (orderDetails != null) {
+                            onProgressDialogListener?.onShowProgress()
+                            PaymentSdk.instance.payWithSamsungPay(requireContext().applicationContext)
                         } else {
                             onProgressDialogListener?.onHideProgress()
                         }

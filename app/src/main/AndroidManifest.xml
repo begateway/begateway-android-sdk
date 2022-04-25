@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
+    <queries>
+        <package android:name="com.samsung.android.spay" />
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -31,6 +34,15 @@
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
+        <meta-data
+            android:name="debug_mode"
+            android:value="Y" />
+        <meta-data
+            android:name="spay_debug_api_key"
+            android:value="af21e4810eaa4743bbe81720d309e2be" />
+        <meta-data
+            android:name="spay_sdk_api_level"
+            android:value="2.17" />
     </application>
 
 </manifest>

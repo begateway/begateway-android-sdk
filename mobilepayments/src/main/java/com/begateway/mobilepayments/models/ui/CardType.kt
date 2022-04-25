@@ -143,6 +143,10 @@ internal enum class CardType(
             values().find {
                 it.regex.matcher(pan).matches()
             } ?: UNKNOWN
+
+        fun getCardTypeByCardName(cardName: String) = values().find {
+            it.cardName == cardName
+        }
     }
 
     fun getMaxCardLength() = listOfCardNumberSizes.last()

@@ -18,6 +18,10 @@ class PaymentSdkBuilder {
     fun setPublicKey(publicKey: String) = apply { settings.publicKey = publicKey }
 
     @Keep
+    fun setSamsungPayServiceId(serviceId: String) =
+        apply { settings.samsungPayServiceId = serviceId }
+
+    @Keep
     fun setCardNumberFieldVisibility(isVisible: Boolean) =
         apply { settings.isCardNumberFieldVisible = isVisible }
 
