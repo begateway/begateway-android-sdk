@@ -46,6 +46,7 @@ PaymentSdkBuilder().apply {
         setCardCVCFieldVisibility(false)
         setCardDateFieldVisibility(true)
         setCardHolderFieldVisibility(true)
+        setNFCScanVisibility(true)
         setEndpoint(YOUR_CHECKOUT_ENDPOINT)
     }.build()
 ```
