@@ -11,4 +11,5 @@
     <string name="card_date_visibility" translatable="false">card date visibility</string>
     <string name="cvv_visibility" translatable="false">cvv visibility</string>
     <string name="save_card_visibility" translatable="false">save card visibility</string>
+    <string name="nfc_visibility" translatable="false">NFC visibility</string>
 </resources>

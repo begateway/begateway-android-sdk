@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             setCardCVCFieldVisibility(mcbCvvVisibility.isChecked)
             setCardDateFieldVisibility(mcbDateVisibility.isChecked)
             setCardHolderFieldVisibility(mcbHolderVisibility.isChecked)
+            setNFCScanVisibility(mcbNfcVisibility.isChecked)
         }
         setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
     }.build().apply {

@@ -155,13 +155,16 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         container,
         false
     ).also {
-        if (!PaymentSdk.instance.sdkSettings.isDebugMode) {
+        val sdkSettings = PaymentSdk.instance.sdkSettings
+        if (!sdkSettings.isDebugMode) {
             dialog?.window?.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE
             )
         }
-        nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
+        if (sdkSettings.isNFCScanVisible) {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
+        }
         setHasOptionsMenu(true)
         binding = it
     }.root
