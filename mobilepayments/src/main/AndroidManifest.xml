@@ -7,7 +7,7 @@
 
     <uses-feature
         android:name="android.hardware.nfc"
-        android:required="true" />
+        android:required="false" />
     <queries>    <!--need to check new api android 11+-->
         <intent>
             <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD" />
