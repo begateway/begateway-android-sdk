@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import com.begateway.mobilepayments.BuildConfig
@@ -38,7 +39,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.tinkoff.core.nfc.*
+import ru.tinkoff.core.components.nfc.NfcHelper
+import ru.tinkoff.core.components.nfc.NfcUtils
 import ru.tinkoff.decoro.watchers.DescriptorFormatWatcher
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -46,8 +48,7 @@ import java.util.*
 
 private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
 
-internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer.NfcCallbacks,
-    NfcRecognizer.NfcClarifyCallbacks {
+internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private val minExpiry = Calendar.getInstance()
 
@@ -70,7 +71,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     private var onActionbarSetup: OnActionbarSetup? = null
 
     //nfc
-    private var nfcRecognizer: NfcAutoRecognizer? = null
+    private var nfcRecognizer: NfcHelper? = null
     private var nfcDialog: AlertDialog? = null
     private var nfcAdapter: NfcAdapter? = null
 
@@ -328,18 +329,34 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
     }
 
     private fun initNfcScanning() {
-        val activity = requireActivity()
-        if (nfcRecognizer == null) {
-            nfcRecognizer = NfcAutoRecognizer(activity, this).apply {
-                registerClarifyCallbacks(this@CardFormBottomDialog)
-            }
-        } else {
-            nfcRecognizer?.registerCallbacks(this)
-            nfcRecognizer?.registerClarifyCallbacks(this)
+        val appCompatActivity = requireActivity() as? AppCompatActivity
+        if (nfcRecognizer == null && appCompatActivity != null) {
+            nfcRecognizer =
+                NfcHelper.create(appCompatActivity, object : NfcHelper.Callback {
+                    override fun onResult(bundle: Bundle) {
+                        nfcScanningComplete()
+                        applyCardData(
+                            CardData(
+                                cardNumber = bundle.getString(NfcHelper.CARD_NUMBER),
+                                expiryDate = CardData.getExpiryDateFromString(
+                                    bundle.getString(
+                                        NfcHelper.EXPIRY_DATE
+                                    )
+                                )
+                            )
+                        )
+                    }
+
+
+                    override fun onException(p0: java.lang.Exception?) = onException()
+
+                    override fun onNfcNotSupported() = onNfcNotSupportedMessage()
+
+                    override fun onNfcDisabled() = onNfcDisabledMessage()
+                })
         }
-        nfcRecognizer?.onCreate(activity)
-        nfcRecognizer?.start(activity)
-        if (nfcAdapter?.isEnabled == true) {
+        nfcRecognizer?.startListening()
+        if (nfcRecognizer != null && nfcAdapter?.isEnabled == true) {
             nfcDialog = onMessageDialogListener?.showMessageDialog(
                 requireContext(),
                 messageId = R.string.begateway_nfc_attach_bank_card,
@@ -620,19 +637,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
             true
         }
 
-
-    override fun onException(exception: Exception) {
-        onException()
-    }
-
-    override fun onClarifiedException(ex: MalformedDataException) {
-        onException()
-    }
-
-    override fun onClarifiedException(ex: ImperfectAlgorithmException) {
-        onException()
-    }
-
     private fun onException() {
         onMessageDialogListener?.showMessageDialog(
             requireContext(),
@@ -642,7 +646,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         )
     }
 
-    override fun onNfcDisabled() {
+    private fun onNfcDisabledMessage() {
         onMessageDialogListener?.showMessageDialog(
             requireContext(),
             R.string.begateway_error,
@@ -657,7 +661,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         )
     }
 
-    override fun onNfcNotSupported() {
+    private fun onNfcNotSupportedMessage() {
         onMessageDialogListener?.showMessageDialog(
             requireContext(),
             titleId = R.string.begateway_error,
@@ -666,21 +670,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment(), NfcRecognizer
         )
     }
 
-    override fun onResult(bundle: Bundle?) {
-        nfcScanningComplete()
-        applyCardData(
-            CardData(
-                cardNumber = bundle?.getString(BuildConfig.NFC_CARD_NUMBER_KEY),
-                expiryDate = CardData.getExpiryDateFromString(bundle?.getString(BuildConfig.NFC_EXPIRY_DATE_KEY))
-            )
-        )
-    }
-
     @Suppress("UNUSED_PARAMETER")
     private fun nfcScanningComplete(dialog: DialogInterface? = null, which: Int? = null) {
-        val requireActivity = requireActivity()
-        nfcRecognizer?.stop(requireActivity)
-        nfcRecognizer?.releaseCallbacks()
+        nfcRecognizer?.stopListening()
+        nfcRecognizer?.destroy()
+        nfcRecognizer = null
         nfcDialog?.dismiss()
         dialog?.dismiss()
     }

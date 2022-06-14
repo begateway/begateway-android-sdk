@@ -10,7 +10,7 @@ buildscript {
     ext.ktx = '1.7.0'
     ext.logging_interceptor = '4.9.1'
     ext.decoro = '1.5.0'
-    ext.core_nfc = '3.3.17'
+    ext.core_nfc = '1.0.2'
     ext.coroutines = '1.5.2'
     repositories {
         google()
