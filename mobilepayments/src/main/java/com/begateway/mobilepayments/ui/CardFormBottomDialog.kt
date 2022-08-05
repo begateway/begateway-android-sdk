@@ -394,7 +394,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             binding?.run {
                 val instance = PaymentSdk.instance
                 if (instance.paymentData == null) {
-                    onProgressDialogListener?.onShowProgress()
                     PaymentSdk.instance.updatePaymentData()
                 }
                 val saveCardFieldVisible =
@@ -406,8 +405,6 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                     }
                 }
             }
-        }.invokeOnCompletion {
-            onProgressDialogListener?.onHideProgress()
         }
     }
 
