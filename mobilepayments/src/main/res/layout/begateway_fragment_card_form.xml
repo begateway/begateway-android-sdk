@@ -166,6 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/begateway_default_margin_small"
                 android:text="@string/begateway_savecard"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/end_margin"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@+id/start_margin"

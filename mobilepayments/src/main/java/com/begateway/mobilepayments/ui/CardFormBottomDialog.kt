@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.begateway.mobilepayments.BuildConfig
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.databinding.BegatewayFragmentCardFormBinding
@@ -389,14 +390,19 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     }
 
     private fun iniSaveCardCheckBox() {
-        binding?.run {
-            val instance = PaymentSdk.instance
-            val saveCardFieldVisible =
-                instance.paymentData?.checkout?.settings?.saveCardPolicy?.customerContract == true
-            mcbSaveCard.isVisible = saveCardFieldVisible
-            if (saveCardFieldVisible) {
-                mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
-                    instance.isSaveCard = isChecked
+        lifecycleScope.launchWhenStarted {
+            binding?.run {
+                val instance = PaymentSdk.instance
+                if (instance.paymentData == null) {
+                    PaymentSdk.instance.updatePaymentData()
+                }
+                val saveCardFieldVisible =
+                    instance.paymentData?.checkout?.settings?.saveCardPolicy?.customerContract == true
+                mcbSaveCard.isVisible = saveCardFieldVisible
+                if (saveCardFieldVisible) {
+                    mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
+                        instance.isSaveCard = isChecked
+                    }
                 }
             }
         }
