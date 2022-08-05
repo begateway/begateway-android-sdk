@@ -163,6 +163,14 @@ class PaymentSdk private constructor() {
         }
     }
 
+    internal suspend fun updatePaymentData() {
+        getPaymentData(
+            token = checkoutWithTokenData!!.checkout.token,
+            onSuccess = {},
+            onError = {}
+        )
+    }
+
     private suspend fun getPaymentData(
         token: String,
         onSuccess: suspend (paymentData: PaymentData) -> Unit,
