@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 47
+        versionCode 48
         versionName version
         buildConfigField 'int', 'MAXIMUM_VALID_YEAR_DIFFERENCE', '30'
         buildConfigField 'int', 'EXPIRY_DATE_LENGTH', '5'
@@ -57,6 +57,7 @@ dependencies {
     implementation "ru.tinkoff.core.components.nfc:nfc:$core_nfc"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
