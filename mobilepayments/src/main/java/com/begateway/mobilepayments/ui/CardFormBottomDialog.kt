@@ -186,31 +186,39 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             }
         }
         view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
-        initGooglePayButton()
         binding?.run {
             onActionbarSetup?.addToolBar(toolbar, null, ::dismissAllowingStateLoss)
             mbPay.setOnClickListener {
                 pay()
             }
         }
-        iniSaveCardCheckBox()
+
         initCardNumberView()
         initCardNameView()
         initCardExpireDateView()
         initCvcView()
         applyCardTypeValues()
+        initPaymentDataCheck()
+    }
+
+    private fun initPaymentDataCheck() {
+        lifecycleScope.launchWhenStarted {
+            if (PaymentSdk.instance.paymentData == null) {
+                PaymentSdk.instance.updatePaymentData()
+            }
+            iniSaveCardCheckBox()
+            initGooglePayButton()
+        }
     }
 
     private fun initGooglePayButton() {
         try {
-            val context = context ?: return
-            val metadata = context.packageManager.getApplicationInfo(
-                context.packageName,
-                PackageManager.GET_META_DATA
-            ).metaData
             if (
-                PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay != null
-                && metadata.getBoolean(
+                PaymentSdk.instance.paymentData?.checkout?.googlePay != null
+                && requireContext().packageManager.getApplicationInfo(
+                    requireContext().packageName,
+                    PackageManager.GET_META_DATA
+                ).metaData.getBoolean(
                     "com.google.android.gms.wallet.api.enabled"
                 )
             ) {
@@ -390,19 +398,14 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     }
 
     private fun iniSaveCardCheckBox() {
-        lifecycleScope.launchWhenStarted {
-            binding?.run {
-                val instance = PaymentSdk.instance
-                if (instance.paymentData == null) {
-                    PaymentSdk.instance.updatePaymentData()
-                }
-                val saveCardFieldVisible =
-                    instance.paymentData?.checkout?.settings?.saveCardPolicy?.customerContract == true
-                mcbSaveCard.isVisible = saveCardFieldVisible
-                if (saveCardFieldVisible) {
-                    mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
-                        instance.isSaveCard = isChecked
-                    }
+        binding?.run {
+            val instance = PaymentSdk.instance
+            val saveCardFieldVisible =
+                instance.paymentData?.checkout?.settings?.saveCardPolicy?.customerContract == true
+            mcbSaveCard.isVisible = saveCardFieldVisible
+            if (saveCardFieldVisible) {
+                mcbSaveCard.setOnCheckedChangeListener { _, isChecked ->
+                    instance.isSaveCard = isChecked
                 }
             }
         }
@@ -635,7 +638,10 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             editText?.length() == BuildConfig.EXPIRY_DATE_LENGTH &&
                     try {
                         val text = editText.text?.toString()
-                        !text.isNullOrEmpty() && minExpiry.time < expiryFormat.parse(text)
+                        // TODO temp fix rework to DateTimeFormatter
+                        text?.startsWith("00") != true &&
+                                !text.isNullOrEmpty() &&
+                                minExpiry.time < expiryFormat.parse(text)
                     } catch (e: ParseException) {
                         false
                     }
