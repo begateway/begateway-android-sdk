@@ -604,7 +604,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun isCardNameCorrect(): Boolean =
         if (binding?.tilCardName?.isVisible == true) {
-            !binding?.tilCardName?.editText?.text.isNullOrEmpty()
+            !binding?.tilCardName?.editText?.text.isNullOrBlank()
         } else {
             true
         }
