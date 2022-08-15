@@ -44,7 +44,7 @@ internal object GooglePayHelper {
     @SuppressLint("DefaultLocale")
     private fun getPaymentDataRequest(order: Order): PaymentDataRequest {
         val currency = Currency.getInstance(order.currency)
-        val googlePay = PaymentSdk.instance.checkoutWithTokenData!!.checkout.googlePay!!
+        val googlePay = PaymentSdk.instance.paymentData!!.checkout.googlePay!!
         return PaymentDataRequestLocal(
             allowedPaymentMethods = arrayListOf(
                 AllowedPaymentMethods(
