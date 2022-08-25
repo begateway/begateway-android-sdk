@@ -13,7 +13,6 @@ android {
         targetSdkVersion 31
         versionCode 48
         versionName version
-        buildConfigField 'int', 'MAXIMUM_VALID_YEAR_DIFFERENCE', '30'
         buildConfigField 'int', 'EXPIRY_DATE_LENGTH', '5'
         buildConfigField 'String', 'BANK_CARD_REGEX', '"[^\\\\d ]*"'
         buildConfigField "String", "SCAN_CARD_BANK_ACTION", '"com.begateway.mobilepayments.action.SCAN_BANK_CARD"'

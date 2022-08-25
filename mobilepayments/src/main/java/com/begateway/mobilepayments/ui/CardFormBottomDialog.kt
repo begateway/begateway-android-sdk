@@ -9,7 +9,9 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -48,6 +50,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
+private const val EXPIRY_DATE_FORMAT = "MMyy"
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
@@ -55,7 +58,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     //date
     private val expiryFormat =
-        SimpleDateFormat(CardData.EXPIRY_DATE_FORMAT_SMALL, Locale.US).apply {
+        SimpleDateFormat(EXPIRY_DATE_FORMAT, Locale.US).apply {
             val now = Calendar.getInstance()
             now.set(Calendar.YEAR, (now.get(Calendar.YEAR) / 100) * 100)
             set2DigitYearStart(now.time)
@@ -267,10 +270,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                             expMonth = cardData.getMonth(),
                             expYear = cardData.getYear(),
                             isSaveCard = paymentSdk.isSaveCard
-                        )
+                        ),
+                        browserInfo = requireContext().getBrowserInfo()
                     )
                 ),
-                context = requireActivity(),
+                context = requireActivity().applicationContext,
                 launcher = paymentLauncher
             )
         }
@@ -384,7 +388,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                         tietCardNumber.text?.toString()
                     } else null,
                     if (tilCardName.isVisible) {
-                        tietCardName.text?.toString()
+                        tietCardName.text?.toString()?.trimEnd()
                     } else null,
                     if (tilCardExpiryDate.isVisible) {
                         CardData.getExpiryDateFromString(tietCardExpiryDate.text?.toString())
@@ -461,6 +465,33 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                 }
 
                 tietCardName.run {
+                    addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            var text = s?.toString().orEmpty().trimStart()
+                            if (text.isNotBlank()) {
+                                text = text.uppercase()
+                            }
+                            removeTextChangedListener(this)
+                            tietCardName.setTextKeepState(text)
+                            addTextChangedListener(this)
+                        }
+                    })
                     onEditorListener(::requestFocusToNextVisibleElement)
                 }
             }
@@ -473,15 +504,15 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             tilCardExpiryDate.isVisible = isCardDateFieldVisible
             if (isCardDateFieldVisible) {
                 tilCardExpiryDate.apply {
-                    onFocusListener(
-                        ::isExpiryCorrect
-                    ) { getString(R.string.begateway_expiration_invalid) }
+                    onExpiryTextChanged()
                     onTextChanged(
                         ::updateCardState,
                         ::requestFocusToNextVisibleElement,
                         ::isCardExpireLengthAccepted
                     )
-                    onExpiryTextChanged()
+                    onFocusListener(
+                        ::isExpiryCorrect
+                    ) { getString(R.string.begateway_expiration_invalid) }
                 }
                 tietCardExpiryDate.run {
                     onEditorListener(::requestFocusToNextVisibleElement)
@@ -604,7 +635,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun isCardNameCorrect(): Boolean =
         if (binding?.tilCardName?.isVisible == true) {
-            !binding?.tilCardName?.editText?.text.isNullOrBlank()
+            val text = binding?.tilCardName?.editText?.text
+            !text.isNullOrBlank() && text.length > 1
         } else {
             true
         }
@@ -637,11 +669,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             val editText = binding?.tilCardExpiryDate?.editText
             editText?.length() == BuildConfig.EXPIRY_DATE_LENGTH &&
                     try {
-                        val text = editText.text?.toString()
+                        val text = editText.text?.toString()?.filter { it.isDigit() }
                         // TODO temp fix rework to DateTimeFormatter
-                        text?.startsWith("00") != true &&
-                                !text.isNullOrEmpty() &&
-                                minExpiry.time < expiryFormat.parse(text)
+                        !text.isNullOrEmpty() && !text.startsWith("00") && minExpiry.time < expiryFormat.parse(
+                            text
+                        )
                     } catch (e: ParseException) {
                         false
                     }

@@ -41,7 +41,9 @@ internal fun TextInputLayout.onExpiryTextChanged() {
                 }
                 else -> value
             }
+            editText?.removeTextChangedListener(this)
             s?.replace(0, s.length, value)
+            editText?.addTextChangedListener(this)
         }
     })
 }

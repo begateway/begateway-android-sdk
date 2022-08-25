@@ -15,135 +15,190 @@ internal enum class CardType(
     val isLunhCheckRequired: Boolean = true,
     val maskFormat: String = "____ ____ ____ ____ ___"
 ) {
-    MIR(
-        "mir",
-        Pattern.compile("^220\\d*"),
-        R.drawable.begateway_ic_mir,
-        arrayListOf(19),
-        arrayListOf(3),
-        R.string.begateway_cvv
-    ),
-    BELKART(
-        "belkart",
-        Pattern.compile("^9112"),
-        R.drawable.begateway_ic_belkart,
-        arrayListOf(19),
-        arrayListOf(3),
-        R.string.begateway_cvv
-    ),
-    VISA_ELECTRON(
-        "visaelectron",
-        Pattern.compile("^4(026|17500|405|508|844|91[37])\\d*"),
-        R.drawable.begateway_ic_visa_electron,
-        arrayListOf(19, 23),
-        arrayListOf(3),
-        R.string.begateway_cvv
-    ),
     VISA(
-        "visa",
-        Pattern.compile("^4\\d*"),
-        R.drawable.begateway_ic_visa,
-        arrayListOf(16, 19, 23),
-        arrayListOf(3),
-        R.string.begateway_cvv
+        cardName = "visa",
+        regex = Pattern.compile("^4\\d*"),
+        drawable = R.drawable.begateway_ic_visa,
+        listOfCardNumberSizes = arrayListOf(16, 19, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
     MASTERCARD(
-        "master",
-        Pattern.compile("^(5[1-5]|2[3-6]|222[1-9]|27[1-2])\\d*"),
-        R.drawable.begateway_ic_mastercard,
-        arrayListOf(19),
-        arrayListOf(3),
-        R.string.begateway_cvc
-    ),
-    DISCOVER(
-        "discover",
-        Pattern.compile("^(6011|65|64[4-9])\\d*"),
-        R.drawable.begateway_ic_discover,
-        arrayListOf(19, 23),
-        arrayListOf(3),
-        R.string.begateway_cid
+        cardName = "master",
+        regex = Pattern.compile("^(5[1-5]|2[3-6]|22[3-9]|222[1-9]|27[1-2])\\d*"),
+        drawable = R.drawable.begateway_ic_mastercard,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvc
     ),
     AMEX(
-        "amex",
-        Pattern.compile("^3[47]\\d*"),
-        R.drawable.begateway_ic_amex,
-        arrayListOf(17),
-        arrayListOf(3, 4),
-        R.string.begateway_cid,
+        cardName = "amex",
+        regex = Pattern.compile("^3[47]\\d*"),
+        drawable = R.drawable.begateway_ic_amex,
+        listOfCardNumberSizes = arrayListOf(17),
+        listOfSecurityCodeSizes = arrayListOf(3, 4),
+        securityCodeName = R.string.begateway_cid,
         maskFormat = "____ ______ _____"
     ),
     DINERSCLUB(
-        "dinersclub",
-        Pattern.compile("^(30[0-5]|36|38)\\d*"),
-        R.drawable.begateway_ic_dinersclub,
-        arrayListOf(17),
-        arrayListOf(3),
-        R.string.begateway_cvv
+        cardName = "dinersclub",
+        regex = Pattern.compile("^(30[0-5]|36|38)\\d*"),
+        drawable = R.drawable.begateway_ic_dinersclub,
+        listOfCardNumberSizes = arrayListOf(17),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
     JCB(
-        "jcb",
-        Pattern.compile("^35\\d*"),
-        R.drawable.begateway_ic_jcb,
-        arrayListOf(18, 19),
-        arrayListOf(3),
-        R.string.begateway_cvv
+        cardName = "jcb",
+        regex = Pattern.compile("^(35[2-8]|1800|2131)\\d*"),
+        drawable = R.drawable.begateway_ic_jcb,
+        listOfCardNumberSizes = arrayListOf(18, 19, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
-    DANKORT(
-        "dankort",
-        Pattern.compile("^5019\\d*"),
-        R.drawable.begateway_ic_dankort,
-        arrayListOf(19),
-        arrayListOf(3),
-        R.string.begateway_cvv
+    SOLO(
+        cardName = "solo",
+        regex = Pattern.compile("^(6334|6767)\\d*"),
+        drawable = R.drawable.begateway_ic_solo,
+        listOfCardNumberSizes = arrayListOf(19, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
-    FORBRUGSFORENINGEN(
-        "forbrugsforeningen",
-        Pattern.compile("^600\\d*"),
-        R.drawable.begateway_ic_forbrugsforeningen,
-        arrayListOf(19),
-        arrayListOf(3),
-        R.string.begateway_cvv
+    SWITCH(
+        cardName = "switch",
+        regex = Pattern.compile("^(633110|633312|633304|633303|633301|633300)\\d*"),
+        drawable = R.drawable.begateway_ic_switch,
+        listOfCardNumberSizes = arrayListOf(19, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
     MAESTRO(
-        "maestro",
-        Pattern.compile(
-            "^(500|50[2-9]|501[0-8]|56|57|58|60[2-5]|6010|601[2-9]" +
+        cardName = "maestro",
+        regex = Pattern.compile(
+            "^(500|50[2-9]|501[0-8]|5[6-9]|60[2-5]|6010|601[2-9]" +
                     "|6060|616788|6218[368]|6219[89]|622110|6220|627[1-9]" +
                     "|628[0-1]|6294|6301|630490|633857|63609|6361|636392|636708|637043|637102|637118" +
                     "|637187|637529|639|64[0-3]|67[0123457]|676[0-9]|679|6771)\\d*"
         ),
-        R.drawable.begateway_ic_maestro,
-        arrayListOf(14, 16, 17, 18, 19, 21, 22, 23),
-        arrayListOf(0, 3),
-        R.string.begateway_cvc
+        drawable = R.drawable.begateway_ic_maestro,
+        listOfCardNumberSizes = arrayListOf(14, 16, 17, 18, 19, 21, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(0, 3),
+        securityCodeName = R.string.begateway_cvc
     ),
     UNIONPAY(
-        "unionpay",
-        Pattern.compile(
+        cardName = "unionpay",
+        regex = Pattern.compile(
             "^(620|621[0234567]|621977|62212[6-9]|6221[3-8]" +
                     "|6222[0-9]|622[3-9]|62[3-6]|6270[2467]|628[2-4]|629[1-2]|632062|685800|69075)\\d*"
         ),
-        R.drawable.begateway_ic_unionpay,
-        arrayListOf(19, 21, 22, 23),
-        arrayListOf(3),
-        R.string.begateway_cvn,
-        false
+        drawable = R.drawable.begateway_ic_unionpay,
+        listOfCardNumberSizes = arrayListOf(19, 21, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvn,
+        isLunhCheckRequired = false
+    ),
+    DANKORT(
+        cardName = "dankort",
+        regex = Pattern.compile("^5019\\d*"),
+        drawable = R.drawable.begateway_ic_dankort,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    RUPAY(
+        cardName = "rupay",
+        regex = Pattern.compile(
+            "^(606[1-9]|607|608|81|82|508)\\d*"
+        ),
+        drawable = R.drawable.begateway_ic_rupay,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv,
+        isLunhCheckRequired = false
+    ),
+    HIPERCARD(
+        cardName = "hipercard",
+        regex = Pattern.compile("^(384|606282|637095|637568|637599|637609|637612)\\d*"),
+        drawable = R.drawable.begateway_ic_hipercard,
+        listOfCardNumberSizes = arrayListOf(23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    ELO(
+        cardName = "elo",
+        regex = Pattern.compile(
+            "^(401178|401179|431274|438935|451416|457393|457631|457632|504175|506699" +
+                    "|5067[0-7]|5090[0-8]|636297|636368|650[04579]|651652|6550[0-4])\\d*"
+        ),
+        drawable = R.drawable.begateway_ic_elo,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv,
+        isLunhCheckRequired = false
+    ),
+    MIR(
+        cardName = "mir",
+        regex = Pattern.compile("^220[0-4]\\d*"),
+        drawable = R.drawable.begateway_ic_mir,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    DISCOVER(
+        cardName = "discover",
+        regex = Pattern.compile("^(30[0-5]|3[689]|6011[0234789]|65|64[4-9])\\d*"),
+        drawable = R.drawable.begateway_ic_discover,
+        listOfCardNumberSizes = arrayListOf(19, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cid
+    ),
+    BELKART(
+        cardName = "belkart",
+        regex = Pattern.compile("^9112"),
+        drawable = R.drawable.begateway_ic_belkart,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    PROSTIR(
+        cardName = "prostir",
+        regex = Pattern.compile("^9804"),
+        drawable = R.drawable.begateway_ic_prostir,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    VISA_ELECTRON(
+        cardName = "visaelectron",
+        regex = Pattern.compile("^4(026|17500|405|508|844|91[37])\\d*"),
+        drawable = R.drawable.begateway_ic_visa_electron,
+        listOfCardNumberSizes = arrayListOf(19, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    FORBRUGSFORENINGEN(
+        cardName = "forbrugsforeningen",
+        regex = Pattern.compile("^600\\d*"),
+        drawable = R.drawable.begateway_ic_forbrugsforeningen,
+        listOfCardNumberSizes = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
     UNKNOWN(
-        "unknown",
-        Pattern.compile("\\d+"),
-        R.drawable.begateway_ic_unknown,
-        arrayListOf(17, 18, 19, 21, 22, 23),
-        arrayListOf(3),
-        R.string.begateway_cvv
+        cardName = "unknown",
+        regex = Pattern.compile("\\d+"),
+        drawable = R.drawable.begateway_ic_unknown,
+        listOfCardNumberSizes = arrayListOf(17, 18, 19, 21, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     ),
     EMPTY(
-        "empty",
-        Pattern.compile("^$"),
-        R.drawable.begateway_ic_unknown,
-        arrayListOf(17, 18, 19, 21, 22, 23),
-        arrayListOf(3),
-        R.string.begateway_cvv
+        cardName = "empty",
+        regex = Pattern.compile("^$"),
+        drawable = R.drawable.begateway_ic_unknown,
+        listOfCardNumberSizes = arrayListOf(17, 18, 19, 21, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
     );
 
     companion object {

@@ -98,8 +98,10 @@
                     android:id="@+id/tiet_card_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:digits="AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz "
                     android:imeOptions="actionNext"
-                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:inputType="text|textCapCharacters"
+                    android:maxLength="32"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.webkit.WebView
+import com.begateway.mobilepayments.models.network.request.BrowserInfo
+import java.util.*
+
+private const val ONE_MINUTE_IN_MILLISECONDS = 60_000
 
 internal fun Context.findDefaultLocalActivityForIntent(intent: Intent): ActivityInfo? {
     val applicationContext = this.applicationContext
@@ -13,4 +18,22 @@ internal fun Context.findDefaultLocalActivityForIntent(intent: Intent): Activity
         .asSequence()
         .map { it.activityInfo }
         .find { applicationPackage == it.packageName }
+}
+
+internal fun Context.getBrowserInfo(): BrowserInfo {
+    val displayMetrics = this.resources.displayMetrics
+    val userAgent = WebView(this).settings.userAgentString
+    val timeZone = TimeZone.getDefault()
+    return BrowserInfo(
+        screenWidth = displayMetrics.widthPixels,
+        screenHeight = displayMetrics.heightPixels,
+        screenColorDepth = 24,
+        windowWidth = displayMetrics.widthPixels,
+        windowHeight = displayMetrics.heightPixels,
+        language = Locale.getDefault().language,
+        javaEnabled = true,
+        userAgent = userAgent,
+        timeZone = timeZone.rawOffset / ONE_MINUTE_IN_MILLISECONDS,
+        timeZoneName = timeZone.id,
+    )
 }
