@@ -9,9 +9,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
-import android.text.TextWatcher
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -465,33 +463,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                 }
 
                 tietCardName.run {
-                    addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
+                    addDuplicateSpacesTextWatcher {
+                        if (it.isNotBlank()) {
+                            setTextKeepState(it.uppercase())
                         }
-
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
-                        }
-
-                        override fun afterTextChanged(s: Editable?) {
-                            var text = s?.toString().orEmpty().trimStart()
-                            if (text.isNotBlank()) {
-                                text = text.uppercase()
-                            }
-                            removeTextChangedListener(this)
-                            tietCardName.setTextKeepState(text)
-                            addTextChangedListener(this)
-                        }
-                    })
+                    }
                     onEditorListener(::requestFocusToNextVisibleElement)
                 }
             }
