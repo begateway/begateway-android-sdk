@@ -244,13 +244,14 @@ class PaymentSdk private constructor() {
         launcher: ActivityResultLauncher<Intent>? = null
     ) {
         GooglePayHelper.getGooglePayResponse(data)?.let { gPayResponse ->
-            when (
-                val pay = rest.payWithGooglePay(
-                    getRequestWithGooglePayToken(
-                        context = context,
-                        response = gPayResponse
-                    )
+            val requestBody = withContext(Dispatchers.Main) {
+                getRequestWithGooglePayToken(
+                    context = context,
+                    response = gPayResponse
                 )
+            }
+            when (
+                val pay = rest.payWithGooglePay(requestBody)
             ) {
                 is HttpResult.Success -> {
                     val body = pay.data

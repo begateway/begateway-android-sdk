@@ -255,6 +255,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun pay() {
         onProgressDialogListener?.onShowProgress()
         val paymentSdk = PaymentSdk.instance
+        val browserInfo = requireContext().getBrowserInfo()
         CoroutineScope(Dispatchers.IO).launch {
             paymentSdk.payWithCard(
                 requestBody = PaymentRequest(
@@ -269,7 +270,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                             expYear = cardData.getYear(),
                             isSaveCard = paymentSdk.isSaveCard
                         ),
-                        browserInfo = requireContext().getBrowserInfo()
+                        browserInfo = browserInfo
                     )
                 ),
                 context = requireActivity().applicationContext,
