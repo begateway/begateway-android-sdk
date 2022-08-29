@@ -632,7 +632,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             binding?.tilCardNumber?.editText
                 ?.text?.toString()
                 ?.isCorrectPan(
-                    currentCardType.listOfCardNumberSizes,
+                    currentCardType.listOfCardNumberSizesWithSpaces,
                     currentCardType.isLunhCheckRequired
                 )
                 ?: false
