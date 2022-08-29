@@ -102,7 +102,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapCharacters"
                     android:lines="1"
-                    android:maxLength="32"
+                    android:maxLength="@integer/begateway_max_card_name_length"
                     android:maxLines="1"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>

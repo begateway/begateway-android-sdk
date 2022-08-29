@@ -86,7 +86,7 @@ internal enum class CardType(
     ),
     DISCOVER(
         cardName = "discover",
-        regex = Pattern.compile("^(30[0-5]|3[689]|6011[0234789]|65|64[4-9])\\d*"),
+        regex = Pattern.compile("^(30[0-5]|3095|3[689]|6011[0234789]|65|64[4-9])\\d*"),
         drawable = R.drawable.begateway_ic_discover,
         listOfCardNumberSizesWithSpaces = arrayListOf(17, 19, 23),
         listOfSecurityCodeSizes = arrayListOf(3),
@@ -112,7 +112,7 @@ internal enum class CardType(
         cardName = "maestro",
         regex = Pattern.compile(
             "^(500|50[2-9]|501[0-8]|5[6-9]|60[2-5]|6010|601[2-9]" +
-                    "|6060|616788|6218[368]|6219[89]|622110|6220|627[1-9]" +
+                    "|6060|616788|6218[368]|6219[89]|622110|6220|627[1-9]|627089" +
                     "|628[0-1]|6294|6301|630490|633857|63609|6361|636392|636708|637043|637102|637118" +
                     "|637187|637529|639|64[0-3]|67[0123457]|676[0-9]|679|6771)\\d*"
         ),
@@ -190,7 +190,8 @@ internal enum class CardType(
         drawable = R.drawable.begateway_ic_unknown,
         listOfCardNumberSizesWithSpaces = arrayListOf(17, 18, 19, 21, 22, 23),
         listOfSecurityCodeSizes = arrayListOf(3),
-        securityCodeName = R.string.begateway_cvv
+        securityCodeName = R.string.begateway_cvv,
+        isLunhCheckRequired = false
     ),
     EMPTY(
         cardName = "empty",

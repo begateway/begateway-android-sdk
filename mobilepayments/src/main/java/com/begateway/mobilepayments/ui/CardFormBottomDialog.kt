@@ -448,6 +448,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun initCardNameView() {
         binding?.run {
+            val maxCardHolderLength =
+                requireContext().resources.getInteger(R.integer.begateway_max_card_name_length)
             val cardHolderFieldVisible = PaymentSdk.instance.sdkSettings.isCardHolderFieldVisible
             tilCardName.isVisible = cardHolderFieldVisible
             if (cardHolderFieldVisible) {
@@ -459,7 +461,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                         ::updateCardState,
                         ::requestFocusToNextVisibleElement,
                     ) {
-                        false
+                        it == maxCardHolderLength
                     }
                 }
 
