@@ -101,8 +101,10 @@
                     android:digits="AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz "
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapCharacters"
+                    android:lines="1"
                     android:maxLength="32"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
