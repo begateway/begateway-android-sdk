@@ -75,14 +75,6 @@ internal enum class CardType(
         securityCodeName = R.string.begateway_cvv,
         isLunhCheckRequired = false
     ),
-    MASTERCARD(
-        cardName = "master",
-        regex = Pattern.compile("^(5[1-5]|2[3-6]|22[3-9]|222[1-9]|27[1-2])\\d*"),
-        drawable = R.drawable.begateway_ic_mastercard,
-        listOfCardNumberSizesWithSpaces = arrayListOf(19),
-        listOfSecurityCodeSizes = arrayListOf(3),
-        securityCodeName = R.string.begateway_cvc
-    ),
     AMEX(
         cardName = "amex",
         regex = Pattern.compile("^3[47]\\d*"),
@@ -108,6 +100,14 @@ internal enum class CardType(
         listOfSecurityCodeSizes = arrayListOf(3),
         securityCodeName = R.string.begateway_cvv
     ),
+    MASTERCARD(
+        cardName = "master",
+        regex = Pattern.compile("^(5[1-5]|2[3-6]|22[3-9]|222[1-9]|27[1-2])\\d*"),
+        drawable = R.drawable.begateway_ic_mastercard,
+        listOfCardNumberSizesWithSpaces = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvc
+    ),
     MAESTRO(
         cardName = "maestro",
         regex = Pattern.compile(
@@ -121,18 +121,6 @@ internal enum class CardType(
         listOfSecurityCodeSizes = arrayListOf(0, 3),
         securityCodeName = R.string.begateway_cvc
     ),
-    UNIONPAY(
-        cardName = "unionpay",
-        regex = Pattern.compile(
-            "^(620|621[0234567]|621977|62212[6-9]|6221[3-8]" +
-                    "|6222[0-9]|622[3-9]|62[3-6]|6270[2467]|628[2-4]|629[1-2]|632062|685800|69075)\\d*"
-        ),
-        drawable = R.drawable.begateway_ic_unionpay,
-        listOfCardNumberSizesWithSpaces = arrayListOf(19, 21, 22, 23),
-        listOfSecurityCodeSizes = arrayListOf(3),
-        securityCodeName = R.string.begateway_cvn,
-        isLunhCheckRequired = false
-    ),
     DANKORT(
         cardName = "dankort",
         regex = Pattern.compile("^5019\\d*"),
@@ -145,6 +133,37 @@ internal enum class CardType(
         cardName = "mir",
         regex = Pattern.compile("^220[0-4]\\d*"),
         drawable = R.drawable.begateway_ic_mir,
+        listOfCardNumberSizesWithSpaces = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv
+    ),
+    UNIONPAY(
+        cardName = "unionpay",
+        regex = Pattern.compile(
+            "^(620|621[0234567]|621977|62212[6-9]|6221[3-8]" +
+                    "|6222[0-9]|622[3-9]|62[3-6]|6270[2467]|628[2-4]|629[1-2]|632062|685800|69075)\\d*"
+        ),
+        drawable = R.drawable.begateway_ic_unionpay,
+        listOfCardNumberSizesWithSpaces = arrayListOf(19, 21, 22, 23),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvn,
+        isLunhCheckRequired = false
+    ),
+    RUPAY(
+        cardName = "rupay",
+        regex = Pattern.compile(
+            "^(606[1-9]|607|608|81|82|508)\\d*"
+        ),
+        drawable = R.drawable.begateway_ic_rupay,
+        listOfCardNumberSizesWithSpaces = arrayListOf(19),
+        listOfSecurityCodeSizes = arrayListOf(3),
+        securityCodeName = R.string.begateway_cvv,
+        isLunhCheckRequired = false
+    ),
+    FORBRUGSFORENINGEN(
+        cardName = "forbrugsforeningen",
+        regex = Pattern.compile("^600\\d*"),
+        drawable = R.drawable.begateway_ic_forbrugsforeningen,
         listOfCardNumberSizesWithSpaces = arrayListOf(19),
         listOfSecurityCodeSizes = arrayListOf(3),
         securityCodeName = R.string.begateway_cvv
@@ -164,25 +183,6 @@ internal enum class CardType(
         listOfCardNumberSizesWithSpaces = arrayListOf(16, 19, 23),
         listOfSecurityCodeSizes = arrayListOf(3),
         securityCodeName = R.string.begateway_cvv
-    ),
-    FORBRUGSFORENINGEN(
-        cardName = "forbrugsforeningen",
-        regex = Pattern.compile("^600\\d*"),
-        drawable = R.drawable.begateway_ic_forbrugsforeningen,
-        listOfCardNumberSizesWithSpaces = arrayListOf(19),
-        listOfSecurityCodeSizes = arrayListOf(3),
-        securityCodeName = R.string.begateway_cvv
-    ),
-    RUPAY(
-        cardName = "rupay",
-        regex = Pattern.compile(
-            "^(606[1-9]|607|608|81|82|508)\\d*"
-        ),
-        drawable = R.drawable.begateway_ic_rupay,
-        listOfCardNumberSizesWithSpaces = arrayListOf(19),
-        listOfSecurityCodeSizes = arrayListOf(3),
-        securityCodeName = R.string.begateway_cvv,
-        isLunhCheckRequired = false
     ),
     UNKNOWN(
         cardName = "unknown",
