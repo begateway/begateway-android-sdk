@@ -102,6 +102,7 @@ data class CreditCard(
 ) : AdditionalFields()
 
 data class BrowserInfo(
+    @SerializedName("accept_header") val acceptHeader: String,
     @SerializedName("screen_width") val screenWidth: Int,
     @SerializedName("screen_height") val screenHeight: Int,
     @SerializedName("screen_color_depth") val screenColorDepth: Int,
