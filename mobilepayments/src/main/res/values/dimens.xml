@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <integer name="begateway_max_card_name_length">32</integer>
     <dimen name="begateway_default_margin">16dp</dimen>
     <dimen name="begateway_default_margin_small">8dp</dimen>
     <dimen name="begateway_default_margin_big">24dp</dimen>

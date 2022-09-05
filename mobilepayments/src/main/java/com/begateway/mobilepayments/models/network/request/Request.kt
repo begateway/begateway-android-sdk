@@ -6,5 +6,6 @@ import com.google.gson.annotations.SerializedName
 data class Request(
     @SerializedName("token") val token: String,
     @SerializedName("payment_method") val paymentMethod: PaymentMethodType,
-    @SerializedName("credit_card") val creditCard: CreditCard? = null
+    @SerializedName("credit_card") val creditCard: CreditCard? = null,
+    @SerializedName("browser") val browserInfo: BrowserInfo? = null
 ) : AdditionalFields()

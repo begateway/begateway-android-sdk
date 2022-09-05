@@ -3,6 +3,7 @@ package com.begateway.mobilepayments.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import com.begateway.mobilepayments.R
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.sdk.OnResultListener
@@ -16,6 +17,15 @@ private val TAG_CARD_FORM_SHEET = CardFormBottomDialog::class.java.name
 internal const val GOOGLE_PAY_RETURN_CODE = 0x54BD
 
 internal class CheckoutActivity : AbstractActivity(), OnResultListener {
+
+    private val paymentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != Activity.RESULT_OK) {
+            onHideProgress()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!PaymentSdk.instance.isSdkInitialized) {
@@ -59,7 +69,11 @@ internal class CheckoutActivity : AbstractActivity(), OnResultListener {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     onShowProgress()
                     CoroutineScope(Dispatchers.Main).launch {
-                        PaymentSdk.instance.payWithGooglePay(data)
+                        PaymentSdk.instance.payWithGooglePay(
+                            data = data,
+                            context = this@CheckoutActivity.applicationContext,
+                            launcher = paymentLauncher
+                        )
                     }
                 } else {
                     if (resultCode == AutoResolveHelper.RESULT_ERROR) {

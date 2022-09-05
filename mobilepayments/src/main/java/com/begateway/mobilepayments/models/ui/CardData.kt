@@ -16,7 +16,7 @@ internal data class CardData(
 ) : Parcelable {
     companion object {
         private const val EXPIRY_DATE_FORMAT_FULL = "MM/yyyy"
-        const val EXPIRY_DATE_FORMAT_SMALL = "MM/yy"
+        private const val EXPIRY_DATE_FORMAT_SMALL = "MM/yy"
         private const val EXPIRY_MONTH = "MM"
         private const val EXPIRY_YEAR = "yy"
         private const val EXTRA_CARD = "card_extra"

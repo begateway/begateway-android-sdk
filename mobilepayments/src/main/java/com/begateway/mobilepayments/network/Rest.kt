@@ -39,6 +39,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
 
     private val api: Api
     private val gson: Gson = Gson()
+    private val beGatewayResponseParser: BeGatewayResponseParser = BeGatewayResponseParser()
 
     init {
         val client = OkHttpClient.Builder().apply {
@@ -124,7 +125,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
                     HttpResult.Success(response.body()!!)
                 } else {
                     HttpResult.UnSuccess(
-                        BeGatewayResponseParser().parseJson(
+                        beGatewayResponseParser.parseJson(
                             gson.fromJson(
                                 response.errorBody()?.charStream(),
                                 JsonElement::class.java

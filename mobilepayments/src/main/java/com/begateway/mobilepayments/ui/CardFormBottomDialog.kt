@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val REQUEST_CODE_NFC_SETTINGS = 0x55BD
+private const val EXPIRY_DATE_FORMAT = "MMyy"
 
 internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
@@ -55,7 +56,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     //date
     private val expiryFormat =
-        SimpleDateFormat(CardData.EXPIRY_DATE_FORMAT_SMALL, Locale.US).apply {
+        SimpleDateFormat(EXPIRY_DATE_FORMAT, Locale.US).apply {
             val now = Calendar.getInstance()
             now.set(Calendar.YEAR, (now.get(Calendar.YEAR) / 100) * 100)
             set2DigitYearStart(now.time)
@@ -254,6 +255,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
     private fun pay() {
         onProgressDialogListener?.onShowProgress()
         val paymentSdk = PaymentSdk.instance
+        val browserInfo = requireContext().getBrowserInfo()
         CoroutineScope(Dispatchers.IO).launch {
             paymentSdk.payWithCard(
                 requestBody = PaymentRequest(
@@ -267,10 +269,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                             expMonth = cardData.getMonth(),
                             expYear = cardData.getYear(),
                             isSaveCard = paymentSdk.isSaveCard
-                        )
+                        ),
+                        browserInfo = browserInfo
                     )
                 ),
-                context = requireActivity(),
+                context = requireActivity().applicationContext,
                 launcher = paymentLauncher
             )
         }
@@ -384,7 +387,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                         tietCardNumber.text?.toString()
                     } else null,
                     if (tilCardName.isVisible) {
-                        tietCardName.text?.toString()
+                        tietCardName.text?.toString()?.trimEnd()
                     } else null,
                     if (tilCardExpiryDate.isVisible) {
                         CardData.getExpiryDateFromString(tietCardExpiryDate.text?.toString())
@@ -445,6 +448,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun initCardNameView() {
         binding?.run {
+            val maxCardHolderLength =
+                requireContext().resources.getInteger(R.integer.begateway_max_card_name_length)
             val cardHolderFieldVisible = PaymentSdk.instance.sdkSettings.isCardHolderFieldVisible
             tilCardName.isVisible = cardHolderFieldVisible
             if (cardHolderFieldVisible) {
@@ -456,11 +461,16 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
                         ::updateCardState,
                         ::requestFocusToNextVisibleElement,
                     ) {
-                        false
+                        it == maxCardHolderLength
                     }
                 }
 
                 tietCardName.run {
+                    addDuplicateSpacesTextWatcher {
+                        if (it.isNotBlank()) {
+                            setTextKeepState(it.uppercase())
+                        }
+                    }
                     onEditorListener(::requestFocusToNextVisibleElement)
                 }
             }
@@ -473,15 +483,15 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             tilCardExpiryDate.isVisible = isCardDateFieldVisible
             if (isCardDateFieldVisible) {
                 tilCardExpiryDate.apply {
-                    onFocusListener(
-                        ::isExpiryCorrect
-                    ) { getString(R.string.begateway_expiration_invalid) }
+                    onExpiryTextChanged()
                     onTextChanged(
                         ::updateCardState,
                         ::requestFocusToNextVisibleElement,
                         ::isCardExpireLengthAccepted
                     )
-                    onExpiryTextChanged()
+                    onFocusListener(
+                        ::isExpiryCorrect
+                    ) { getString(R.string.begateway_expiration_invalid) }
                 }
                 tietCardExpiryDate.run {
                     onEditorListener(::requestFocusToNextVisibleElement)
@@ -604,7 +614,8 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
 
     private fun isCardNameCorrect(): Boolean =
         if (binding?.tilCardName?.isVisible == true) {
-            !binding?.tilCardName?.editText?.text.isNullOrBlank()
+            val text = binding?.tilCardName?.editText?.text
+            !text.isNullOrBlank() && text.length > 1
         } else {
             true
         }
@@ -623,7 +634,7 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             binding?.tilCardNumber?.editText
                 ?.text?.toString()
                 ?.isCorrectPan(
-                    currentCardType.listOfCardNumberSizes,
+                    currentCardType.listOfCardNumberSizesWithSpaces,
                     currentCardType.isLunhCheckRequired
                 )
                 ?: false
@@ -637,11 +648,11 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
             val editText = binding?.tilCardExpiryDate?.editText
             editText?.length() == BuildConfig.EXPIRY_DATE_LENGTH &&
                     try {
-                        val text = editText.text?.toString()
+                        val text = editText.text?.toString()?.filter { it.isDigit() }
                         // TODO temp fix rework to DateTimeFormatter
-                        text?.startsWith("00") != true &&
-                                !text.isNullOrEmpty() &&
-                                minExpiry.time < expiryFormat.parse(text)
+                        !text.isNullOrEmpty() && !text.startsWith("00") && minExpiry.time < expiryFormat.parse(
+                            text
+                        )
                     } catch (e: ParseException) {
                         false
                     }

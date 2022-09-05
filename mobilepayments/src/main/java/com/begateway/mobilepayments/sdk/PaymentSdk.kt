@@ -22,6 +22,7 @@ import com.begateway.mobilepayments.network.Rest
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
+import com.begateway.mobilepayments.utils.getBrowserInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -237,31 +238,67 @@ class PaymentSdk private constructor() {
     }
 
     @Keep
-    internal suspend fun payWithGooglePay(data: Intent) {
+    internal suspend fun payWithGooglePay(
+        data: Intent,
+        context: Context,
+        launcher: ActivityResultLauncher<Intent>? = null
+    ) {
         GooglePayHelper.getGooglePayResponse(data)?.let { gPayResponse ->
-            when (
-                val pay = rest.payWithGooglePay(
-                    getRequestWithGooglePayToken(
-                        gPayResponse
-                    )
+            val requestBody = withContext(Dispatchers.Main) {
+                getRequestWithGooglePayToken(
+                    context = context,
+                    response = gPayResponse
                 )
+            }
+            when (
+                val pay = rest.payWithGooglePay(requestBody)
             ) {
                 is HttpResult.Success -> {
-                    onPaymentFinished(pay.data)
+                    val body = pay.data
+                    if (body.status == ResponseStatus.INCOMPLETE && body.threeDSUrl != null && body.resultUrl != null) {
+                        getPaymentData(
+                            token = checkoutWithTokenData!!.checkout.token,
+                            onSuccess = {
+                                withContext(Dispatchers.Main) {
+                                    val threeDSIntent = WebViewActivity.getThreeDSIntent(
+                                        context = context,
+                                        url = body.threeDSUrl,
+                                        resultUrl = body.resultUrl
+                                    )
+                                    (launcher?.let {
+                                        launcher.launch(threeDSIntent)
+                                    } ?: kotlin.run {
+                                        context.startActivity(threeDSIntent)
+                                    })
+                                }
+                            },
+                            onError = {
+                                onNotSuccess(it)
+                            }
+                        )
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            onPaymentFinished(body)
+                        }
+                    }
                 }
                 else -> onNotSuccess(pay)
             }
         } ?: onPaymentFinished(BeGatewayResponse())
     }
 
-    private fun getRequestWithGooglePayToken(response: GooglePayResponse): GPaymentRequest {
+    private fun getRequestWithGooglePayToken(
+        context: Context,
+        response: GooglePayResponse
+    ): GPaymentRequest {
         return GPaymentRequest(
-            checkoutWithTokenData!!.checkout.token,
-            GRequest(
+            token = checkoutWithTokenData!!.checkout.token,
+            request = GRequest(
                 response.apiVersion,
                 response.apiVersionMinor,
                 response.paymentMethodData
-            )
+            ),
+            browserInfo = context.getBrowserInfo()
         )
     }
 

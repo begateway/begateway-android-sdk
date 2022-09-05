@@ -101,6 +101,20 @@ data class CreditCard(
     @SerializedName("save_card") val isSaveCard: Boolean? = null,
 ) : AdditionalFields()
 
+data class BrowserInfo(
+    @SerializedName("accept_header") val acceptHeader: String,
+    @SerializedName("screen_width") val screenWidth: Int,
+    @SerializedName("screen_height") val screenHeight: Int,
+    @SerializedName("screen_color_depth") val screenColorDepth: Int,
+    @SerializedName("window_width") val windowWidth: Int,
+    @SerializedName("window_height") val windowHeight: Int,
+    @SerializedName("language") val language: String,
+    @SerializedName("java_enabled") val javaEnabled: Boolean,
+    @SerializedName("user_agent") val userAgent: String,
+    @SerializedName("time_zone") val timeZone: Int,
+    @SerializedName("time_zone_name") val timeZoneName: String,
+) : AdditionalFields()
+
 class Travel(
     @SerializedName("airline") val airline: Airline,
 ) : AdditionalFields()
