@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 49
+        versionCode 50
         versionName version
         buildConfigField 'int', 'EXPIRY_DATE_LENGTH', '5'
         buildConfigField 'String', 'BANK_CARD_REGEX', '"[^\\\\d ]*"'

@@ -31,7 +31,7 @@ internal class WebViewActivity : AbstractActivity() {
             setContentView(root)
             setToolbar(toolbar)
             webView.settings.javaScriptEnabled = true
-            webView.settings.allowFileAccess = true
+            webView.settings.allowFileAccess = false
             webView.webChromeClient = object : WebChromeClient() {}
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
