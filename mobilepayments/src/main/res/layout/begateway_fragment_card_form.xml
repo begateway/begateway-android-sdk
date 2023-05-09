@@ -78,6 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
+                    android:textSize="@dimen/begateway_card_number_text_size"
                     android:inputType="number|textNoSuggestions"
                     android:maxLength="23"
                     android:maxLines="1" />
@@ -101,6 +102,7 @@
                     android:digits="AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz "
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapCharacters"
+                    android:textSize="@dimen/begateway_card_holder_text_size"
                     android:lines="1"
                     android:maxLength="@integer/begateway_max_card_name_length"
                     android:maxLines="1"
@@ -122,6 +124,7 @@
                     android:id="@+id/tiet_card_expiry_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/begateway_card_expire_date_text_size"
                     android:layout_marginEnd="@dimen/begateway_default_margin_small"
                     android:imeOptions="actionNext"
                     android:inputType="number|textNoSuggestions"
@@ -152,6 +155,7 @@
                     android:id="@+id/tiet_cvc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/begateway_card_cvc_text_size"
                     android:imeOptions="actionNext"
                     android:inputType="number"
                     android:maxLength="4" />

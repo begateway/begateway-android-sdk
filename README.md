@@ -227,6 +227,17 @@ You can rewrite string for card form view elements in your string.xml, just put 
 </resources>
 ```
 
+#### Customize using dimens.xml
+You can rewrite dimens for text size of fields
+```xml
+<resources>
+    <dimen name="begateway_card_number_text_size">16sp</dimen>
+    <dimen name="begateway_card_holder_text_size">16sp</dimen>
+    <dimen name="begateway_card_expire_date_text_size">16sp</dimen>
+    <dimen name="begateway_card_cvc_text_size">16sp</dimen
+</resources>
+```
+
 ## Bank card scanning
 ### NFC
 if device has nfc sdk will show to user button for scanning
