@@ -10,4 +10,9 @@
     <dimen name="begateway_small_component_corner_size">12dp</dimen>
     <dimen name="begateway_large_component_corner_size">24dp</dimen>
 
+    <dimen name="begateway_card_number_text_size">16sp</dimen>
+    <dimen name="begateway_card_holder_text_size">16sp</dimen>
+    <dimen name="begateway_card_expire_date_text_size">16sp</dimen>
+    <dimen name="begateway_card_cvc_text_size">16sp</dimen>
+
 </resources>
