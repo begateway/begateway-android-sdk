@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             setNFCScanVisibility(mcbNfcVisibility.isChecked)
         }
         setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
-    }.build().apply {
+    }.build(this@MainActivity).apply {
         addCallBackListener(this@MainActivity)
     }.also {
         sdk = it
@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     private fun listeners() {
         binding.bGetToken.setOnClickListener {
             pay()
+
         }
         binding.bPayWithCreditCard.setOnClickListener {
             if (!isTokenEmpty()) {
