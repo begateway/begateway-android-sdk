@@ -149,3 +149,9 @@ class Passenger(
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,
 ) : AdditionalFields()
+
+class Company(
+    @SerializedName("name") val nameCompany: String,
+    @SerializedName("site") val siteCompany: String,
+    @SerializedName("small_logo_url") val logoUrlCompany: String,
+) : AdditionalFields()

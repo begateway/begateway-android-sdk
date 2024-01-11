@@ -27,6 +27,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/begateway_fragment_card_margin_bottom"
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.Guideline
@@ -191,6 +192,14 @@
                 app:layout_constraintEnd_toStartOf="@+id/end_margin"
                 app:layout_constraintStart_toEndOf="@+id/start_margin"
                 app:layout_constraintTop_toBottomOf="@+id/mcb_save_card" />
+            <TextView
+                android:id="@+id/secure_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/begateway_secure_info"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mb_pay" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

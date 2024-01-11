@@ -2,10 +2,10 @@ package com.begateway.mobilepayments.sdk
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Keep
-import androidx.core.content.edit
+
 import com.begateway.mobilepayments.encryption.RSA
 import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
@@ -25,6 +25,7 @@ import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
 import com.begateway.mobilepayments.utils.getBrowserInfo
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -133,30 +134,8 @@ class PaymentSdk private constructor() {
         context: Context,
         launcher: ActivityResultLauncher<Intent>? = null
 
-    ) {
-        if (requestBody.request.creditCard?.token != null) {
-            val cardToken = requestBody.request.creditCard?.token
-            // Log the card token
-//            Log.d("TOKEN CARD", "Card Token: $cardToken")
-//            Log.d("TOKEN CARD", "Card Token: ${requestBody.request}")
-
-            // Retrieve the existing tokens from SharedPreferences
-            val sharedPreferences = context.getSharedPreferences("TOKEN_PREFS", Context.MODE_PRIVATE)
-            val tokenList = sharedPreferences.getStringSet("cardTokens", HashSet())?.toMutableSet() ?: mutableSetOf()
-
-            // Add the new card token to the list
-            cardToken?.let {
-                tokenList.add(it)
-            }
-
-            // Save the updated list back to SharedPreferences
-            sharedPreferences.edit {
-                putStringSet("cardTokens", tokenList)
-            }
-            Log.d("TOKEN LIST", "Updated Token List: $tokenList")
-        }
-
-
+    )
+{
             when (val pay = rest.payWithCard(requestBody)) {
                 is HttpResult.Success -> {
                     val data = pay.data

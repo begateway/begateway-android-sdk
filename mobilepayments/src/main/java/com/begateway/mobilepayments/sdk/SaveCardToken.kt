@@ -64,10 +64,8 @@ fun saveCreditCardData(context: Context, creditCardInfo: SaveCardToken?) {
 
     // Проверяем наличие совпадений по полю "Stamp"
     val isStampExist = existingList.any { it.stamp == creditCardInfo?.stamp }
-
-    if (!isStampExist) {
         // Добавляем новый объект в список
-        if (creditCardInfo != null) {
+        if (!isStampExist && creditCardInfo?.last4?.length != null) {
             existingList.add(creditCardInfo)
 
             // Преобразуем список в JSON-строку и сохраняем в SharedPreferences
@@ -76,8 +74,7 @@ fun saveCreditCardData(context: Context, creditCardInfo: SaveCardToken?) {
 
             // Применяем изменения
             editor.apply()
-        }
-    } else {
+        } else {
         // Обработка совпадения (если необходимо)
         Log.d("saveCreditCardData", "Совпадение по полю 'Stamp', объект не добавлен.")
     }
