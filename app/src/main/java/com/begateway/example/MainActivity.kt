@@ -126,7 +126,6 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         val args = Bundle()
         args.putString("cardToken", token)
         bottomSheetFragment.arguments = args
-
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
