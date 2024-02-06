@@ -2,8 +2,10 @@ package com.begateway.mobilepayments.sdk
 
 import android.content.Context
 import android.content.Intent
+
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Keep
+
 import com.begateway.mobilepayments.encryption.RSA
 import com.begateway.mobilepayments.models.googlepay.android.response.GooglePayResponse
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
@@ -23,6 +25,7 @@ import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
 import com.begateway.mobilepayments.utils.getBrowserInfo
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -83,11 +86,12 @@ class PaymentSdk private constructor() {
     var checkoutWithTokenData: CheckoutWithTokenData? = null
 
     internal fun initSdk(
+        context: Context,
         settings: PaymentSdkSettings,
     ) {
         resetValues()
         this.sdkSettings = settings
-        rest = Rest(settings.endpoint, settings.isDebugMode, settings.publicKey)
+        rest = Rest(settings.endpoint, settings.isDebugMode, settings.publicKey, context)
     }
 
     @Keep
@@ -129,39 +133,42 @@ class PaymentSdk private constructor() {
         requestBody: PaymentRequest,
         context: Context,
         launcher: ActivityResultLauncher<Intent>? = null
-    ) {
-        when (val pay = rest.payWithCard(requestBody)) {
-            is HttpResult.Success -> {
-                val data = pay.data
-                if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null && data.resultUrl != null) {
-                    getPaymentData(
-                        token = requestBody.request.token,
-                        onSuccess = {
-                            withContext(Dispatchers.Main) {
-                                val threeDSIntent = WebViewActivity.getThreeDSIntent(
-                                    context = context,
-                                    url = data.threeDSUrl,
-                                    resultUrl = data.resultUrl
-                                )
-                                (launcher?.let {
-                                    launcher.launch(threeDSIntent)
-                                } ?: kotlin.run {
-                                    context.startActivity(threeDSIntent)
-                                })
+
+    )
+{
+            when (val pay = rest.payWithCard(requestBody)) {
+                is HttpResult.Success -> {
+                    val data = pay.data
+                    if (data.status == ResponseStatus.INCOMPLETE && data.threeDSUrl != null && data.resultUrl != null) {
+                        getPaymentData(
+                            token = requestBody.request.token,
+                            onSuccess = {
+                                withContext(Dispatchers.Main) {
+                                    val threeDSIntent = WebViewActivity.getThreeDSIntent(
+                                        context = context,
+                                        url = data.threeDSUrl,
+                                        resultUrl = data.resultUrl
+                                    )
+                                    (launcher?.let {
+                                        launcher.launch(threeDSIntent)
+                                    } ?: kotlin.run {
+                                        context.startActivity(threeDSIntent)
+                                    })
+                                }
+                            },
+                            onError = {
+                                onNotSuccess(it)
                             }
-                        },
-                        onError = {
-                            onNotSuccess(it)
+                        )
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            onPaymentFinished(data)
                         }
-                    )
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onPaymentFinished(data)
                     }
                 }
+
+                else -> onNotSuccess(pay)
             }
-            else -> onNotSuccess(pay)
-        }
     }
 
     internal suspend fun updatePaymentData() {
@@ -339,7 +346,9 @@ class PaymentSdk private constructor() {
                     null
                 }
             )
+
         }
+
         resetValues()
     }
 

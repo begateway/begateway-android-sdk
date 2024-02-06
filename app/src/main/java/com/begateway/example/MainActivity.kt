@@ -15,6 +15,7 @@ import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenDat
 import com.begateway.mobilepayments.sdk.OnResultListener
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.sdk.PaymentSdkBuilder
+import com.begateway.mobilepayments.utils.SaveCardSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
             setNFCScanVisibility(mcbNfcVisibility.isChecked)
         }
         setEndpoint(TestData.YOUR_CHECKOUT_ENDPOINT)
-    }.build().apply {
+    }.build(this@MainActivity).apply {
         addCallBackListener(this@MainActivity)
     }.also {
         sdk = it
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), OnResultListener {
                         isCancellableOutside = false
                     ).show()
                 } else {
-                    payWithCard(cardToken)
+                    payWithCard()
                 }
             }
         }
@@ -110,6 +111,8 @@ class MainActivity : AppCompatActivity(), OnResultListener {
         )
         startActivity(
             PaymentSdk.getCardFormIntent(this@MainActivity)
+
+
         )
     }
 
@@ -117,23 +120,13 @@ class MainActivity : AppCompatActivity(), OnResultListener {
     /**
      * use if you already have payment token and card info(card token or card data)
      */
-    private fun payWithCard(cardToken: String) {
+    private fun payWithCard() {
         val token = binding.tilToken.editText?.text?.toString() ?: return
-        isProgressVisible(true)
-        CoroutineScope(Dispatchers.IO).launch {
-            initPaymentSdk().payWithCard(
-                requestBody = PaymentRequest(
-                    Request(
-                        token,
-                        PaymentMethodType.CREDIT_CARD,
-                        CreditCard(
-                            token = cardToken
-                        )
-                    )
-                ),
-                context = this@MainActivity
-            )
-        }
+        val bottomSheetFragment = SaveCardSheetDialogFragment()
+        val args = Bundle()
+        args.putString("cardToken", token)
+        bottomSheetFragment.arguments = args
+        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.network
 
+import android.content.Context
 import android.util.Log
 import com.begateway.mobilepayments.models.googlepay.api.GPaymentRequest
 import com.begateway.mobilepayments.models.network.AdditionalFields
@@ -35,11 +36,11 @@ internal const val X_API_VERSION = "X-Api-Version"
 internal const val X_API_VERSION_VALUE = "2"
 internal const val AUTORIZATION_HEADER_NAME = "Authorization"
 
-internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
+internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String, context: Context) {
 
     private val api: Api
     private val gson: Gson = Gson()
-    private val beGatewayResponseParser: BeGatewayResponseParser = BeGatewayResponseParser()
+    private val beGatewayResponseParser: BeGatewayResponseParser = BeGatewayResponseParser(context)
 
     init {
         val client = OkHttpClient.Builder().apply {
@@ -84,7 +85,7 @@ internal class Rest(baseUrl: String, isDebugMode: Boolean, publicKey: String) {
         ).forEach { cls ->
             gsonBuilder.registerTypeAdapter(cls, customSerializer)
         }
-        gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser())
+        gsonBuilder.registerTypeAdapter(BeGatewayResponse::class.java, BeGatewayResponseParser(context))
         api = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)

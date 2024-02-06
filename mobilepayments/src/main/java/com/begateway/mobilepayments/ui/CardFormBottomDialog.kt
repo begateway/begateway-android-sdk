@@ -13,6 +13,7 @@ import android.text.InputFilter
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -172,35 +173,56 @@ internal class CardFormBottomDialog : BottomSheetDialogFragment() {
         binding = it
     }.root
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-            (dialog as? BottomSheetDialog)?.also { dialog ->
-                val bottomSheet =
-                    dialog.findViewById<FrameLayout?>(com.google.android.material.R.id.design_bottom_sheet)!!
-                BottomSheetBehavior.from(bottomSheet).apply {
-                    state = BottomSheetBehavior.STATE_EXPANDED
-                    skipCollapsed = true
-                    isHideable = true
-                    peekHeight = 0
-                }
-            }
-        }
-        view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
-        binding?.run {
-            onActionbarSetup?.addToolBar(toolbar, null, ::dismissAllowingStateLoss)
-            mbPay.setOnClickListener {
-                pay()
-            }
-        }
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        initCardNumberView()
-        initCardNameView()
-        initCardExpireDateView()
-        initCvcView()
-        applyCardTypeValues()
-        initPaymentDataCheck()
+    val paymentSdk = PaymentSdk.instance
+    val company = paymentSdk.paymentData?.checkout?.company?.nameCompany
+
+    // Получение SharedPreferences
+    val sharedPreferences = requireContext().getSharedPreferences("CompanyPrefs", Context.MODE_PRIVATE)
+
+    // Получение сохраненного значения
+    val savedCompany = sharedPreferences.getString("company", null)
+
+    if (company != null) {
+        // Сохранение значения в локальное хранилище, если company не равен null
+        with(sharedPreferences.edit()) {
+            putString("company", company)
+            apply()
+        }
     }
+    val secureInfo = view.findViewById<TextView>(R.id.secure_info)
+    val formattedText = getString(R.string.begateway_secure_info, company ?: savedCompany)
+    secureInfo.text = formattedText
+
+    onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+        (dialog as? BottomSheetDialog)?.also { dialog ->
+            val bottomSheet =
+                dialog.findViewById<FrameLayout?>(com.google.android.material.R.id.design_bottom_sheet)!!
+            BottomSheetBehavior.from(bottomSheet).apply {
+                state = BottomSheetBehavior.STATE_EXPANDED
+                skipCollapsed = true
+                isHideable = true
+                peekHeight = 0
+            }
+        }
+    }
+    view.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
+    binding?.run {
+        onActionbarSetup?.addToolBar(toolbar, null, ::dismissAllowingStateLoss)
+        mbPay.setOnClickListener {
+            pay()
+        }
+    }
+
+    initCardNumberView()
+    initCardNameView()
+    initCardExpireDateView()
+    initCvcView()
+    applyCardTypeValues()
+    initPaymentDataCheck()
+}
 
     private fun initPaymentDataCheck() {
         lifecycleScope.launchWhenStarted {

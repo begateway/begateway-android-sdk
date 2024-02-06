@@ -1,8 +1,11 @@
 package com.begateway.mobilepayments.parser
 
+import android.content.Context
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.ResponseStatus
 import com.begateway.mobilepayments.sdk.PaymentSdk
+import com.begateway.mobilepayments.sdk.extractCreditCardInfo
+import com.begateway.mobilepayments.sdk.saveCreditCardData
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -10,7 +13,7 @@ import com.google.gson.JsonObject
 import java.lang.reflect.Type
 
 
-class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
+class BeGatewayResponseParser(private val context: Context) : JsonDeserializer<BeGatewayResponse> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
@@ -33,6 +36,8 @@ class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
                             if (creditCard != null && !creditCard.isJsonNull) {
                                 PaymentSdk.instance.cardToken = getString("token", creditCard)
                             }
+                            val creditCardInfo = extractCreditCardInfo(response)
+                            saveCreditCardData(context, creditCardInfo)
                         }
                         response
                     }
@@ -70,4 +75,10 @@ class BeGatewayResponseParser : JsonDeserializer<BeGatewayResponse> {
             value.asString
         }
     }
+
 }
+
+
+
+
+

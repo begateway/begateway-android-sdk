@@ -115,24 +115,7 @@ BeGatewayResponse parameters:
                 PaymentSdk.getCardFormIntent(this@MainActivity)
             )
 ```
-
-#### 2. Start payment with bank card token or credit card data if you have
-```kotlin
-            sdk.payWithCard(
-                PaymentRequest(
-                    Request(
-                        token,
-                        PaymentMethodType.CREDIT_CARD,
-                        CreditCard(
-                            token = cardToken
-                        )
-                    )
-                ),
-                this@MainActivity,
-                launcher // used for starting activity for 3d secure
-            )
-```
-#### 3. Start payment with `CheckoutWithTokenData`
+#### 2. Start payment with `CheckoutWithTokenData`
 here you also can use payment token from your server or etc.
 
 ```kotlin
@@ -145,6 +128,17 @@ here you also can use payment token from your server or etc.
         startActivity(
             PaymentSdk.getCardFormIntent(this@MainActivity)
         )
+    }
+```
+#### 3. To make a payment using a saved card, you must initialize the SDK, receive a payment token, then turn on the "Saver card" switch when paying with the card. The card token will be saved, then you can call the UI of the saved cards using the function:
+```kotlin
+    private fun payWithCard() {
+        val token = binding.tilToken.editText?.text?.toString() ?: return
+        val bottomSheetFragment = SaveCardSheetDialogFragment()
+        val args = Bundle()
+        args.putString("cardToken", token)
+        bottomSheetFragment.arguments = args
+        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 ```
 ## Dynamic Fields
@@ -234,7 +228,7 @@ You can rewrite dimens for text size of fields
     <dimen name="begateway_card_number_text_size">16sp</dimen>
     <dimen name="begateway_card_holder_text_size">16sp</dimen>
     <dimen name="begateway_card_expire_date_text_size">16sp</dimen>
-    <dimen name="begateway_card_cvc_text_size">16sp</dimen
+    <dimen name="begateway_card_cvc_text_size">16sp</dimen>
 </resources>
 ```
 

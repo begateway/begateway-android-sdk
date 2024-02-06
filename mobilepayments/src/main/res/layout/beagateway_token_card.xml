@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="ResourceName">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingVertical="8dp"
+
+        tools:ignore="UselessParent">
+        <LinearLayout
+            android:id="@+id/linearLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/begateway_save_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            tools:ignore="MissingConstraints,OnClick">
+
+            <ImageView
+                android:id="@+id/icon_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/begateway_ic_belkart" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="••••"
+                android:textSize="16sp"
+                android:textColor="#000"
+                android:textStyle="bold"
+                android:paddingStart="16dp"
+                android:layout_gravity="center_vertical"
+                tools:ignore="RtlSymmetry" />
+
+
+            <TextView
+                android:id="@+id/last_four"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageView
+                android:id="@+id/delete_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/begateway_ic_trash" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
+</androidx.cardview.widget.CardView>
+
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:ignore="ResourceName">-->
+<!--&lt;!&ndash;    <FrameLayout&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="match_parent">&ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:padding='8dp'-->
+<!--        android:orientation="vertical">-->
+<!--        <ListView-->
+<!--            android:id = "@+id/listView"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_width="match_parent" />-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linearLayoutId"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:background="@drawable/begateway_save_card"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="8dp"-->
+<!--            tools:ignore="MissingConstraints,OnClick">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/icon_card"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center_vertical"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:src="@drawable/begateway_ic_belkart" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/last_four"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:paddingStart="16dp"-->
+<!--                android:textColor="#000"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold"-->
+<!--                tools:ignore="RtlSymmetry" />-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/delete_card"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center_vertical"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:src="@drawable/begateway_ic_trash" />-->
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
+<!--&lt;!&ndash;    </FrameLayout>&ndash;&gt;-->
+<!--    <FrameLayout-->
+<!--        android:id="@+id/fl_overlay"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="#80000000"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        android:visibility="gone">-->
+
+<!--        <ProgressBar-->
+<!--            android:id="@+id/progressBar"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:visibility="gone" />-->
+
+<!--    </FrameLayout>-->
+
+
+<!--</RelativeLayout>-->

@@ -1,5 +1,6 @@
 package com.begateway.mobilepayments.sdk
 
+import android.content.Context
 import androidx.annotation.Keep
 import com.begateway.mobilepayments.models.settings.PaymentSdkSettings
 
@@ -39,12 +40,13 @@ class PaymentSdkBuilder {
 
     @Keep
     @Throws(IllegalArgumentException::class)
-    fun build(): PaymentSdk {
+    fun build(context: Context): PaymentSdk {
         require(settings.publicKey.isNotBlank()) { "Public key can not be empty" }
         require(settings.endpoint.isNotBlank()) { "Endpoint can not be empty" }
         return PaymentSdk.instance.apply {
             initSdk(
-                this@PaymentSdkBuilder.settings,
+                context,
+                this@PaymentSdkBuilder.settings
             )
         }
     }

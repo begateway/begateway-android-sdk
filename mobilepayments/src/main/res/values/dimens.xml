@@ -15,4 +15,6 @@
     <dimen name="begateway_card_expire_date_text_size">16sp</dimen>
     <dimen name="begateway_card_cvc_text_size">16sp</dimen>
 
+    <dimen name="begateway_fragment_card_margin_bottom">8sp</dimen>
+
 </resources>

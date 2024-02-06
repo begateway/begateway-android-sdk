@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.begateway.mobilepayments">
 
@@ -8,23 +9,22 @@
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="false" />
-    <queries>    <!--need to check new api android 11+-->
+
+    <queries> <!-- need to check new api android 11+ -->
         <intent>
             <action android:name="com.begateway.mobilepayments.action.SCAN_BANK_CARD" />
         </intent>
     </queries>
-    <application>
 
+    <application>
         <activity
-            android:name="com.begateway.mobilepayments.ui.CheckoutActivity"
+            android:name=".ui.CheckoutActivity"
             android:exported="false"
             android:theme="@style/begateway_Theme.Transparent" />
         <activity
-            android:name="com.begateway.mobilepayments.ui.WebViewActivity"
+            android:name=".ui.WebViewActivity"
             android:exported="false"
             android:theme="@style/begateway_Theme" />
     </application>
 
 </manifest>
-
-
