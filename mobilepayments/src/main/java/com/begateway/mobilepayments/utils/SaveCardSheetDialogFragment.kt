@@ -19,7 +19,7 @@ import com.begateway.mobilepayments.models.network.request.PaymentMethodType
 import com.begateway.mobilepayments.models.network.request.PaymentRequest
 import com.begateway.mobilepayments.models.network.request.Request
 import com.begateway.mobilepayments.sdk.PaymentSdk
-import com.begateway.mobilepayments.sdk.SaveCardToken
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,6 +75,7 @@ import org.json.JSONException
             )
         }
         listView.setOnItemClickListener { _, _, position, _ ->
+            Log.d("ItemClick", "Item clicked at position $cardToken")
             val selectedCard = creditCardList[position]
             lifecycleScope.launch(Dispatchers.Main) {
                 if (cardToken != null) {
@@ -85,6 +86,7 @@ import org.json.JSONException
         return view
     }
     private suspend fun handleButtonClick(cardToken: String, token: String) {
+        Log.d("BeagatewayToken", "Pay with token! $token")
         progressBar.visibility = View.VISIBLE
         overlay.visibility = View.VISIBLE
         lifecycleScope.launch {
@@ -109,6 +111,7 @@ import org.json.JSONException
                 dialog?.dismiss()
                 overlay.visibility = View.GONE
                 progressBar.visibility = View.GONE
+                activity?.finish()
 
             }
         }

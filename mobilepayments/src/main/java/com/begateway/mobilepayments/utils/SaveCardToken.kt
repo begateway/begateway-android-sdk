@@ -1,4 +1,4 @@
-package com.begateway.mobilepayments.sdk
+package com.begateway.mobilepayments.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -67,15 +67,12 @@ fun saveCreditCardData(context: Context, creditCardInfo: SaveCardToken?) {
         // Добавляем новый объект в список
         if (!isStampExist && creditCardInfo?.last4?.length != null) {
             existingList.add(creditCardInfo)
-
             // Преобразуем список в JSON-строку и сохраняем в SharedPreferences
             val newListJson = Gson().toJson(existingList)
             editor.putString("CreditCardList", newListJson)
-
             // Применяем изменения
             editor.apply()
         } else {
-        // Обработка совпадения (если необходимо)
         Log.d("saveCreditCardData", "Совпадение по полю 'Stamp', объект не добавлен.")
     }
 }

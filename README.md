@@ -132,13 +132,9 @@ here you also can use payment token from your server or etc.
 ```
 #### 3. To make a payment using a saved card, you must initialize the SDK, receive a payment token, then turn on the "Saver card" switch when paying with the card. The card token will be saved, then you can call the UI of the saved cards using the function:
 ```kotlin
-    private fun payWithCard() {
+   private fun payWithCard() {
         val token = binding.tilToken.editText?.text?.toString() ?: return
-        val bottomSheetFragment = SaveCardSheetDialogFragment()
-        val args = Bundle()
-        args.putString("cardToken", token)
-        bottomSheetFragment.arguments = args
-        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        startActivity( PaymentSdk.getSaveCardIntent(this@MainActivity, token))
     }
 ```
 ## Dynamic Fields

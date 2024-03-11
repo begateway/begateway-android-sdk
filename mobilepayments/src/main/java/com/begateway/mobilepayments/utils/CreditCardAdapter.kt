@@ -11,14 +11,13 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.begateway.mobilepayments.R
-import com.begateway.mobilepayments.sdk.SaveCardToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
 interface CardDeleteCallback {
     fun onCardDelete()
 }
-class CreditCardAdapter(context: Context, private val resource: Int, private val cards: List<SaveCardToken>,private val overlay: FrameLayout,
+class CreditCardAdapter(context: Context, private val resource: Int, private val cards: List<SaveCardToken>, private val overlay: FrameLayout,
                         private val progressBar: ProgressBar, private val cardDeleteCallback: CardDeleteCallback)
     : ArrayAdapter<SaveCardToken>(context, resource, cards) {
 
