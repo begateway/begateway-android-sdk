@@ -4,8 +4,8 @@ import android.content.Context
 import com.begateway.mobilepayments.models.network.response.BeGatewayResponse
 import com.begateway.mobilepayments.models.network.response.ResponseStatus
 import com.begateway.mobilepayments.sdk.PaymentSdk
-import com.begateway.mobilepayments.sdk.extractCreditCardInfo
-import com.begateway.mobilepayments.sdk.saveCreditCardData
+import com.begateway.mobilepayments.utils.extractCreditCardInfo
+import com.begateway.mobilepayments.utils.saveCreditCardData
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement

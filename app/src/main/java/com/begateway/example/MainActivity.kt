@@ -15,7 +15,6 @@ import com.begateway.mobilepayments.models.network.response.CheckoutWithTokenDat
 import com.begateway.mobilepayments.sdk.OnResultListener
 import com.begateway.mobilepayments.sdk.PaymentSdk
 import com.begateway.mobilepayments.sdk.PaymentSdkBuilder
-import com.begateway.mobilepayments.utils.SaveCardSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -122,12 +121,9 @@ class MainActivity : AppCompatActivity(), OnResultListener {
      */
     private fun payWithCard() {
         val token = binding.tilToken.editText?.text?.toString() ?: return
-        val bottomSheetFragment = SaveCardSheetDialogFragment()
-        val args = Bundle()
-        args.putString("cardToken", token)
-        bottomSheetFragment.arguments = args
-        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        startActivity( PaymentSdk.getSaveCardIntent(this@MainActivity, token))
     }
+
 
     /**
      * use if you haven't anything
