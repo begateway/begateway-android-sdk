@@ -23,6 +23,7 @@ import com.begateway.mobilepayments.network.HttpResult
 import com.begateway.mobilepayments.network.Rest
 import com.begateway.mobilepayments.payment.googlepay.GooglePayHelper
 import com.begateway.mobilepayments.ui.CheckoutActivity
+import com.begateway.mobilepayments.ui.SaveCardActivity
 import com.begateway.mobilepayments.ui.WebViewActivity
 import com.begateway.mobilepayments.utils.getBrowserInfo
 
@@ -53,7 +54,12 @@ class PaymentSdk private constructor() {
             expiryYear,
             cvcCode
         )
-
+        @Keep
+        fun getSaveCardIntent(context: Context, cardToken: String): Intent {
+            val intent = Intent(context, SaveCardActivity::class.java)
+            intent.putExtra("cardToken", cardToken)
+            return intent
+        }
         @[JvmStatic JvmOverloads Keep]
         fun getCardDataIntentWithExpiryString(
             cardNumber: String? = null,
@@ -170,6 +176,7 @@ class PaymentSdk private constructor() {
                 else -> onNotSuccess(pay)
             }
     }
+
 
     internal suspend fun updatePaymentData() {
         getPaymentData(
