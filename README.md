@@ -23,7 +23,7 @@ allprojects {
 Import the component module by adding it to your `build.gradle` file.
 
 ```groovy
-   implementation 'com.github.begateway:begateway-android-sdk:2.0.0'
+   implementation 'com.github.begateway:begateway-android-sdk:2.1.0'
 ```
 You can give a look to the full Kotlin sample by clicking [here](https://github.com/begateway/begateway-android-sdk/tree/master/app)
 
