@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 
-    class SaveCardSheetDialogFragment : BottomSheetDialogFragment() {
+class SaveCardSheetDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var overlay: FrameLayout

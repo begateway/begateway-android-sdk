@@ -3,11 +3,13 @@ package com.begateway.mobilepayments.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.json.JSONArray
 import org.json.JSONException
 
+@Keep
 data class SaveCardToken(
     val brand: String?,
     val last4: String?,
