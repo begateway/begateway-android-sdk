@@ -4,7 +4,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.begateway.mobilepayments.utils.SaveCardSheetDialogFragment
 
-
 class SaveCardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

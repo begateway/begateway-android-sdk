@@ -8,7 +8,7 @@ android {
     buildToolsVersion "31.0.0"
     defaultConfig {
         applicationId "com.bepaid.example"
-        minSdkVersion 22
+        minSdkVersion 24
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
